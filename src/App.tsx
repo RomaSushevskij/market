@@ -1,10 +1,10 @@
 import React from 'react';
 
 import './App.module.scss';
-import { Products } from './pages/products/Products';
+import { AppRoutes } from 'components/appRoutes/Routes';
 
 const App = () => {
-  return <Products />;
+  return <AppRoutes />;
 };
 
 export default App;

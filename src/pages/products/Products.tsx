@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import Grid from '@mui/material/Grid';
 
 import productImage from '../../assets/images/product.png';
-import { Product } from '../../components';
-import { Header } from '../../components/header/Header';
 
-export const Products = () => {
+import { Header, Product } from 'components';
+
+export const Products: FC = () => {
   // testing data
   const arrayLength = 6;
   const oneHundredDollars = 100;

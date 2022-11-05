@@ -8,26 +8,17 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
-import { ProductPropsType } from './types';
+import { OrderItemPropsType } from 'components/orderItem/types';
 
-export const Product: FC<ProductPropsType> = ({ title, sale, image }) => {
+export const OrderItem: FC<OrderItemPropsType> = ({ title, sale, image }) => {
   return (
-    <Card sx={{ width: 300, margin: '20px' }}>
+    <Card sx={{ width: 400, margin: '20px' }}>
       <CardMedia component="img" height="max-content" image={image} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {title}
         </Typography>
-        <Chip
-          size="medium"
-          style={{
-            backgroundColor: '#67C27B',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: 'bold',
-          }}
-          label={`$ ${sale}`}
-        />
+        <Chip size="medium" color="success" label={`$ ${sale}`} />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
         <Button

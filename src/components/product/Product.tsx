@@ -18,12 +18,12 @@ export const Product: FC<ProductPropsType> = ({ title, sale, image }) => {
         <Typography gutterBottom variant="h5" component="div">
           {title}
         </Typography>
-        <Chip color="success" label={`${sale} $`} variant="outlined" />
+        <Chip size="medium" color="success" label={`$ ${sale}`} />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
         <Button
           color="secondary"
-          variant="outlined"
+          variant="contained"
           endIcon={<ShoppingCartIcon />}
           size="small"
         >

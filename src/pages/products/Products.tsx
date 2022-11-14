@@ -1,30 +1,30 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 
-import productImage from '../../assets/images/product.png';
-
-import { Product } from 'components';
+import { Preloader, Product } from 'components';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { fetchProducts } from 'store/reducers/products/productsReducer';
+import { selectProducts } from 'store/selectors';
+import { selectStatus } from 'store/selectors/productsSelectors';
 
 export const Products: FC = () => {
-  // testing data
-  const arrayLength = 6;
-  const oneHundredDollars = 100;
-  const productsItems = new Array(arrayLength).fill(1).map((el, index) => {
-    return (
-      <Product
-        key={el + 1}
-        title="Some product"
-        image={productImage}
-        price={(index + el) * oneHundredDollars}
-        id={index + el}
-      />
-    );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, []);
+  const products = useAppSelector(selectProducts);
+  const productsPageStatus = useAppSelector(selectStatus);
+
+  const productsItems = products.map(({ id, title, price, image }) => {
+    return <Product key={id} title={title} image={image} price={price} id={id} />;
   });
+  const isLoading = productsPageStatus === 'loading';
 
   return (
     <Grid container spacing={2} justifyContent="space-around">
-      {productsItems}
+      {isLoading ? <Preloader /> : productsItems}
     </Grid>
   );
 };

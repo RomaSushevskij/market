@@ -1,6 +1,3 @@
-export type ProductPropsType = {
-  title: string;
-  image: string;
-  price: number;
-  id: string;
-};
+import { ProductType } from 'store/reducers';
+
+export type ProductPropsType = ProductType;

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
@@ -7,11 +7,18 @@ import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 
 import { HeaderMenu } from './menu/Menu';
 
-export const Header: FC = () => {
+import { PRODUCTS_ROUTE } from 'appConstants';
+
+export const Header: FC = memo(() => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const onMenuIconButtonClick = () => {
+    navigate(PRODUCTS_ROUTE);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }} mb={2}>
@@ -23,6 +30,7 @@ export const Header: FC = () => {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={onMenuIconButtonClick}
           >
             <MenuIcon />
           </IconButton>
@@ -34,4 +42,4 @@ export const Header: FC = () => {
       </AppBar>
     </Box>
   );
-};
+});

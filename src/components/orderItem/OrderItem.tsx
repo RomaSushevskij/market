@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 
 import { OrderItemPropsType } from 'components/orderItem/types';
 
-export const OrderItem: FC<OrderItemPropsType> = ({ title, price, image }) => {
+export const OrderItem: FC<OrderItemPropsType> = memo(({ title, price, image }) => {
   const theme = useTheme();
   const [ordersCount, setOrdersCount] = useState<number>(1);
 
@@ -79,4 +79,4 @@ export const OrderItem: FC<OrderItemPropsType> = ({ title, price, image }) => {
       </Stack>
     </Card>
   );
-};
+});

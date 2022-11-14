@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 
 import productImage from 'assets/images/product.png';
 import { OrderItem } from 'components';
@@ -28,8 +29,19 @@ export const OrderList: FC = () => {
     <Grid container spacing={2}>
       <Grid item flexGrow={1}>
         <Stack spacing={2}>{productsItems}</Stack>
+        <Typography
+          variant="h5"
+          component="span"
+          borderBottom={1}
+          color="primary"
+          fontWeight="bold"
+          display="inline-block"
+          marginTop={2}
+        >
+          TOTAL: 600$
+        </Typography>
       </Grid>
-      <Grid item width={{ xs: '100%', sm: 300 }} m="auto">
+      <Grid item width={{ xs: '100%', sm: 300 }} mx="auto">
         <Paper sx={{ p: 2 }}>
           <OrderForm />
         </Paper>

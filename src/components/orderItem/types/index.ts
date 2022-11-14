@@ -1,3 +1,3 @@
-import { ProductPropsType } from 'components/product/types';
+import { ProductType } from 'store/reducers';
 
-export type OrderItemPropsType = ProductPropsType;
+export type OrderItemPropsType = ProductType;

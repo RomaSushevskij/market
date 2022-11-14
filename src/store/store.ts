@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
-const rootReducer = combineReducers({
-  auth: () => {},
+import { productsReducer } from 'store/reducers/products/productsReducer';
+
+export const rootReducer = combineReducers({
+  products: productsReducer,
 });
 
 export const store = configureStore({

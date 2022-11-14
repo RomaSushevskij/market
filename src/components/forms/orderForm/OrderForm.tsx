@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 
 import { OrderFormValuesType } from 'components/forms/orderForm/types';
 
-export const OrderForm = () => {
+export const OrderForm = memo(() => {
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -26,7 +26,9 @@ export const OrderForm = () => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <FormControl fullWidth>
-        <FormLabel sx={{ fontSize: 20, textAlign: 'center' }}>Ordering</FormLabel>
+        <FormLabel sx={{ fontSize: 20, textAlign: 'center', fontWeight: 'bold' }}>
+          Ordering
+        </FormLabel>
         <FormGroup>
           <Box>
             <TextField
@@ -67,4 +69,4 @@ export const OrderForm = () => {
       </FormControl>
     </form>
   );
-};
+});

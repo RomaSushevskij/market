@@ -2,10 +2,10 @@ import React, { FC, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, Stack } from '@mui/material';
 import Badge from '@mui/material/Badge';
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
 import { ORDER_LIST } from 'appConstants';
@@ -48,7 +48,10 @@ export const HeaderMenu: FC = () => {
   };
 
   return (
-    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+    <Stack direction="row" alignItems="center">
+      <Typography variant="body1" fontWeight="bold" component="span">
+        $600
+      </Typography>
       <IconButton
         size="large"
         aria-label="show 4 new mails"
@@ -71,6 +74,6 @@ export const HeaderMenu: FC = () => {
         <AccountCircle />
       </IconButton>
       {renderMenu}
-    </Box>
+    </Stack>
   );
 };

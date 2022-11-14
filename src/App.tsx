@@ -1,10 +1,20 @@
 import React from 'react';
 
 import './App.module.scss';
+import Container from '@mui/material/Container';
+
+import { Header } from 'components';
 import { AppRoutes } from 'components/appRoutes/Routes';
 
 const App = () => {
-  return <AppRoutes />;
+  return (
+    <>
+      <Header />
+      <Container maxWidth="md" sx={{ minHeight: 'calc(100vh - 64px)' }}>
+        <AppRoutes />
+      </Container>
+    </>
+  );
 };
 
 export default App;

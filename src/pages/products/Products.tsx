@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 
 import productImage from '../../assets/images/product.png';
 
-import { Header, Product } from 'components';
+import { Product } from 'components';
 
 export const Products: FC = () => {
   // testing data
@@ -16,18 +16,15 @@ export const Products: FC = () => {
         key={el + 1}
         title="Some product"
         image={productImage}
-        sale={(index + el) * oneHundredDollars}
+        price={(index + el) * oneHundredDollars}
         id={index + el}
       />
     );
   });
 
   return (
-    <>
-      <Header />
-      <Grid bgcolor="#E7EBEF" container justifyContent="center" paddingTop={5}>
-        {productsItems}
-      </Grid>
-    </>
+    <Grid container spacing={2} justifyContent="space-around">
+      {productsItems}
+    </Grid>
   );
 };

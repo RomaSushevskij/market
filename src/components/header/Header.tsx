@@ -16,13 +16,14 @@ import { PRODUCTS_ROUTE } from 'appConstants';
 export const Header: FC = memo(() => {
   const theme = useTheme();
   const navigate = useNavigate();
+
   const onMenuIconButtonClick = () => {
     navigate(PRODUCTS_ROUTE);
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }} mb={2}>
-      <AppBar position="static" sx={{ bgcolor: theme.palette.primary.light }}>
+    <Box sx={{ flexGrow: 1 }} mb={10}>
+      <AppBar position="fixed" sx={{ bgcolor: theme.palette.primary.light }}>
         <Toolbar>
           <IconButton
             size="large"

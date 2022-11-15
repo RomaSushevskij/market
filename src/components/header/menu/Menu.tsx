@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -10,11 +10,21 @@ import { useNavigate } from 'react-router-dom';
 
 import { ORDER_LIST } from 'appConstants';
 import { useAppSelector } from 'hooks';
-import { selectorOrderTotalCost } from 'store/selectors/orderSelectors';
+import {
+  selectorOrderList,
+  selectorOrderTotalCost,
+} from 'store/selectors/orderSelectors';
 
 export const HeaderMenu: FC = () => {
-  const orderTotalCost = useAppSelector(selectorOrderTotalCost);
   const navigate = useNavigate();
+
+  const orderTotalCost = useAppSelector(selectorOrderTotalCost);
+  const orderList = useAppSelector(selectorOrderList);
+
+  const orderItemsTotalCount = useMemo(() => {
+    return orderList.reduce((sum, { count }) => sum + count, 0);
+  }, [orderList]);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -63,7 +73,7 @@ export const HeaderMenu: FC = () => {
         color="inherit"
         onClick={onShoppingCartClick}
       >
-        <Badge badgeContent={4} color="error">
+        <Badge badgeContent={orderItemsTotalCount} color="error">
           <ShoppingCartIcon />
         </Badge>
       </IconButton>

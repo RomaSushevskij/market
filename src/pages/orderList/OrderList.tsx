@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 import Grid from '@mui/material/Grid';
@@ -8,13 +8,15 @@ import Typography from '@mui/material/Typography';
 
 import { OrderItem } from 'components';
 import { OrderForm } from 'components/forms';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
 import {
   selectorOrderList,
   selectorOrderTotalCost,
 } from 'store/selectors/orderSelectors';
 
 export const OrderList: FC = () => {
+  const dispatch = useAppDispatch();
   const orderList = useAppSelector(selectorOrderList);
   const orderTotalCost = useAppSelector(selectorOrderTotalCost);
   const orderItems = orderList.map(({ id, title, image, price, count }) => {
@@ -30,6 +32,10 @@ export const OrderList: FC = () => {
     );
   });
 
+  useEffect(() => {
+    dispatch(calculateOrdersTotalCost());
+  }, [orderList]);
+
   return (
     <Grid container spacing={2}>
       {orderTotalCost > 0 ? (
@@ -41,11 +47,21 @@ export const OrderList: FC = () => {
               component="span"
               borderBottom={1}
               color="primary"
-              fontWeight="bold"
               display="inline-block"
-              marginTop={2}
+              mt={2}
             >
-              {`TOTAL: $ ${orderTotalCost}`}
+              TOTAL:
+              <Typography
+                variant="h5"
+                component="span"
+                color="primary"
+                display="inline-block"
+                mt={2}
+                fontWeight="bold"
+                ml={2}
+              >
+                {`$ ${orderTotalCost}`}
+              </Typography>
             </Typography>
           </Grid>
           <Grid item width={{ xs: '100%', sm: 300 }} mx="auto">

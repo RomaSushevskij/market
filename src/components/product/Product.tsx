@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Button, Chip } from '@mui/material';
@@ -12,16 +12,25 @@ import Typography from '@mui/material/Typography';
 
 import { ProductPropsType } from './types';
 
-import { useAppDispatch } from 'hooks';
-import { addItemToCart } from 'store/reducers/orders/ordersReducer';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import {
+  addItemToCart,
+  calculateOrdersTotalCost,
+} from 'store/reducers/orders/ordersReducer';
+import { selectorOrderList } from 'store/selectors/orderSelectors';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const orderList = useAppSelector(selectorOrderList);
 
   const onAddToCartClick = () => {
     dispatch(addItemToCart(id));
   };
+
+  useEffect(() => {
+    dispatch(calculateOrdersTotalCost());
+  }, [orderList]);
 
   return (
     <Grid item sx={{ width: 288 }}>

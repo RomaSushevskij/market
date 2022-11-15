@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
 import { OrderInformationType, OrderType } from 'store/reducers/orders/types';
@@ -37,11 +37,50 @@ const slice = createSlice({
       totalCost: 0,
     } as OrderInformationType,
   },
-  reducers: {},
+  reducers: {
+    changeOrderItemCount(
+      state,
+      action: PayloadAction<{ productId: string; changeType: 'add' | 'remove' }>,
+    ) {
+      const { productId, changeType } = action.payload;
+      const { orderList } = state;
+      const currentItemInCart = orderList.find(({ id }) => id === productId);
+
+      if (currentItemInCart) {
+        switch (changeType) {
+          case 'add':
+            currentItemInCart.count += 1;
+            break;
+          case 'remove': {
+            if (currentItemInCart.count > 1) {
+              currentItemInCart.count -= 1;
+              break;
+            }
+            const currentItemIndex = orderList.indexOf(currentItemInCart);
+
+            if (currentItemIndex > -1) {
+              orderList.splice(currentItemIndex, 1);
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    },
+    calculateOrdersTotalCost(state) {
+      const { orderList, orderInformation } = state;
+
+      orderInformation.totalCost = orderList.reduce(
+        (sum, { price, count }) => sum + price * count,
+        0,
+      );
+    },
+  },
   extraReducers: builder => {
     builder.addCase(addItemToCart.fulfilled, (state, { payload }) => {
       const { products, productId } = payload;
-      const { orderList, orderInformation } = state;
+      const { orderList } = state;
       const currentProduct = products.find(({ id }) => id === productId);
 
       if (currentProduct) {
@@ -54,13 +93,10 @@ const slice = createSlice({
 
           orderList.push(orderItem);
         }
-        orderInformation.totalCost = orderList.reduce(
-          (sum, { price, count }) => sum + price * count,
-          0,
-        );
       }
     });
   },
 });
 
 export const ordersReducer = slice.reducer;
+export const { changeOrderItemCount, calculateOrdersTotalCost } = slice.actions;

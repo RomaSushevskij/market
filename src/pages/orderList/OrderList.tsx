@@ -1,26 +1,26 @@
 import React, { FC } from 'react';
 
-import { Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import productImage from 'assets/images/product.png';
 import { OrderItem } from 'components';
 import { OrderForm } from 'components/forms';
+import { useAppSelector } from 'hooks';
+import { selectorOrderList } from 'store/selectors/orderSelectors';
 
 export const OrderList: FC = () => {
-  // testing data
-  const arrayLength = 3;
-  const oneHundredDollars = 100;
-  const productsItems = new Array(arrayLength).fill(1).map((el, index) => {
+  const orderList = useAppSelector(selectorOrderList);
+  const orderItems = orderList.map(({ id, title, image, price, count }) => {
     return (
       <OrderItem
-        key={el + 1}
-        title="Product name"
-        image={productImage}
-        price={(index + el) * oneHundredDollars}
-        id={index + el}
+        key={id}
+        title={title}
+        image={image}
+        price={price}
+        id={id}
+        count={count}
       />
     );
   });
@@ -28,7 +28,7 @@ export const OrderList: FC = () => {
   return (
     <Grid container spacing={2}>
       <Grid item flexGrow={1}>
-        <Stack spacing={2}>{productsItems}</Stack>
+        <Stack spacing={2}>{orderItems}</Stack>
         <Typography
           variant="h5"
           component="span"

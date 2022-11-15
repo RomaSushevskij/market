@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
-import { productsAPI } from 'api/products/todosAPI';
+import { productsAPI } from 'api/products/productsAPI';
 import { ProductType, RequestStatusType } from 'store/reducers/products/types';
 
 export const fetchProducts = createAsyncThunk<

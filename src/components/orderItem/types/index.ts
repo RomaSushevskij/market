@@ -1,3 +1,3 @@
-import { ProductType } from 'store/reducers';
+import { OrderType } from 'store/reducers/orders/types';
 
-export type OrderItemPropsType = ProductType;
+export type OrderItemPropsType = OrderType;

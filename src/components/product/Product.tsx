@@ -12,8 +12,16 @@ import Typography from '@mui/material/Typography';
 
 import { ProductPropsType } from './types';
 
-export const Product: FC<ProductPropsType> = ({ title, price, image }) => {
+import { useAppDispatch } from 'hooks';
+import { addItemToCart } from 'store/reducers/orders/ordersReducer';
+
+export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
+  const onAddToCartClick = () => {
+    dispatch(addItemToCart(id));
+  };
 
   return (
     <Grid item sx={{ width: 288 }}>
@@ -35,7 +43,11 @@ export const Product: FC<ProductPropsType> = ({ title, price, image }) => {
           />
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button color="primary" endIcon={<ShoppingCartIcon />}>
+          <Button
+            color="primary"
+            endIcon={<ShoppingCartIcon />}
+            onClick={onAddToCartClick}
+          >
             Add to cart
           </Button>
         </CardActions>

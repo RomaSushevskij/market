@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
+import { ordersReducer } from 'store/reducers/orders/ordersReducer';
 import { productsReducer } from 'store/reducers/products/productsReducer';
 
 export const rootReducer = combineReducers({
   products: productsReducer,
+  orders: ordersReducer,
 });
 
 export const store = configureStore({

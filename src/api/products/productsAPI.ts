@@ -10,7 +10,7 @@ const productsData: ProductType[] = [
   { id: '5', title: 'MacBook Air', image: productImage, price: 1120 },
   { id: '6', title: 'Oppo', image: productImage, price: 375 },
 ];
-const MS = 3000;
+const MS = 500;
 
 export const productsAPI = {
   async fetchProducts() {

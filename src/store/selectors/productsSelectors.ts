@@ -6,3 +6,5 @@ export const selectProducts = (state: AppStateType): ProductType[] =>
   state.products.products;
 export const selectStatus = (state: AppStateType): RequestStatusType =>
   state.products.status;
+export const selectProductsPageMessage = (state: AppStateType): string | undefined =>
+  state.products.productsPageMessage;

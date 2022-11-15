@@ -9,8 +9,12 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
 import { ORDER_LIST } from 'appConstants';
+import { useAppSelector } from 'hooks';
+import { selectorOrderTotalCost } from 'store/selectors/orderSelectors';
 
 export const HeaderMenu: FC = () => {
+  const orderTotalCost = useAppSelector(selectorOrderTotalCost);
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -42,16 +46,17 @@ export const HeaderMenu: FC = () => {
     </Menu>
   );
 
-  const navigate = useNavigate();
   const onShoppingCartClick = () => {
     navigate(ORDER_LIST);
   };
 
   return (
     <Stack direction="row" alignItems="center">
-      <Typography variant="body1" fontWeight="bold" component="span">
-        $600
-      </Typography>
+      {orderTotalCost > 0 && (
+        <Typography variant="body1" fontWeight="bold" component="span">
+          $ {orderTotalCost}
+        </Typography>
+      )}
       <IconButton
         size="large"
         aria-label="show 4 new mails"

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
-import { OrderType } from 'store/reducers/orders/types';
+import { OrderInformationType, OrderType } from 'store/reducers/orders/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
 
@@ -35,18 +35,29 @@ const slice = createSlice({
       address: '',
       phone: '',
       totalCost: 0,
-    },
+    } as OrderInformationType,
   },
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(addItemToCart.fulfilled, ({ orderList }, { payload }) => {
+    builder.addCase(addItemToCart.fulfilled, (state, { payload }) => {
       const { products, productId } = payload;
+      const { orderList, orderInformation } = state;
       const currentProduct = products.find(({ id }) => id === productId);
 
       if (currentProduct) {
-        const orderItem: OrderType = { ...currentProduct, count: 0 };
+        const currentItemInCart = orderList.find(({ id }) => id === productId);
 
-        orderList.push(orderItem);
+        if (currentItemInCart) {
+          currentItemInCart.count += 1;
+        } else {
+          const orderItem: OrderType = { ...currentProduct, count: 1 };
+
+          orderList.push(orderItem);
+        }
+        orderInformation.totalCost = orderList.reduce(
+          (sum, { price, count }) => sum + price * count,
+          0,
+        );
       }
     });
   },

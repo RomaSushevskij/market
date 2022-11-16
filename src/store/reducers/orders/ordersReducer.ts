@@ -47,24 +47,20 @@ const slice = createSlice({
       const currentItemInCart = orderList.find(({ id }) => id === productId);
 
       if (currentItemInCart) {
-        switch (changeType) {
-          case 'add':
-            currentItemInCart.count += 1;
-            break;
-          case 'remove': {
-            if (currentItemInCart.count > 1) {
-              currentItemInCart.count -= 1;
-              break;
-            }
-            const currentItemIndex = orderList.indexOf(currentItemInCart);
+        if (changeType === 'add') {
+          currentItemInCart.count += 1;
 
-            if (currentItemIndex > -1) {
-              orderList.splice(currentItemIndex, 1);
-            }
-            break;
-          }
-          default:
-            break;
+          return;
+        }
+        if (currentItemInCart.count > 1) {
+          currentItemInCart.count -= 1;
+
+          return;
+        }
+        const currentItemIndex = orderList.indexOf(currentItemInCart);
+
+        if (currentItemIndex > -1) {
+          orderList.splice(currentItemIndex, 1);
         }
       }
     },

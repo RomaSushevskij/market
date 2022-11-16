@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -9,7 +9,8 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
 import { ORDER_LIST } from 'appConstants';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
 import {
   selectorOrderList,
   selectorOrderTotalCost,
@@ -17,6 +18,7 @@ import {
 
 export const HeaderMenu: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const orderTotalCost = useAppSelector(selectorOrderTotalCost);
   const orderList = useAppSelector(selectorOrderList);
@@ -35,6 +37,15 @@ export const HeaderMenu: FC = () => {
     setAnchorEl(null);
   };
   const menuId = 'primary-search-account-menu';
+
+  const onShoppingCartClick = () => {
+    navigate(ORDER_LIST);
+  };
+
+  useEffect(() => {
+    dispatch(calculateOrdersTotalCost());
+  }, [orderList]);
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -55,10 +66,6 @@ export const HeaderMenu: FC = () => {
       <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
     </Menu>
   );
-
-  const onShoppingCartClick = () => {
-    navigate(ORDER_LIST);
-  };
 
   return (
     <Stack direction="row" alignItems="center">

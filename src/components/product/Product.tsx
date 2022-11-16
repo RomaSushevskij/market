@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Button, Chip } from '@mui/material';
@@ -12,29 +12,36 @@ import Typography from '@mui/material/Typography';
 
 import { ProductPropsType } from './types';
 
-import { useAppDispatch, useAppSelector } from 'hooks';
-import {
-  addItemToCart,
-  calculateOrdersTotalCost,
-} from 'store/reducers/orders/ordersReducer';
-import { selectorOrderList } from 'store/selectors/orderSelectors';
+import { useAppDispatch } from 'hooks';
+import { addItemToCart } from 'store/reducers/orders/ordersReducer';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const orderList = useAppSelector(selectorOrderList);
+
+  const [isHoverCard, setHoverCard] = useState(false);
 
   const onAddToCartClick = () => {
     dispatch(addItemToCart(id));
   };
-
-  useEffect(() => {
-    dispatch(calculateOrdersTotalCost());
-  }, [orderList]);
+  const onCardMouseMove = () => {
+    setHoverCard(true);
+  };
+  const onCardMouseOut = () => {
+    setHoverCard(false);
+  };
+  const hoverElevationValue = 10;
+  const elevationValue = useMemo(() => {
+    return isHoverCard ? hoverElevationValue : 1;
+  }, [isHoverCard]);
 
   return (
     <Grid item sx={{ width: 288 }}>
-      <Card>
+      <Card
+        elevation={elevationValue}
+        onMouseMove={onCardMouseMove}
+        onMouseOut={onCardMouseOut}
+      >
         <CardMedia component="img" sx={{ width: '100%' }} image={image} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">

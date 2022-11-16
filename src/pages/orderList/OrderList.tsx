@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 import Grid from '@mui/material/Grid';
@@ -8,15 +8,13 @@ import Typography from '@mui/material/Typography';
 
 import { OrderItem } from 'components';
 import { OrderForm } from 'components/forms';
-import { useAppDispatch, useAppSelector } from 'hooks';
-import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
+import { useAppSelector } from 'hooks';
 import {
   selectorOrderList,
   selectorOrderTotalCost,
 } from 'store/selectors/orderSelectors';
 
 export const OrderList: FC = () => {
-  const dispatch = useAppDispatch();
   const orderList = useAppSelector(selectorOrderList);
   const orderTotalCost = useAppSelector(selectorOrderTotalCost);
   const orderItems = orderList.map(({ id, title, image, price, count }) => {
@@ -31,10 +29,6 @@ export const OrderList: FC = () => {
       />
     );
   });
-
-  useEffect(() => {
-    dispatch(calculateOrdersTotalCost());
-  }, [orderList]);
 
   return (
     <Grid container spacing={2}>

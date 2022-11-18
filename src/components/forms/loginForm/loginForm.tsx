@@ -13,7 +13,11 @@ import TextField from '@mui/material/TextField';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 
-import { PRODUCTS_ROUTE } from 'appConstants';
+import {
+  AUTH_PAGE_ROUTE,
+  AUTH_SEND_INSTRUCTIONS_ROUTE,
+  AUTH_SIGN_UP_ROUTE,
+} from 'appConstants';
 
 export const LoginForm = memo(() => {
   const theme = useTheme();
@@ -21,7 +25,7 @@ export const LoginForm = memo(() => {
     initialValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      rememberMe: true,
     },
     onSubmit: values => {
       const validation = 2;
@@ -38,6 +42,7 @@ export const LoginForm = memo(() => {
           <TextField
             InputProps={{
               endAdornment: <AlternateEmailOutlinedIcon sx={{ color: primaryColor }} />,
+              autoComplete: 'off',
             }}
             variant="outlined"
             label="Email"
@@ -47,13 +52,16 @@ export const LoginForm = memo(() => {
           />
 
           <TextField
+            id="password"
             InputProps={{
               endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
+              autoComplete: 'new-password',
             }}
             variant="outlined"
             label="Password"
             margin="normal"
             type="password"
+            autoComplete="new-password"
             fullWidth
             {...formik.getFieldProps('password')}
           />
@@ -69,7 +77,7 @@ export const LoginForm = memo(() => {
           <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
             {'Forgot your'}{' '}
             <NavLink
-              to={PRODUCTS_ROUTE}
+              to={`${AUTH_PAGE_ROUTE}/${AUTH_SEND_INSTRUCTIONS_ROUTE}`}
               style={{
                 textDecoration: 'none',
                 fontWeight: 'bold',
@@ -80,9 +88,9 @@ export const LoginForm = memo(() => {
             </NavLink>
           </FormHelperText>
           <FormHelperText sx={{ mx: 'auto' }}>
-            {'Don&apos;t have an account?'}
+            Don&apos;t have an account?
             <NavLink
-              to={PRODUCTS_ROUTE}
+              to={`${AUTH_PAGE_ROUTE}/${AUTH_SIGN_UP_ROUTE}`}
               style={{ textDecoration: 'none', fontWeight: 'bold', color: primaryColor }}
             >
               {'  Sign Up'}

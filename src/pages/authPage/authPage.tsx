@@ -3,9 +3,9 @@ import React, { FC, memo } from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 
-import { AuthForm, LoginForm, RegistrationForm } from 'components/forms';
+import { AuthForm } from 'components/forms';
 
-export const LoginPage: FC = memo(() => {
+export const AuthPage: FC = memo(() => {
   return (
     <Grid
       container
@@ -16,8 +16,6 @@ export const LoginPage: FC = memo(() => {
       <Grid item sx={{ width: 400 }}>
         <Paper sx={{ p: 4 }}>
           <AuthForm />
-          <LoginForm />
-          <RegistrationForm />
         </Paper>
       </Grid>
     </Grid>

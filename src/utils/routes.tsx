@@ -1,7 +1,7 @@
-import {LOGIN_PAGE_ROUTE, ORDER_LIST_ROUTE, PRODUCTS_ROUTE} from 'appConstants';
+import { AUTH_PAGE_DEEP_ROUTE, ORDER_LIST_ROUTE, PRODUCTS_ROUTE } from 'appConstants';
 import { RouteType } from 'components/appRoutes/types';
 import { OrderList, Products } from 'pages';
-import {LoginPage} from "../pages/loginPage/loginPage";
+import { AuthPage } from 'pages/authPage/authPage';
 
 export const privateRoutes: RouteType[] = [
   {
@@ -16,7 +16,7 @@ export const privateRoutes: RouteType[] = [
 
 export const publicRoutes: RouteType[] = [
   {
-    path: LOGIN_PAGE_ROUTE,
-    component: <LoginPage />
-  }
-]
+    path: AUTH_PAGE_DEEP_ROUTE,
+    component: <AuthPage />,
+  },
+];

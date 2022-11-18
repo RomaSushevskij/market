@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
@@ -11,9 +11,9 @@ import TextField from '@mui/material/TextField';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 
-import { PRODUCTS_ROUTE } from 'appConstants';
+import { AUTH_PAGE_ROUTE, AUTH_SIGN_IN_ROUTE } from 'appConstants';
 
-export const RegistrationForm: FC = () => {
+export const RegistrationForm: FC = memo(() => {
   const theme = useTheme();
   const primaryColor = theme.palette.primary.light;
   const formik = useFormik({
@@ -52,6 +52,7 @@ export const RegistrationForm: FC = () => {
             label="Password"
             margin="normal"
             type="password"
+            autoComplete="new-password"
             fullWidth
             {...formik.getFieldProps('password')}
           />
@@ -63,6 +64,7 @@ export const RegistrationForm: FC = () => {
             label="Confirm password"
             margin="normal"
             type="password"
+            autoComplete="new-password"
             fullWidth
             {...formik.getFieldProps('confirmPassword')}
           />
@@ -73,18 +75,18 @@ export const RegistrationForm: FC = () => {
           <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
             {"I'm already a member!"}{' '}
             <NavLink
-              to={PRODUCTS_ROUTE}
+              to={`${AUTH_PAGE_ROUTE}/${AUTH_SIGN_IN_ROUTE}`}
               style={{
                 textDecoration: 'none',
                 fontWeight: 'bold',
                 color: primaryColor,
               }}
             >
-              {'  Sign In?'}
+              {'  Sign In'}
             </NavLink>
           </FormHelperText>
         </FormGroup>
       </FormControl>
     </form>
   );
-};
+});

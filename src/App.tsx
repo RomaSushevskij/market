@@ -10,7 +10,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <Container maxWidth="md" sx={{ padding: 2, minHeight: 'calc(100vh - 64px)' }}>
+      <Container maxWidth="md" sx={{ padding: 2, minHeight: 'calc(100vh - 80px)' }}>
         <AppRoutes />
       </Container>
     </>

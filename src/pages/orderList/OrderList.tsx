@@ -9,14 +9,11 @@ import Typography from '@mui/material/Typography';
 import { OrderItem } from 'components';
 import { OrderForm } from 'components/forms';
 import { useAppSelector } from 'hooks';
-import {
-  selectorOrderList,
-  selectorOrderTotalCost,
-} from 'store/selectors/orderSelectors';
+import { selectOrderList, selectOrderTotalCost } from 'store/selectors/orderSelectors';
 
 export const OrderList: FC = () => {
-  const orderList = useAppSelector(selectorOrderList);
-  const orderTotalCost = useAppSelector(selectorOrderTotalCost);
+  const orderList = useAppSelector(selectOrderList);
+  const orderTotalCost = useAppSelector(selectOrderTotalCost);
   const orderItems = orderList.map(({ id, title, image, price, count }) => {
     return (
       <OrderItem

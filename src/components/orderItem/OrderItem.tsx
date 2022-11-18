@@ -17,7 +17,7 @@ import { useAppDispatch } from 'hooks';
 import { changeOrderItemCount } from 'store/reducers/orders/ordersReducer';
 
 export const OrderItem: FC<OrderItemPropsType> = memo(
-  ({ title, price, image, count, id }) => {
+  ({ title, price, image, count, id }: OrderItemPropsType) => {
     const theme = useTheme();
     const dispatch = useAppDispatch();
 

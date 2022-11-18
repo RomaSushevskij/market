@@ -8,20 +8,17 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
-import { ORDER_LIST } from 'appConstants';
+import { ORDER_LIST_ROUTE } from 'appConstants';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
-import {
-  selectorOrderList,
-  selectorOrderTotalCost,
-} from 'store/selectors/orderSelectors';
+import { selectOrderList, selectOrderTotalCost } from 'store/selectors/orderSelectors';
 
 export const HeaderMenu: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const orderTotalCost = useAppSelector(selectorOrderTotalCost);
-  const orderList = useAppSelector(selectorOrderList);
+  const orderTotalCost = useAppSelector(selectOrderTotalCost);
+  const orderList = useAppSelector(selectOrderList);
 
   const orderItemsTotalCount = useMemo(() => {
     return orderList.reduce((sum, { count }) => sum + count, 0);
@@ -39,7 +36,7 @@ export const HeaderMenu: FC = () => {
   const menuId = 'primary-search-account-menu';
 
   const onShoppingCartClick = () => {
-    navigate(ORDER_LIST);
+    navigate(ORDER_LIST_ROUTE);
   };
 
   useEffect(() => {

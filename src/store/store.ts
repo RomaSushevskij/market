@@ -22,3 +22,6 @@ store.subscribe(() => {
     products: store.getState().products,
   });
 });
+
+// @ts-ignore
+window.store = store;

@@ -8,9 +8,13 @@ import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 import { useFormik } from 'formik';
 
+import { useAppDispatch } from '../../../hooks';
+
 import { OrderFormValuesType } from 'components/forms/orderForm/types';
+import { generateAnOrder } from 'store/reducers/orders/ordersReducer';
 
 export const OrderForm = memo(() => {
+  const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -19,7 +23,7 @@ export const OrderForm = memo(() => {
       phone: '',
     } as OrderFormValuesType,
     onSubmit: (values: OrderFormValuesType) => {
-      console.log(values);
+      dispatch(generateAnOrder({ customerInformation: values }));
     },
   });
 

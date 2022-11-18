@@ -1,7 +1,7 @@
 import { OrderType } from 'store/reducers/orders/types';
 import { AppStateType } from 'store/types';
 
-export const selectorOrderList = (state: AppStateType): OrderType[] =>
+export const selectOrderList = (state: AppStateType): OrderType[] =>
   state.orders.orderList;
-export const selectorOrderTotalCost = (state: AppStateType): number =>
+export const selectOrderTotalCost = (state: AppStateType): number =>
   state.orders.orderInformation.totalCost;

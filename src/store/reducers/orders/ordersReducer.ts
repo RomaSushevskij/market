@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
+import { OrderFormValuesType } from '../../../components/forms/orderForm/types';
+
 import { OrderInformationType, OrderType } from 'store/reducers/orders/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
@@ -72,6 +74,22 @@ const slice = createSlice({
         0,
       );
     },
+    generateAnOrder(
+      state,
+      action: PayloadAction<{ customerInformation: OrderFormValuesType }>,
+    ) {
+      const { customerInformation } = action.payload;
+      const { orderList, orderInformation } = state;
+
+      state.orderInformation = {
+        ...customerInformation,
+        totalCost: state.orderInformation.totalCost,
+      };
+
+      const finalOrder = { ...orderInformation, orderList };
+
+      console.log(finalOrder);
+    },
   },
   extraReducers: builder => {
     builder.addCase(addItemToCart.fulfilled, (state, { payload }) => {
@@ -95,4 +113,5 @@ const slice = createSlice({
 });
 
 export const ordersReducer = slice.reducer;
-export const { changeOrderItemCount, calculateOrdersTotalCost } = slice.actions;
+export const { changeOrderItemCount, calculateOrdersTotalCost, generateAnOrder } =
+  slice.actions;

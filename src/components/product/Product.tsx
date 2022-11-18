@@ -63,6 +63,7 @@ export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
             color="primary"
             endIcon={<ShoppingCartIcon />}
             onClick={onAddToCartClick}
+            sx={{ fontWeight: 'bold' }}
           >
             Add to cart
           </Button>

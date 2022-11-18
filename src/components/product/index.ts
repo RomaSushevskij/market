@@ -1,2 +1,2 @@
 export { Product } from './Product';
-export {} from './types';
+export type { ProductPropsType } from './types';

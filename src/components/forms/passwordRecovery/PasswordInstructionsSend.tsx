@@ -32,20 +32,19 @@ export const PasswordInstructionsSend: FC = memo(() => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <FormLabel>
-        <Typography variant="h6" component="div" my={2}>
-          Forgot your password?
-        </Typography>
-        <Typography variant="body2" component="div">
-          Enter your email address and we will send you further instructions
-        </Typography>
-      </FormLabel>
       <FormControl fullWidth>
+        <FormLabel>
+          <Typography variant="h6" component="div" my={2}>
+            Forgot your password?
+          </Typography>
+          <Typography variant="body2" component="div">
+            Enter your email address and we will send you further instructions
+          </Typography>
+        </FormLabel>
         <FormGroup>
           <TextField
             InputProps={{
               endAdornment: <AlternateEmailOutlinedIcon sx={{ color: primaryColor }} />,
-              autoComplete: 'off',
             }}
             variant="outlined"
             label="Email"

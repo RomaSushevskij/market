@@ -8,6 +8,7 @@ import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { AuthTabsValueType } from './types';
 
 import {
+  AUTH_PASSWORD_RECOVERY_ROUTE,
   AUTH_SEND_INSTRUCTIONS_ROUTE,
   AUTH_SIGN_IN_ROUTE,
   AUTH_SIGN_UP_ROUTE,
@@ -15,6 +16,7 @@ import {
 import { authForms } from 'components/forms/authForm/enums';
 import { LoginForm } from 'components/forms/loginForm/loginForm';
 import { PasswordInstructionsSend } from 'components/forms/passwordRecovery/PasswordInstructionsSend';
+import { PasswordRecoveryForm } from 'components/forms/passwordRecovery/PasswordRecoveryForm';
 import { RegistrationForm } from 'components/forms/registrationForm/RegistrationForm';
 
 export const AuthForm: FC = memo(() => {
@@ -60,15 +62,12 @@ export const AuthForm: FC = memo(() => {
       )}
       <Routes>
         <Route path={AUTH_SIGN_IN_ROUTE} element={<LoginForm />} />
-      </Routes>
-      <Routes>
         <Route path={AUTH_SIGN_UP_ROUTE} element={<RegistrationForm />} />
-      </Routes>
-      <Routes>
         <Route
           path={AUTH_SEND_INSTRUCTIONS_ROUTE}
           element={<PasswordInstructionsSend />}
         />
+        <Route path={AUTH_PASSWORD_RECOVERY_ROUTE} element={<PasswordRecoveryForm />} />
       </Routes>
     </Box>
   );

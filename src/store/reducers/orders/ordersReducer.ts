@@ -79,14 +79,14 @@ const slice = createSlice({
       action: PayloadAction<{ customerInformation: OrderFormValuesType }>,
     ) {
       const { customerInformation } = action.payload;
-      const { orderList, orderInformation } = state;
+      const { orderList } = state;
 
       state.orderInformation = {
         ...customerInformation,
         totalCost: state.orderInformation.totalCost,
       };
 
-      const finalOrder = { ...orderInformation, orderList };
+      const finalOrder = { ...state.orderInformation, orderList };
 
       console.log(finalOrder);
     },

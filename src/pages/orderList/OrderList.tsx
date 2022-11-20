@@ -5,15 +5,19 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Navigate } from 'react-router-dom';
 
 import { OrderItem } from 'components';
 import { OrderForm } from 'components/forms';
+import { routes } from 'enums';
 import { useAppSelector } from 'hooks';
-import { selectOrderList, selectOrderTotalCost } from 'store/selectors/orderSelectors';
+import { selectIsAuth, selectOrderList, selectOrderTotalCost } from 'store/selectors';
 
 export const OrderList: FC = () => {
   const orderList = useAppSelector(selectOrderList);
   const orderTotalCost = useAppSelector(selectOrderTotalCost);
+  const isAuth = useAppSelector(selectIsAuth);
+
   const orderItems = orderList.map(({ id, title, image, price, count }) => {
     return (
       <OrderItem
@@ -26,6 +30,10 @@ export const OrderList: FC = () => {
       />
     );
   });
+
+  if (!isAuth) {
+    return <Navigate to={routes.AUTH_PAGE} />;
+  }
 
   return (
     <Grid container spacing={2}>

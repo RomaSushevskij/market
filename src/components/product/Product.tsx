@@ -1,11 +1,12 @@
 import React, { FC, useMemo, useState } from 'react';
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Button, Chip } from '@mui/material';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -13,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { ProductPropsType } from './types';
 
 import { useAppDispatch } from 'hooks';
-import { addItemToCart } from 'store/reducers/orders/ordersReducer';
+import { addItemToCart } from 'store/reducers';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   const theme = useTheme();

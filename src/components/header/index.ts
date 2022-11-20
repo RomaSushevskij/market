@@ -1,2 +1,2 @@
-export { Header } from './Header';
-export { HeaderMenu } from './menu/Menu';
+export * from './Header';
+export * from './menu/Menu';

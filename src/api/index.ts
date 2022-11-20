@@ -1,1 +1,2 @@
-export const plug = () => {};
+export * from './products/productsAPI';
+export * from './auth/authApi';

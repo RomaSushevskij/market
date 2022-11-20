@@ -1,20 +1,25 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import { useTheme } from '@mui/material';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
+import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useFormik } from 'formik';
 
-import { Notification } from 'components/forms/passwordRecovery/Notification';
+import { PasswordRecoverySchema } from '../validation';
+
+import { Notification } from './Notification';
+
+import { routes } from 'enums';
 
 export const PasswordRecoveryForm: FC = () => {
   const theme = useTheme();
-  const primaryColor = theme.palette.primary.light;
   const formik = useFormik({
     initialValues: {
       password: '',
@@ -26,11 +31,46 @@ export const PasswordRecoveryForm: FC = () => {
       alert(JSON.stringify(values, null, validate));
       setPassword(true);
     },
+    validationSchema: PasswordRecoverySchema,
   });
 
   const [isSetPassword, setPassword] = useState(false);
 
-  if (isSetPassword) return <Notification />;
+  const getErrorHelperText = useCallback(
+    (fieldName: 'password' | 'confirmPassword') => {
+      const errorHelperText =
+        formik.errors[fieldName] && formik.touched[fieldName]
+          ? formik.errors[fieldName]
+          : '';
+
+      return errorHelperText;
+    },
+    [formik],
+  );
+  const passwordErrorHelperText = getErrorHelperText('password');
+  const confirmPasswordErrorHelperText = getErrorHelperText('confirmPassword');
+  const primaryColor = theme.palette.primary.light;
+  const successColor = theme.palette.success.light;
+  const getIconColor = useCallback((fieldError: string | undefined) => {
+    return fieldError ? theme.palette.error.main : primaryColor;
+  }, []);
+  const passwordIconColor = getIconColor(passwordErrorHelperText);
+  const confirmPasswordIconColor = getIconColor(confirmPasswordErrorHelperText);
+  const isSubmitButtonDisabled =
+    passwordErrorHelperText ||
+    confirmPasswordErrorHelperText ||
+    !formik.values.password ||
+    !formik.values.confirmPassword;
+
+  if (isSetPassword)
+    return (
+      <Notification
+        title="The new password has been successfully set"
+        icon={<CheckCircleOutlineIcon sx={{ fontSize: 100, color: successColor }} />}
+        linkTitle="Login with new password"
+        linkPath={`${routes.AUTH_PAGE}/${routes.AUTH_SIGN_IN}`}
+      />
+    );
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -43,7 +83,7 @@ export const PasswordRecoveryForm: FC = () => {
         <FormGroup>
           <TextField
             InputProps={{
-              endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: <LockOpenOutlinedIcon sx={{ color: passwordIconColor }} />,
             }}
             variant="outlined"
             label="Password"
@@ -51,8 +91,12 @@ export const PasswordRecoveryForm: FC = () => {
             type="password"
             autoComplete="new-password"
             fullWidth
+            error={!!passwordErrorHelperText}
             {...formik.getFieldProps('password')}
           />
+          <FormHelperText error sx={{ height: 20 }}>
+            {passwordErrorHelperText}
+          </FormHelperText>
           <TextField
             InputProps={{
               endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
@@ -63,10 +107,18 @@ export const PasswordRecoveryForm: FC = () => {
             type="password"
             autoComplete="new-password"
             fullWidth
+            error={!!confirmPasswordErrorHelperText}
             {...formik.getFieldProps('confirmPassword')}
           />
-
-          <Button variant="contained" type="submit" sx={{ mt: 4, bgcolor: primaryColor }}>
+          <FormHelperText error sx={{ height: 20 }}>
+            {confirmPasswordErrorHelperText}
+          </FormHelperText>
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ mt: 4, bgcolor: confirmPasswordIconColor }}
+            disabled={!!isSubmitButtonDisabled}
+          >
             Set new password
           </Button>
         </FormGroup>

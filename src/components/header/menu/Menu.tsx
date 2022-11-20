@@ -2,16 +2,18 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Menu, MenuItem, Stack } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
-import { ORDER_LIST_ROUTE } from 'appConstants';
+import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
-import { selectOrderList, selectOrderTotalCost } from 'store/selectors/orderSelectors';
+import { logOut, calculateOrdersTotalCost } from 'store/reducers';
+import { selectOrderList, selectOrderTotalCost } from 'store/selectors';
 
 export const HeaderMenu: FC = () => {
   const navigate = useNavigate();
@@ -32,11 +34,12 @@ export const HeaderMenu: FC = () => {
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
+    dispatch(logOut());
   };
   const menuId = 'primary-search-account-menu';
 
   const onShoppingCartClick = () => {
-    navigate(ORDER_LIST_ROUTE);
+    navigate(routes.ORDER_LIST);
   };
 
   useEffect(() => {

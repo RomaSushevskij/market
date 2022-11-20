@@ -1,22 +1,22 @@
-import { AUTH_PAGE_DEEP_ROUTE, ORDER_LIST_ROUTE, PRODUCTS_ROUTE } from 'appConstants';
 import { RouteType } from 'components/appRoutes/types';
+import { routes } from 'enums';
 import { OrderList, Products } from 'pages';
 import { AuthPage } from 'pages/authPage/authPage';
 
 export const privateRoutes: RouteType[] = [
   {
-    path: PRODUCTS_ROUTE,
+    path: routes.PRODUCTS,
     component: <Products />,
   },
   {
-    path: ORDER_LIST_ROUTE,
+    path: routes.ORDER_LIST,
     component: <OrderList />,
   },
 ];
 
 export const publicRoutes: RouteType[] = [
   {
-    path: AUTH_PAGE_DEEP_ROUTE,
+    path: routes.AUTH_PAGE_DEEP,
     component: <AuthPage />,
   },
 ];

@@ -11,14 +11,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { HeaderMenu } from './menu/Menu';
 
-import { PRODUCTS_ROUTE } from 'appConstants';
+import { routes } from 'enums';
 
 export const Header: FC = memo(() => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const onMenuIconButtonClick = () => {
-    navigate(PRODUCTS_ROUTE);
+    navigate(routes.PRODUCTS);
   };
 
   return (

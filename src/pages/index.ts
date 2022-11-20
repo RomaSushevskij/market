@@ -1,2 +1,3 @@
-export { Products } from './products/Products';
-export { OrderList } from './orderList/OrderList';
+export * from './products';
+export * from './orderList';
+export * from './authPage';

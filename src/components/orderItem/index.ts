@@ -1,1 +1,2 @@
-export { OrderItem } from './OrderItem';
+export * from './OrderItem';
+export * from './types';

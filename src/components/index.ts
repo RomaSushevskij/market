@@ -1,4 +1,6 @@
-export { Product } from './product';
-export { Header, HeaderMenu } from './header';
-export { OrderItem } from './orderItem';
-export { Preloader } from './preloader/Preloader';
+export * from './appRoutes';
+export * from './forms';
+export * from './header';
+export * from './orderItem';
+export * from './preloader';
+export * from './product';

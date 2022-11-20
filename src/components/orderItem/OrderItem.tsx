@@ -12,9 +12,10 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
-import { OrderItemPropsType } from 'components/orderItem/types';
+import { OrderItemPropsType } from './types';
+
 import { useAppDispatch } from 'hooks';
-import { changeOrderItemCount } from 'store/reducers/orders/ordersReducer';
+import { changeOrderItemCount } from 'store/reducers';
 
 export const OrderItem: FC<OrderItemPropsType> = memo(
   ({ title, price, image, count, id }: OrderItemPropsType) => {

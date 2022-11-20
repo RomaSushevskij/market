@@ -1,2 +1,2 @@
-export { rootReducer, store } from './store';
-export type { AppDispatch, AppStateType } from './types';
+export * from './store';
+export * from './types';

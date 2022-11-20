@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
@@ -11,23 +11,57 @@ import TextField from '@mui/material/TextField';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 
-import { AUTH_PAGE_ROUTE, AUTH_SIGN_IN_ROUTE } from 'appConstants';
+import { SignUpSchema } from '../validation';
+
+import { SignUpFormValuesType } from './types';
+
+import { routes } from 'enums';
 
 export const RegistrationForm: FC = memo(() => {
   const theme = useTheme();
-  const primaryColor = theme.palette.primary.light;
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
       confirmPassword: '',
-    },
+    } as SignUpFormValuesType,
     onSubmit: values => {
       const validation = 2;
 
       alert(JSON.stringify(values, null, validation));
     },
+    validationSchema: SignUpSchema,
   });
+
+  const getErrorHelperText = useCallback(
+    (fieldName: 'email' | 'password' | 'confirmPassword') => {
+      const errorHelperText =
+        formik.errors[fieldName] && formik.touched[fieldName]
+          ? formik.errors[fieldName]
+          : '';
+
+      return errorHelperText;
+    },
+    [formik],
+  );
+
+  const emailErrorHelperText = getErrorHelperText('email');
+  const passwordErrorHelperText = getErrorHelperText('password');
+  const confirmPasswordErrorHelperText = getErrorHelperText('confirmPassword');
+  const primaryColor = theme.palette.primary.light;
+  const getIconColor = useCallback((fieldError: string | undefined) => {
+    return fieldError ? theme.palette.error.main : primaryColor;
+  }, []);
+  const emailIconColor = getIconColor(emailErrorHelperText);
+  const passwordIconColor = getIconColor(passwordErrorHelperText);
+  const confirmPasswordIconColor = getIconColor(confirmPasswordErrorHelperText);
+  const isSubmitButtonDisabled =
+    emailErrorHelperText ||
+    passwordErrorHelperText ||
+    confirmPasswordErrorHelperText ||
+    !formik.values.email ||
+    !formik.values.password ||
+    !formik.values.confirmPassword;
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -35,18 +69,21 @@ export const RegistrationForm: FC = memo(() => {
         <FormGroup>
           <TextField
             InputProps={{
-              endAdornment: <AlternateEmailOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: <AlternateEmailOutlinedIcon sx={{ color: emailIconColor }} />,
             }}
             variant="outlined"
             label="Email"
             margin="normal"
             fullWidth
+            error={!!emailErrorHelperText}
             {...formik.getFieldProps('email')}
           />
-
+          <FormHelperText error sx={{ height: 20 }}>
+            {emailErrorHelperText}
+          </FormHelperText>
           <TextField
             InputProps={{
-              endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: <LockOpenOutlinedIcon sx={{ color: passwordIconColor }} />,
             }}
             variant="outlined"
             label="Password"
@@ -54,11 +91,17 @@ export const RegistrationForm: FC = memo(() => {
             type="password"
             autoComplete="new-password"
             fullWidth
+            error={!!passwordErrorHelperText}
             {...formik.getFieldProps('password')}
           />
+          <FormHelperText error sx={{ height: 20 }}>
+            {passwordErrorHelperText}
+          </FormHelperText>
           <TextField
             InputProps={{
-              endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: (
+                <LockOpenOutlinedIcon sx={{ color: confirmPasswordIconColor }} />
+              ),
             }}
             variant="outlined"
             label="Confirm password"
@@ -66,16 +109,24 @@ export const RegistrationForm: FC = memo(() => {
             type="password"
             autoComplete="new-password"
             fullWidth
+            error={!!confirmPasswordErrorHelperText}
             {...formik.getFieldProps('confirmPassword')}
           />
-
-          <Button variant="contained" type="submit" sx={{ mt: 4, bgcolor: primaryColor }}>
+          <FormHelperText error sx={{ height: 20 }}>
+            {confirmPasswordErrorHelperText}
+          </FormHelperText>
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ mt: 4, bgcolor: primaryColor }}
+            disabled={!!isSubmitButtonDisabled}
+          >
             Sign Up
           </Button>
           <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
             {"I'm already a member!"}{' '}
             <NavLink
-              to={`${AUTH_PAGE_ROUTE}/${AUTH_SIGN_IN_ROUTE}`}
+              to={`${routes.AUTH_PAGE}/${routes.AUTH_SIGN_IN}`}
               style={{
                 textDecoration: 'none',
                 fontWeight: 'bold',

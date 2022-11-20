@@ -18,21 +18,40 @@ import {
   AUTH_SEND_INSTRUCTIONS_ROUTE,
   AUTH_SIGN_UP_ROUTE,
 } from 'appConstants';
+import { SignInFormValuesType } from 'components/forms/loginForm/types';
+import { SignInSchema } from 'components/forms/loginForm/validation';
 
 export const LoginForm = memo(() => {
   const theme = useTheme();
+
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
       rememberMe: true,
-    },
-    onSubmit: values => {
+    } as SignInFormValuesType,
+    onSubmit: (values: SignInFormValuesType) => {
       const validation = 2;
 
       alert(JSON.stringify(values, null, validation));
     },
+    validationSchema: SignInSchema,
   });
+
+  const getErrorHelperText = (
+    formikObj: typeof formik,
+    fieldName: 'email' | 'password',
+  ) => {
+    const errorHelperText =
+      formikObj.errors[fieldName] && formikObj.touched[fieldName]
+        ? formikObj.errors[fieldName]
+        : '';
+
+    return errorHelperText;
+  };
+  const emailFieldError = getErrorHelperText(formik, 'email');
+  const passwordFieldError = getErrorHelperText(formik, 'password');
+
   const primaryColor = theme.palette.primary.light;
 
   return (
@@ -41,16 +60,25 @@ export const LoginForm = memo(() => {
         <FormGroup>
           <TextField
             InputProps={{
-              endAdornment: <AlternateEmailOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: (
+                <AlternateEmailOutlinedIcon
+                  sx={{
+                    color: emailFieldError ? theme.palette.error.main : primaryColor,
+                  }}
+                />
+              ),
               autoComplete: 'off',
             }}
             variant="outlined"
             label="Email"
-            margin="normal"
+            sx={{ mt: 2 }}
             fullWidth
+            error={!!emailFieldError}
             {...formik.getFieldProps('email')}
           />
-
+          <FormHelperText error sx={{ height: 20 }}>
+            {emailFieldError}
+          </FormHelperText>
           <TextField
             id="password"
             InputProps={{
@@ -59,12 +87,16 @@ export const LoginForm = memo(() => {
             }}
             variant="outlined"
             label="Password"
-            margin="normal"
             type="password"
             autoComplete="new-password"
             fullWidth
+            sx={{ mt: 2 }}
+            error={!!passwordFieldError}
             {...formik.getFieldProps('password')}
           />
+          <FormHelperText error sx={{ height: 20 }}>
+            {passwordFieldError}
+          </FormHelperText>
 
           <FormControlLabel
             label="Remember me"

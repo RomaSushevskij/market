@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import { useTheme } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -10,11 +11,13 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useFormik } from 'formik';
 
+import { AUTH_PAGE_ROUTE, AUTH_SIGN_IN_ROUTE } from 'appConstants';
 import { Notification } from 'components/forms/passwordRecovery/Notification';
 
 export const PasswordRecoveryForm: FC = () => {
   const theme = useTheme();
   const primaryColor = theme.palette.primary.light;
+  const successColor = theme.palette.success.light;
   const formik = useFormik({
     initialValues: {
       password: '',
@@ -30,7 +33,15 @@ export const PasswordRecoveryForm: FC = () => {
 
   const [isSetPassword, setPassword] = useState(false);
 
-  if (isSetPassword) return <Notification />;
+  if (isSetPassword)
+    return (
+      <Notification
+        title="The new password has been successfully set"
+        icon={<CheckCircleOutlineIcon sx={{ fontSize: 100, color: successColor }} />}
+        linkTitle="Login with new password"
+        linkPath={`${AUTH_PAGE_ROUTE}/${AUTH_SIGN_IN_ROUTE}`}
+      />
+    );
 
   return (
     <form onSubmit={formik.handleSubmit}>

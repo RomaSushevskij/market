@@ -9,7 +9,7 @@ import { NavLink } from 'react-router-dom';
 
 import { AUTH_PAGE_ROUTE, AUTH_SIGN_IN_ROUTE } from 'appConstants';
 
-export const Notification: FC = () => {
+export const SetPasswordNotification: FC = () => {
   const theme = useTheme();
   const primaryColor = theme.palette.primary.light;
   const successColor = theme.palette.success.light;

@@ -1,6 +1,7 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useState } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
+import MarkEmailReadOutlined from '@mui/icons-material/MarkEmailReadOutlined';
 import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,9 +15,11 @@ import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 
 import { AUTH_PAGE_ROUTE, AUTH_SIGN_IN_ROUTE } from 'appConstants';
+import { Notification } from 'components/forms/passwordRecovery/Notification';
 
 export const PasswordInstructionsSend: FC = memo(() => {
   const theme = useTheme();
+  const [isSendInstructions, setSendInstructions] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -25,10 +28,20 @@ export const PasswordInstructionsSend: FC = memo(() => {
       const validation = 2;
 
       alert(JSON.stringify(values, null, validation));
+      setSendInstructions(true);
     },
   });
 
   const primaryColor = theme.palette.primary.light;
+  const successColor = theme.palette.success.light;
+
+  if (isSendInstructions)
+    return (
+      <Notification
+        icon={<MarkEmailReadOutlined sx={{ fontSize: 100, color: successColor }} />}
+        title={`We've sent an Email with instructions to ${formik.values.email}`}
+      />
+    );
 
   return (
     <form onSubmit={formik.handleSubmit}>

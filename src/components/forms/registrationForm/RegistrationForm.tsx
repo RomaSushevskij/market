@@ -16,8 +16,11 @@ import { SignUpSchema } from '../validation';
 import { SignUpFormValuesType } from './types';
 
 import { routes } from 'enums';
+import { useAppDispatch } from 'hooks';
+import { signUp } from 'store/reducers';
 
 export const RegistrationForm: FC = memo(() => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const formik = useFormik({
     initialValues: {
@@ -25,10 +28,8 @@ export const RegistrationForm: FC = memo(() => {
       password: '',
       confirmPassword: '',
     } as SignUpFormValuesType,
-    onSubmit: values => {
-      const validation = 2;
-
-      alert(JSON.stringify(values, null, validation));
+    onSubmit: ({ email, password }) => {
+      dispatch(signUp({ email, password }));
     },
     validationSchema: SignUpSchema,
   });

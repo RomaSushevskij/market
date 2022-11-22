@@ -9,7 +9,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { store } from 'store';
-import './services/firebase/firebase';
+import './services/firebase';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 

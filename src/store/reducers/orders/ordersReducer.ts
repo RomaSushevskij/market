@@ -115,3 +115,4 @@ const slice = createSlice({
 export const ordersReducer = slice.reducer;
 export const { changeOrderItemCount, calculateOrdersTotalCost, generateAnOrder } =
   slice.actions;
+export const getInitialOrderState = slice.getInitialState;

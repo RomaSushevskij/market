@@ -13,6 +13,8 @@ const App = () => {
   const isAuth = useAppSelector(selectIsAuth);
   const minHeight = isAuth ? 'calc(100vh - 80px)' : '100vh';
 
+  console.log(isAuth);
+
   return (
     <>
       {isAuth && <Header />}

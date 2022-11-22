@@ -48,3 +48,4 @@ const slice = createSlice({
 });
 
 export const productsReducer = slice.reducer;
+export const getInitialProductState = slice.getInitialState;

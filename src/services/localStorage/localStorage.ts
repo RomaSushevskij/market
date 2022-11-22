@@ -1,8 +1,18 @@
 import { AppStateType } from 'store';
+import {
+  getInitialAuthState,
+  getInitialOrderState,
+  getInitialProductState,
+} from 'store/reducers';
 
 export const saveState = (state: AppStateType) => {
   try {
-    const serializedState = JSON.stringify(state);
+    const orderListState: AppStateType = {
+      auth: getInitialAuthState(),
+      products: getInitialProductState(),
+      orders: { ...getInitialOrderState(), orderList: state.orders.orderList },
+    };
+    const serializedState = JSON.stringify(orderListState);
 
     localStorage.setItem('state', serializedState);
   } catch {

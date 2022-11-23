@@ -33,14 +33,10 @@ export const OrderItem: FC<OrderItemPropsType> = memo(
 
     return (
       <Card sx={{ p: 1 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} alignItems="center">
-          <CardMedia
-            component="img"
-            sx={{ width: { xs: '254px', sm: '120px' } }}
-            image={image}
-          />
-          <CardContent>
-            <Stack alignItems={{ xs: 'center', sm: 'flex-start' }}>
+        <Stack direction="row" alignItems="center">
+          <CardMedia component="img" sx={{ width: '120px' }} image={image} />
+          <CardContent sx={{ px: { xs: 0, sm: 1 } }}>
+            <Stack alignItems="flex-start">
               <Typography gutterBottom variant="h6" component="div">
                 {title}
               </Typography>
@@ -56,9 +52,9 @@ export const OrderItem: FC<OrderItemPropsType> = memo(
               />
             </Stack>
           </CardContent>
-          <CardActions sx={{ ml: { sm: 'auto' } }}>
+          <CardActions sx={{ ml: 'auto' }}>
             <Stack
-              minWidth={120}
+              minWidth={{ xs: 100, sm: 120 }}
               direction="row"
               alignItems="center"
               justifyContent="space-between"

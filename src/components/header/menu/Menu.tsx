@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
@@ -51,12 +50,14 @@ export const HeaderMenu: FC = () => {
   };
   const onLogOutMenuItemClick = () => {
     setAnchorEl(null);
+    setMobileMoreAnchorEl(null);
     dispatch(signOut());
   };
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
 
   const onShoppingCartClick = () => {
+    setMobileMoreAnchorEl(null);
     navigate(routes.ORDER_LIST);
   };
 
@@ -102,22 +103,6 @@ export const HeaderMenu: FC = () => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -128,6 +113,20 @@ export const HeaderMenu: FC = () => {
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
+      </MenuItem>
+      <MenuItem onClick={onShoppingCartClick}>
+        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+          <Badge badgeContent={orderItemsTotalCount} color="error">
+            <ShoppingCartIcon />
+          </Badge>
+        </IconButton>
+        <p>Cart</p>
+      </MenuItem>
+      <MenuItem onClick={onLogOutMenuItemClick}>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <LogoutIcon />
+        </IconButton>
+        <p>LogOut</p>
       </MenuItem>
     </Menu>
   );
@@ -171,7 +170,9 @@ export const HeaderMenu: FC = () => {
           onClick={handleMobileMenuOpen}
           color="inherit"
         >
-          <MoreIcon />
+          <Badge variant={orderItemsTotalCount ? 'dot' : 'standard'} color="error">
+            <MoreIcon />
+          </Badge>
         </IconButton>
       </Box>
       {renderMobileMenu}

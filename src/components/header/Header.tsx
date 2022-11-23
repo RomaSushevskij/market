@@ -11,11 +11,18 @@ import { useNavigate } from 'react-router-dom';
 
 import { HeaderMenu } from './menu/Menu';
 
+import { ProgressBar } from 'components/progressBar';
 import { routes } from 'enums';
+import { useAppSelector } from 'hooks';
+import { selectProductsPageStatus, selectAuthPageStatus } from 'store/selectors';
 
 export const Header: FC = memo(() => {
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const productsPageStatus = useAppSelector(selectProductsPageStatus);
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
+  const isLoading = productsPageStatus === 'loading' || authPageStatus === 'loading';
 
   const onMenuIconButtonClick = () => {
     navigate(routes.PRODUCTS);
@@ -41,6 +48,7 @@ export const Header: FC = memo(() => {
           <HeaderMenu />
         </Toolbar>
       </AppBar>
+      {isLoading && <ProgressBar />}
     </Box>
   );
 });

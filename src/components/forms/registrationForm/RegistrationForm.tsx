@@ -2,8 +2,8 @@ import React, { FC, memo, useCallback } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -16,8 +16,9 @@ import { SignUpSchema } from '../validation';
 import { SignUpFormValuesType } from './types';
 
 import { routes } from 'enums';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { signUp } from 'store/reducers';
+import { selectAuthPageStatus } from 'store/selectors';
 
 export const RegistrationForm: FC = memo(() => {
   const dispatch = useAppDispatch();
@@ -45,6 +46,8 @@ export const RegistrationForm: FC = memo(() => {
     },
     [formik],
   );
+
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
 
   const emailErrorHelperText = getErrorHelperText('email');
   const passwordErrorHelperText = getErrorHelperText('password');
@@ -116,14 +119,15 @@ export const RegistrationForm: FC = memo(() => {
           <FormHelperText error sx={{ height: 20 }}>
             {confirmPasswordErrorHelperText}
           </FormHelperText>
-          <Button
+          <LoadingButton
             variant="contained"
             type="submit"
             sx={{ mt: 4, bgcolor: primaryColor }}
             disabled={!!isSubmitButtonDisabled}
+            loading={authPageStatus === 'loading'}
           >
             Sign Up
-          </Button>
+          </LoadingButton>
           <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
             {"I'm already a member!"}{' '}
             <NavLink

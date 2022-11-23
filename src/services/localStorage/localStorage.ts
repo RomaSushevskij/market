@@ -4,10 +4,12 @@ import {
   getInitialOrderState,
   getInitialProductState,
 } from 'store/reducers';
+import { getInitialAppState } from 'store/reducers/app';
 
 export const saveState = (state: AppStateType) => {
   try {
     const orderListState: AppStateType = {
+      app: getInitialAppState(),
       auth: getInitialAuthState(),
       products: getInitialProductState(),
       orders: { ...getInitialOrderState(), orderList: state.orders.orderList },

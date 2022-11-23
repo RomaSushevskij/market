@@ -2,11 +2,13 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
 import { loadState, saveState } from 'services/localStorage/localStorage';
+import { appReducer } from 'store/reducers/app';
 import { authReducer } from 'store/reducers/auth/authReducer';
 import { ordersReducer } from 'store/reducers/orders/ordersReducer';
 import { productsReducer } from 'store/reducers/products/productsReducer';
 
 export const rootReducer = combineReducers({
+  app: appReducer,
   products: productsReducer,
   orders: ordersReducer,
   auth: authReducer,
@@ -23,6 +25,7 @@ store.subscribe(() => {
     orders: store.getState().orders,
     products: store.getState().products,
     auth: store.getState().auth,
+    app: store.getState().app,
   });
 });
 

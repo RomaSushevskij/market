@@ -1,27 +1,30 @@
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
 
+import { app } from 'services/firebase';
 import { SignUpDataType } from 'store/reducers';
 
-const MS = 500;
-const testValue1 = 100;
-const testValue2 = 5;
+const auth = getAuth(app);
 
 export const authApi = {
   async signUp(signUpData: SignUpDataType) {
     const { email, password } = signUpData;
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
-    try {
-      const auth = getAuth();
-
-      return createUserWithEmailAndPassword(auth, email, password);
-    } catch (e) {
-      console.log(e);
-    }
+    return user;
   },
-  async signIn() {
-    return new Promise((res, rej) => {
-      if (MS / testValue1 === testValue2) setTimeout(res, MS);
-      setTimeout(rej, MS, { message: 'Some error occurred' });
-    });
+  async signIn(signUpData: SignUpDataType) {
+    const { email, password } = signUpData;
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+    return user;
+  },
+  async signOut() {
+    console.log('signOut');
+    await signOut(auth);
   },
 };

@@ -2,8 +2,8 @@ import React, { memo, useCallback } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material';
-import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,12 +18,14 @@ import { SignInSchema } from '../validation';
 import { SignInFormValuesType } from './types';
 
 import { routes } from 'enums';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { signIn } from 'store/reducers';
+import { selectAuthPageStatus } from 'store/selectors';
 
 export const LoginForm = memo(() => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
 
   const formik = useFormik({
     initialValues: {
@@ -112,14 +114,15 @@ export const LoginForm = memo(() => {
             control={<Checkbox {...formik.getFieldProps('rememberMe')} />}
             sx={{ mt: 2 }}
           />
-          <Button
+          <LoadingButton
             variant="contained"
             type="submit"
             sx={{ mt: 4, bgcolor: primaryColor }}
             disabled={!!isSubmitButtonDisabled}
+            loading={authPageStatus === 'loading'}
           >
             login
-          </Button>
+          </LoadingButton>
           <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
             {'Forgot your'}{' '}
             <NavLink

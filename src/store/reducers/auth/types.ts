@@ -4,10 +4,10 @@ import { SignInFormValuesType } from 'components';
 
 export type AuthInitialStateType = {
   isAuth: boolean;
-  email: string;
-  name: string;
+  email: string | null;
+  name: string | null;
   status: RequestStatusType;
-  authPageMessage: string | undefined;
+  authPageMessage: string | null;
 };
 
 export type SignUpDataType = Omit<SignInFormValuesType, 'rememberMe'>;

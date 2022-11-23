@@ -8,7 +8,7 @@ export const Preloader: FC = memo(() => {
   const theme = useTheme();
 
   return (
-    <Box minHeight="calc(100vh - 64px)" display="flex" alignItems="center">
+    <Box minHeight="100vh" display="flex" alignItems="center">
       <CircularProgress sx={{ color: theme.palette.primary.light }} />
     </Box>
   );

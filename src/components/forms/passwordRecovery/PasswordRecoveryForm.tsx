@@ -2,8 +2,8 @@ import React, { FC, useCallback, useState } from 'react';
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -17,6 +17,8 @@ import { PasswordRecoverySchema } from '../validation';
 import { Notification } from './Notification';
 
 import { routes } from 'enums';
+import { useAppSelector } from 'hooks';
+import { selectAuthPageStatus } from 'store/selectors';
 
 export const PasswordRecoveryForm: FC = () => {
   const theme = useTheme();
@@ -33,6 +35,8 @@ export const PasswordRecoveryForm: FC = () => {
     },
     validationSchema: PasswordRecoverySchema,
   });
+
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
 
   const [isSetPassword, setPassword] = useState(false);
 
@@ -113,14 +117,15 @@ export const PasswordRecoveryForm: FC = () => {
           <FormHelperText error sx={{ height: 20 }}>
             {confirmPasswordErrorHelperText}
           </FormHelperText>
-          <Button
+          <LoadingButton
             variant="contained"
             type="submit"
             sx={{ mt: 4, bgcolor: confirmPasswordIconColor }}
             disabled={!!isSubmitButtonDisabled}
+            loading={authPageStatus === 'loading'}
           >
             Set new password
-          </Button>
+          </LoadingButton>
         </FormGroup>
       </FormControl>
     </form>

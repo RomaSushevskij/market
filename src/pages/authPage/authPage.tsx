@@ -1,4 +1,4 @@
-import React, { FC, memo, SyntheticEvent, useEffect, useState } from 'react';
+import React, { FC, memo, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -13,16 +13,20 @@ import {
   PasswordRecoveryForm,
   RegistrationForm,
 } from 'components/forms';
+import { SnackBar } from 'components/snackBar';
 import { routes } from 'enums';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { authForms, AuthTabsValueType } from 'pages/authPage';
-import { selectIsAuth } from 'store/selectors';
+import { setAuthPageMessage } from 'store/reducers';
+import { selectAuthMessage, selectIsAuth } from 'store/selectors';
 
 export const AuthPage: FC = memo(() => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
 
   const isAuth = useAppSelector(selectIsAuth);
+  const authPageMessage = useAppSelector(selectAuthMessage);
 
   const [tabValue, setTabValue] = useState<AuthTabsValueType>(authForms.SIGN_IN);
   const [isShowTabs, setShowTabs] = useState(false);
@@ -31,6 +35,10 @@ export const AuthPage: FC = memo(() => {
     if (newTabValue === authForms.SIGN_IN) navigate(routes.AUTH_SIGN_IN);
     if (newTabValue === authForms.SIGN_UP) navigate(routes.AUTH_SIGN_UP);
   };
+
+  const onSnackBarClose = useCallback((closeValue: string | null) => {
+    dispatch(setAuthPageMessage({ errorMessage: closeValue }));
+  }, []);
 
   useEffect(() => {
     if (!params['*']) navigate(routes.AUTH_SIGN_IN);
@@ -52,7 +60,7 @@ export const AuthPage: FC = memo(() => {
   }, [params]);
 
   if (isAuth) {
-    return <Navigate to={routes.PRODUCTS} />;
+    return <Navigate to="/" />;
   }
 
   return (
@@ -88,6 +96,12 @@ export const AuthPage: FC = memo(() => {
           </Box>
         </Paper>
       </Grid>
+      <SnackBar
+        message={authPageMessage}
+        severity="error"
+        autoHideDuration={7000}
+        onClose={onSnackBarClose}
+      />
     </Grid>
   );
 });

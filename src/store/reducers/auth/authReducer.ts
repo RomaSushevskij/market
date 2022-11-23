@@ -1,44 +1,57 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
 import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
+import { AUTH_ERROR_CODES, reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const signUp = createAsyncThunk<
-  undefined,
+  { email: string | null; displayName: string | null },
   SignUpDataType,
   { rejectValue: string }
->('auth/signUp', async (signUpData: SignUpDataType, { rejectWithValue }) => {
+>('auth/signIn', async (signUpData: SignUpDataType, { rejectWithValue }) => {
   try {
-    const response = await authApi.signUp(signUpData);
+    const user = await authApi.signUp(signUpData);
+    const { email, displayName } = user;
 
-    console.log(response);
-
-    return;
+    return { email, displayName };
   } catch (e) {
-    const error = e as string;
+    const { message } = e as firebase.FirebaseError;
 
-    console.log(e);
-
-    return rejectWithValue(error);
+    return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
   }
 });
 
 export const signIn = createAsyncThunk<
-  undefined,
-  { email: string; password: string },
+  { email: string | null; displayName: string | null },
+  SignUpDataType,
   { rejectValue: string }
 >(
   'auth/signIn',
   async (signInData: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      await authApi.signIn();
+      const user = await authApi.signIn(signInData);
 
-      return;
+      const { email, displayName } = user;
+
+      return { email, displayName };
     } catch (e) {
-      const { message } = e as AxiosError;
+      const { message } = e as firebase.FirebaseError;
 
-      return rejectWithValue(message);
+      return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
+    }
+  },
+);
+
+export const signOut = createAsyncThunk<undefined, undefined, { rejectValue: string }>(
+  'auth/signOut',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authApi.signOut();
+    } catch (e) {
+      const { message } = e as firebase.FirebaseError;
+
+      return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
     }
   },
 );
@@ -47,14 +60,24 @@ const slice = createSlice({
   name: 'auth',
   initialState: {
     isAuth: false,
-    email: '',
-    name: '',
+    email: null,
+    name: null,
     status: 'idle',
-    authPageMessage: '',
+    authPageMessage: null,
   } as AuthInitialStateType,
   reducers: {
-    logOut(state) {
-      state.isAuth = false;
+    setAuthPageMessage(state, action: PayloadAction<{ errorMessage: string | null }>) {
+      state.authPageMessage = action.payload.errorMessage;
+    },
+    setUserAuth(
+      state,
+      action: PayloadAction<{ email: string | null; displayName: string | null }>,
+    ) {
+      const { email, displayName } = action.payload;
+
+      state.email = email;
+      state.name = displayName;
+      state.isAuth = true;
     },
   },
   extraReducers: builder =>
@@ -62,26 +85,37 @@ const slice = createSlice({
       .addCase(signIn.pending, state => {
         state.status = 'loading';
       })
-      .addCase(signIn.fulfilled, state => {
+      .addCase(signIn.fulfilled, (state, { payload }) => {
+        const { email, displayName } = payload;
+
         state.status = 'succeeded';
         state.isAuth = true;
+        state.email = email;
+        state.name = displayName;
       })
-      .addCase(signIn.rejected, (state, action) => {
+      .addCase(signIn.rejected, (state, { payload }) => {
+        const errorMessage = payload as string | null;
+
         state.status = 'failed';
-        state.authPageMessage = action.payload;
+        state.authPageMessage = errorMessage;
       })
-      .addCase(signUp.pending, state => {
+      .addCase(signOut.pending, state => {
         state.status = 'loading';
       })
-      .addCase(signUp.fulfilled, state => {
+      .addCase(signOut.fulfilled, state => {
         state.status = 'succeeded';
+        state.isAuth = false;
+        state.email = null;
+        state.name = null;
       })
-      .addCase(signUp.rejected, (state, action) => {
+      .addCase(signOut.rejected, (state, { payload }) => {
+        const errorMessage = payload as string | null;
+
         state.status = 'failed';
-        state.authPageMessage = action.payload;
+        state.authPageMessage = errorMessage;
       }),
 });
 
 export const authReducer = slice.reducer;
-export const { logOut } = slice.actions;
+export const { setAuthPageMessage, setUserAuth } = slice.actions;
 export const getInitialAuthState = slice.getInitialState;

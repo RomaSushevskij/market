@@ -79,7 +79,6 @@ export const LoginForm = memo(() => {
                   }}
                 />
               ),
-              autoComplete: 'off',
             }}
             variant="outlined"
             label="Email"

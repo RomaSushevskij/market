@@ -3,6 +3,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification,
 } from 'firebase/auth';
 
 import { app } from 'services/firebase';
@@ -13,9 +14,12 @@ const auth = getAuth(app);
 export const authApi = {
   async signUp(signUpData: SignUpDataType) {
     const { email, password } = signUpData;
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
-    return user;
+    await createUserWithEmailAndPassword(auth, email, password);
+
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser);
+    }
   },
   async signIn(signUpData: SignUpDataType) {
     const { email, password } = signUpData;

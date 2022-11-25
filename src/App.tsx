@@ -23,7 +23,8 @@ const App = () => {
     const auth = getAuth();
 
     onAuthStateChanged(auth, user => {
-      if (user) {
+      console.log(user);
+      if (user && user.emailVerified) {
         const { email, displayName } = user;
 
         dispatch(setUserAuth({ email, displayName }));

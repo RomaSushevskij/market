@@ -1,7 +1,8 @@
-import React, { FC, memo, useCallback } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import MarkEmailReadOutlined from '@mui/icons-material/MarkEmailReadOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
@@ -15,6 +16,7 @@ import { SignUpSchema } from '../validation';
 
 import { SignUpFormValuesType } from './types';
 
+import { Notification } from 'components/forms/passwordRecovery/Notification';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { signUp } from 'store/reducers';
@@ -23,14 +25,21 @@ import { selectAuthPageStatus } from 'store/selectors';
 export const RegistrationForm: FC = memo(() => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
+
+  const [isSignUpSuccess, setSignUpSuccess] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
       confirmPassword: '',
     } as SignUpFormValuesType,
-    onSubmit: ({ email, password }) => {
-      dispatch(signUp({ email, password }));
+    onSubmit: async ({ email, password }) => {
+      const resultAction = await dispatch(signUp({ email, password }));
+
+      if (signUp.fulfilled.match(resultAction)) {
+        setSignUpSuccess(true);
+      }
     },
     validationSchema: SignUpSchema,
   });
@@ -53,6 +62,7 @@ export const RegistrationForm: FC = memo(() => {
   const passwordErrorHelperText = getErrorHelperText('password');
   const confirmPasswordErrorHelperText = getErrorHelperText('confirmPassword');
   const primaryColor = theme.palette.primary.light;
+  const successColor = theme.palette.success.light;
   const getIconColor = useCallback((fieldError: string | undefined) => {
     return fieldError ? theme.palette.error.main : primaryColor;
   }, []);
@@ -66,6 +76,14 @@ export const RegistrationForm: FC = memo(() => {
     !formik.values.email ||
     !formik.values.password ||
     !formik.values.confirmPassword;
+
+  if (isSignUpSuccess)
+    return (
+      <Notification
+        icon={<MarkEmailReadOutlined sx={{ fontSize: 100, color: successColor }} />}
+        title="An email with instructions to verify your email address has been sent to you"
+      />
+    );
 
   return (
     <form onSubmit={formik.handleSubmit}>

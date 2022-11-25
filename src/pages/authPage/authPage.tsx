@@ -1,5 +1,14 @@
-import React, { FC, memo, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+  FC,
+  memo,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
+import { AlertColor } from '@mui/material/Alert/Alert';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -7,6 +16,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 
+import { VERIFY_ACCOUNT_MESSAGE } from 'appConstants';
 import {
   LoginForm,
   PasswordInstructionsSend,
@@ -35,6 +45,10 @@ export const AuthPage: FC = memo(() => {
     if (newTabValue === authForms.SIGN_IN) navigate(routes.AUTH_SIGN_IN);
     if (newTabValue === authForms.SIGN_UP) navigate(routes.AUTH_SIGN_UP);
   };
+
+  const snackBarSeverity = useMemo((): AlertColor => {
+    return authPageMessage === VERIFY_ACCOUNT_MESSAGE ? 'warning' : 'error';
+  }, [authPageMessage]);
 
   const onSnackBarClose = useCallback((closeValue: string | null) => {
     dispatch(setAuthPageMessage({ errorMessage: closeValue }));
@@ -98,7 +112,7 @@ export const AuthPage: FC = memo(() => {
       </Grid>
       <SnackBar
         message={authPageMessage}
-        severity="error"
+        severity={snackBarSeverity}
         autoHideDuration={7000}
         onClose={onSnackBarClose}
       />

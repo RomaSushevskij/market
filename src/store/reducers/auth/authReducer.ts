@@ -2,43 +2,59 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
+import { VERIFY_ACCOUNT_MESSAGE } from 'appConstants';
 import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
 import { AUTH_ERROR_CODES, reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const signUp = createAsyncThunk<
-  { email: string | null; displayName: string | null },
+  undefined,
   SignUpDataType,
   { rejectValue: string }
->('auth/signIn', async (signUpData: SignUpDataType, { rejectWithValue }) => {
+>('auth/signUp', async (signUpData: SignUpDataType, { dispatch, rejectWithValue }) => {
   try {
-    const user = await authApi.signUp(signUpData);
-    const { email, displayName } = user;
+    await authApi.signUp(signUpData);
 
-    return { email, displayName };
+    dispatch(signOut());
   } catch (e) {
-    const { message } = e as firebase.FirebaseError;
+    const { code } = e as firebase.FirebaseError;
 
-    return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
+    return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
   }
 });
 
 export const signIn = createAsyncThunk<
-  { email: string | null; displayName: string | null },
+  {
+    email?: string | null;
+    displayName?: string | null;
+    isAuth?: boolean;
+    authPageMessage?: string;
+  },
   SignUpDataType,
   { rejectValue: string }
 >(
   'auth/signIn',
-  async (signInData: { email: string; password: string }, { rejectWithValue }) => {
+  async (
+    signInData: { email: string; password: string },
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const user = await authApi.signIn(signInData);
 
-      const { email, displayName } = user;
+      if (user.emailVerified) {
+        const { email, displayName } = user;
 
-      return { email, displayName };
+        return { email, displayName, isAuth: true };
+      }
+      dispatch(signOut());
+      const authPageMessage = VERIFY_ACCOUNT_MESSAGE;
+
+      return {
+        authPageMessage,
+      };
     } catch (e) {
-      const { message } = e as firebase.FirebaseError;
+      const { code } = e as firebase.FirebaseError;
 
-      return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
+      return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
     }
   },
 );
@@ -49,9 +65,9 @@ export const signOut = createAsyncThunk<undefined, undefined, { rejectValue: str
     try {
       await authApi.signOut();
     } catch (e) {
-      const { message } = e as firebase.FirebaseError;
+      const { code } = e as firebase.FirebaseError;
 
-      return rejectWithValue(reduceErrorMessage(message as AUTH_ERROR_CODES));
+      return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
     }
   },
 );
@@ -71,7 +87,10 @@ const slice = createSlice({
     },
     setUserAuth(
       state,
-      action: PayloadAction<{ email: string | null; displayName: string | null }>,
+      action: PayloadAction<{
+        email: string | null;
+        displayName: string | null;
+      }>,
     ) {
       const { email, displayName } = action.payload;
 
@@ -82,16 +101,31 @@ const slice = createSlice({
   },
   extraReducers: builder =>
     builder
+      .addCase(signUp.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(signUp.fulfilled, state => {
+        state.status = 'succeeded';
+      })
+      .addCase(signUp.rejected, (state, { payload }) => {
+        const errorMessage = payload as string | null;
+
+        state.status = 'failed';
+        state.authPageMessage = errorMessage;
+      })
       .addCase(signIn.pending, state => {
         state.status = 'loading';
       })
       .addCase(signIn.fulfilled, (state, { payload }) => {
-        const { email, displayName } = payload;
+        const { email, displayName, isAuth, authPageMessage } = payload;
 
+        if (email && displayName && isAuth) {
+          state.isAuth = isAuth;
+          state.email = email;
+          state.name = displayName;
+        }
+        if (authPageMessage) state.authPageMessage = authPageMessage;
         state.status = 'succeeded';
-        state.isAuth = true;
-        state.email = email;
-        state.name = displayName;
       })
       .addCase(signIn.rejected, (state, { payload }) => {
         const errorMessage = payload as string | null;

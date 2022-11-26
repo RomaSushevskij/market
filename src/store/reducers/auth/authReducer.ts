@@ -4,12 +4,13 @@ import firebase from 'firebase/compat';
 import { authApi } from 'api';
 import { VERIFY_ACCOUNT_MESSAGE } from 'appConstants';
 import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
+import { AlertNotification } from 'types';
 import { AUTH_ERROR_CODES, reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const signUp = createAsyncThunk<
   undefined,
   SignUpDataType,
-  { rejectValue: string }
+  { rejectValue: AlertNotification }
 >('auth/signUp', async (signUpData: SignUpDataType, { dispatch, rejectWithValue }) => {
   try {
     await authApi.signUp(signUpData);
@@ -17,8 +18,9 @@ export const signUp = createAsyncThunk<
     dispatch(signOut());
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
 
-    return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
   }
 });
 
@@ -27,10 +29,10 @@ export const signIn = createAsyncThunk<
     email?: string | null;
     displayName?: string | null;
     isAuth?: boolean;
-    authPageMessage?: string;
+    authPageMessage?: AlertNotification;
   },
   SignUpDataType,
-  { rejectValue: string }
+  { rejectValue: AlertNotification }
 >(
   'auth/signIn',
   async (
@@ -46,31 +48,33 @@ export const signIn = createAsyncThunk<
         return { email, displayName, isAuth: true };
       }
       dispatch(signOut());
-      const authPageMessage = VERIFY_ACCOUNT_MESSAGE;
 
       return {
-        authPageMessage,
+        authPageMessage: { message: VERIFY_ACCOUNT_MESSAGE, severity: 'warning' },
       };
     } catch (e) {
       const { code } = e as firebase.FirebaseError;
+      const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
 
-      return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
+      return rejectWithValue({ message: notificationMessage, severity: 'error' });
     }
   },
 );
 
-export const signOut = createAsyncThunk<undefined, undefined, { rejectValue: string }>(
-  'auth/signOut',
-  async (_, { rejectWithValue }) => {
-    try {
-      await authApi.signOut();
-    } catch (e) {
-      const { code } = e as firebase.FirebaseError;
+export const signOut = createAsyncThunk<
+  undefined,
+  undefined,
+  { rejectValue: AlertNotification }
+>('auth/signOut', async (_, { rejectWithValue }) => {
+  try {
+    await authApi.signOut();
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
 
-      return rejectWithValue(reduceErrorMessage(code as AUTH_ERROR_CODES));
-    }
-  },
-);
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
 
 const slice = createSlice({
   name: 'auth',
@@ -82,8 +86,15 @@ const slice = createSlice({
     authPageMessage: null,
   } as AuthInitialStateType,
   reducers: {
-    setAuthPageMessage(state, action: PayloadAction<{ errorMessage: string | null }>) {
-      state.authPageMessage = action.payload.errorMessage;
+    setAuthPageMessage(state, action: PayloadAction<AlertNotification | null>) {
+      if (action.payload) {
+        const { message, severity } = action.payload;
+
+        state.authPageMessage = { message, severity };
+
+        return;
+      }
+      state.authPageMessage = action.payload;
     },
     setUserAuth(
       state,
@@ -108,10 +119,8 @@ const slice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(signUp.rejected, (state, { payload }) => {
-        const errorMessage = payload as string | null;
-
         state.status = 'failed';
-        state.authPageMessage = errorMessage;
+        if (payload) state.authPageMessage = payload;
       })
       .addCase(signIn.pending, state => {
         state.status = 'loading';
@@ -128,10 +137,8 @@ const slice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(signIn.rejected, (state, { payload }) => {
-        const errorMessage = payload as string | null;
-
         state.status = 'failed';
-        state.authPageMessage = errorMessage;
+        if (payload) state.authPageMessage = payload;
       })
       .addCase(signOut.pending, state => {
         state.status = 'loading';
@@ -143,10 +150,8 @@ const slice = createSlice({
         state.name = null;
       })
       .addCase(signOut.rejected, (state, { payload }) => {
-        const errorMessage = payload as string | null;
-
         state.status = 'failed';
-        state.authPageMessage = errorMessage;
+        if (payload) state.authPageMessage = payload;
       }),
 });
 

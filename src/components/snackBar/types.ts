@@ -4,5 +4,5 @@ export type SnackBarPropsType = {
   autoHideDuration?: number | null;
   severity: AlertColor;
   message: string | null;
-  onClose: (value: string | null) => void;
+  onClose: (value: null) => void;
 };

@@ -1,13 +1,14 @@
 import { RequestStatusType } from '../products/types';
 
 import { SignInFormValuesType } from 'components';
+import { AlertNotification } from 'types';
 
 export type AuthInitialStateType = {
   isAuth: boolean;
   email: string | null;
   name: string | null;
   status: RequestStatusType;
-  authPageMessage: string | null;
+  authPageMessage: AlertNotification | null;
 };
 
 export type SignUpDataType = Omit<SignInFormValuesType, 'rememberMe'>;

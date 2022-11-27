@@ -37,7 +37,7 @@ export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   }, [isHoverCard]);
 
   return (
-    <Grid item sx={{ width: 288 }}>
+    <Grid item sx={{ minWidth: { xs: '96vw', sm: 288 } }}>
       <Card
         elevation={elevationValue}
         onMouseMove={onCardMouseMove}

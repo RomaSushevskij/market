@@ -2,10 +2,11 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
-import { VERIFY_ACCOUNT_MESSAGE } from 'appConstants';
+import { ResetPasswordPayload } from 'api/auth/types';
+import { SignInFormValuesType } from 'components';
 import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
 import { AlertNotification } from 'types';
-import { AUTH_ERROR_CODES, reduceErrorMessage } from 'utils/reduceErrorMessage';
+import { AUTH_PAGE_MESSAGES, reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const signUp = createAsyncThunk<
   undefined,
@@ -18,7 +19,7 @@ export const signUp = createAsyncThunk<
     dispatch(signOut());
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
-    const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
 
     return rejectWithValue({ message: notificationMessage, severity: 'error' });
   }
@@ -29,32 +30,40 @@ export const signIn = createAsyncThunk<
     email?: string | null;
     displayName?: string | null;
     isAuth?: boolean;
-    authPageMessage?: AlertNotification;
+    authPageMessage: AlertNotification;
   },
-  SignUpDataType,
+  SignInFormValuesType,
   { rejectValue: AlertNotification }
 >(
   'auth/signIn',
-  async (
-    signInData: { email: string; password: string },
-    { dispatch, rejectWithValue },
-  ) => {
+  async (signInData: SignInFormValuesType, { dispatch, rejectWithValue }) => {
     try {
       const user = await authApi.signIn(signInData);
 
       if (user.emailVerified) {
         const { email, displayName } = user;
 
-        return { email, displayName, isAuth: true };
+        return {
+          email,
+          displayName,
+          isAuth: true,
+          authPageMessage: {
+            message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
+            severity: 'success',
+          },
+        };
       }
       dispatch(signOut());
 
       return {
-        authPageMessage: { message: VERIFY_ACCOUNT_MESSAGE, severity: 'warning' },
+        authPageMessage: {
+          message: AUTH_PAGE_MESSAGES.NEED_VERIFY_ACCOUNT,
+          severity: 'warning',
+        },
       };
     } catch (e) {
       const { code } = e as firebase.FirebaseError;
-      const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
+      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
 
       return rejectWithValue({ message: notificationMessage, severity: 'error' });
     }
@@ -70,11 +79,44 @@ export const signOut = createAsyncThunk<
     await authApi.signOut();
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
-    const notificationMessage = reduceErrorMessage(code as AUTH_ERROR_CODES);
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
 
     return rejectWithValue({ message: notificationMessage, severity: 'error' });
   }
 });
+
+export const sendPasswordResetEmail = createAsyncThunk<
+  undefined,
+  string,
+  { rejectValue: AlertNotification }
+>('auth/sendPasswordResetEmail', async (email: string, { rejectWithValue }) => {
+  try {
+    await authApi.sendPasswordResetEmail(email);
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
+
+export const resetPassword = createAsyncThunk<
+  undefined,
+  ResetPasswordPayload,
+  { rejectValue: AlertNotification }
+>(
+  'auth/resetPassword',
+  async (resetPasswordPayload: ResetPasswordPayload, { rejectWithValue }) => {
+    try {
+      await authApi.resetPassword(resetPasswordPayload);
+    } catch (e) {
+      const { code } = e as firebase.FirebaseError;
+      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+      return rejectWithValue({ message: notificationMessage, severity: 'error' });
+    }
+  },
+);
 
 const slice = createSlice({
   name: 'auth',
@@ -150,6 +192,26 @@ const slice = createSlice({
         state.name = null;
       })
       .addCase(signOut.rejected, (state, { payload }) => {
+        state.status = 'failed';
+        if (payload) state.authPageMessage = payload;
+      })
+      .addCase(sendPasswordResetEmail.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(sendPasswordResetEmail.fulfilled, state => {
+        state.status = 'succeeded';
+      })
+      .addCase(sendPasswordResetEmail.rejected, (state, { payload }) => {
+        state.status = 'failed';
+        if (payload) state.authPageMessage = payload;
+      })
+      .addCase(resetPassword.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(resetPassword.fulfilled, state => {
+        state.status = 'succeeded';
+      })
+      .addCase(resetPassword.rejected, (state, { payload }) => {
         state.status = 'failed';
         if (payload) state.authPageMessage = payload;
       }),

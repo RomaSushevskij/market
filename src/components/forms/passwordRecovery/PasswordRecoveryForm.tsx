@@ -11,27 +11,39 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useFormik } from 'formik';
-
-import { PasswordRecoverySchema } from '../validation';
+import { useSearchParams } from 'react-router-dom';
 
 import { Notification } from './Notification';
 
+import { ResetPasswordPayload } from 'api/auth/types';
+import { PasswordRecoveryFormValuesType } from 'components/forms/passwordRecovery/types';
+import { PasswordRecoverySchema } from 'components/forms/validation';
 import { routes } from 'enums';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { resetPassword } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
 
 export const PasswordRecoveryForm: FC = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
+  const [searchParams] = useSearchParams();
+
+  const oobCode = searchParams.get('oobCode') || '';
   const formik = useFormik({
     initialValues: {
-      password: '',
-      confirmPassword: '',
-    },
-    onSubmit: values => {
-      const validate = 2;
+      newPassword: '',
+      confirmNewPassword: '',
+    } as PasswordRecoveryFormValuesType,
+    onSubmit: async ({ newPassword }: PasswordRecoveryFormValuesType) => {
+      const resetPasswordPayload: ResetPasswordPayload = {
+        oobCode,
+        newPassword,
+      };
+      const resultAction = await dispatch(resetPassword(resetPasswordPayload));
 
-      alert(JSON.stringify(values, null, validate));
-      setPassword(true);
+      if (resetPassword.fulfilled.match(resultAction)) {
+        setPassword(true);
+      }
     },
     validationSchema: PasswordRecoverySchema,
   });
@@ -41,7 +53,7 @@ export const PasswordRecoveryForm: FC = () => {
   const [isSetPassword, setPassword] = useState(false);
 
   const getErrorHelperText = useCallback(
-    (fieldName: 'password' | 'confirmPassword') => {
+    (fieldName: 'newPassword' | 'confirmNewPassword') => {
       const errorHelperText =
         formik.errors[fieldName] && formik.touched[fieldName]
           ? formik.errors[fieldName]
@@ -51,20 +63,24 @@ export const PasswordRecoveryForm: FC = () => {
     },
     [formik],
   );
-  const passwordErrorHelperText = getErrorHelperText('password');
-  const confirmPasswordErrorHelperText = getErrorHelperText('confirmPassword');
+  const passwordErrorHelperText = getErrorHelperText('newPassword');
+  const confirmPasswordErrorHelperText = getErrorHelperText('confirmNewPassword');
+
   const primaryColor = theme.palette.primary.light;
   const successColor = theme.palette.success.light;
+
   const getIconColor = useCallback((fieldError: string | undefined) => {
     return fieldError ? theme.palette.error.main : primaryColor;
   }, []);
+
   const passwordIconColor = getIconColor(passwordErrorHelperText);
   const confirmPasswordIconColor = getIconColor(confirmPasswordErrorHelperText);
+
   const isSubmitButtonDisabled =
     passwordErrorHelperText ||
     confirmPasswordErrorHelperText ||
-    !formik.values.password ||
-    !formik.values.confirmPassword;
+    !formik.values.newPassword ||
+    !formik.values.confirmNewPassword;
 
   if (isSetPassword)
     return (
@@ -96,7 +112,7 @@ export const PasswordRecoveryForm: FC = () => {
             autoComplete="new-password"
             fullWidth
             error={!!passwordErrorHelperText}
-            {...formik.getFieldProps('password')}
+            {...formik.getFieldProps('newPassword')}
           />
           <FormHelperText error sx={{ height: 20 }}>
             {passwordErrorHelperText}
@@ -112,7 +128,7 @@ export const PasswordRecoveryForm: FC = () => {
             autoComplete="new-password"
             fullWidth
             error={!!confirmPasswordErrorHelperText}
-            {...formik.getFieldProps('confirmPassword')}
+            {...formik.getFieldProps('confirmNewPassword')}
           />
           <FormHelperText error sx={{ height: 20 }}>
             {confirmPasswordErrorHelperText}

@@ -1,3 +1,4 @@
-import { SignUpFormValuesType } from '../registrationForm';
-
-export type PasswordRecoveryFormValuesType = Omit<SignUpFormValuesType, 'email'>;
+export type PasswordRecoveryFormValuesType = {
+  newPassword: string;
+  confirmNewPassword: string;
+};

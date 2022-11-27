@@ -5,4 +5,5 @@ export type NotificationPropsType = {
   title: string;
   linkTitle?: string;
   linkPath?: string;
+  children?: any;
 };

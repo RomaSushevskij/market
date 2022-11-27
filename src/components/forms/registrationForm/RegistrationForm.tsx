@@ -81,7 +81,7 @@ export const RegistrationForm: FC = memo(() => {
     return (
       <Notification
         icon={<MarkEmailReadOutlined sx={{ fontSize: 100, color: successColor }} />}
-        title="An email with instructions to verify your email address has been sent to you"
+        title={`An email has been sent to you at ${formik.values.email} with instructions on how to confirm your email address.`}
       />
     );
 

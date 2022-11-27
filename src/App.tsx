@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import './App.module.scss';
 import Container from '@mui/material/Container';
@@ -7,9 +7,10 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { Header, Preloader } from 'components';
 import { AppRoutes } from 'components/appRoutes/Routes';
+import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { initializeApp, setUserAuth } from 'store/reducers';
-import { selectIsAuth, selectIsInitialize } from 'store/selectors';
+import { initializeApp, setAuthPageMessage, setUserAuth } from 'store/reducers';
+import { selectAuthMessage, selectIsAuth, selectIsInitialize } from 'store/selectors';
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +18,12 @@ const App = () => {
   const isInitialized = useAppSelector(selectIsInitialize);
 
   const isAuth = useAppSelector(selectIsAuth);
+  const authPageMessage = useAppSelector(selectAuthMessage);
   const minHeight = isAuth ? 'calc(100vh - 80px)' : '100vh';
+
+  const onSnackBarClose = useCallback((closeValue: null) => {
+    dispatch(setAuthPageMessage(closeValue));
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
@@ -46,6 +52,14 @@ const App = () => {
       <Container maxWidth="md" sx={{ padding: 2, minHeight }}>
         <AppRoutes />
       </Container>
+      {authPageMessage && (
+        <SnackBar
+          message={authPageMessage.message}
+          severity={authPageMessage.severity}
+          autoHideDuration={7000}
+          onClose={onSnackBarClose}
+        />
+      )}
     </>
   );
 };

@@ -31,12 +31,12 @@ export const LoginForm = memo(() => {
     initialValues: {
       email: '',
       password: '',
-      rememberMe: true,
+      rememberMe: false,
     } as SignInFormValuesType,
     onSubmit: (values: SignInFormValuesType) => {
-      const { email, password } = values;
+      const { email, password, rememberMe } = values;
 
-      dispatch(signIn({ email, password }));
+      dispatch(signIn({ email, password, rememberMe }));
     },
     validationSchema: SignInSchema,
   });

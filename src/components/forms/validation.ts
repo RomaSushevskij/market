@@ -32,12 +32,12 @@ export const InstructionsSendSchema: SchemaOf<{ email: string }> = object().shap
 
 export const PasswordRecoverySchema: SchemaOf<PasswordRecoveryFormValuesType> =
   object().shape({
-    password: string()
+    newPassword: string()
       .required('Field is required')
       .min(endPoints.passwordMin, 'The password field must be at least 6 character'),
-    confirmPassword: string()
+    confirmNewPassword: string()
       .required('Field is required')
-      .oneOf([ref('password'), null], 'The password confirmation does not match'),
+      .oneOf([ref('newPassword'), null], 'The password confirmation does not match'),
   });
 
 export const OrderSchema: SchemaOf<OrderFormValuesType> = object().shape({

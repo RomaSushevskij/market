@@ -2,8 +2,8 @@ import React, { FC, memo, useState } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import MarkEmailReadOutlined from '@mui/icons-material/MarkEmailReadOutlined';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -18,21 +18,28 @@ import { InstructionsSendSchema } from '../validation';
 import { Notification } from './Notification';
 
 import { routes } from 'enums';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { sendPasswordResetEmail } from 'store/reducers';
+import { selectAuthPageStatus } from 'store/selectors';
 
 export const PasswordInstructionsSend: FC = memo(() => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const formik = useFormik({
     initialValues: {
       email: '',
     },
-    onSubmit: values => {
-      const validation = 2;
+    onSubmit: async ({ email }) => {
+      const resultAction = await dispatch(sendPasswordResetEmail(email));
 
-      alert(JSON.stringify(values, null, validation));
-      setSendInstructions(true);
+      if (sendPasswordResetEmail.fulfilled.match(resultAction)) {
+        setSendInstructions(true);
+      }
     },
     validationSchema: InstructionsSendSchema,
   });
+
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
 
   const [isSendInstructions, setSendInstructions] = useState(false);
 
@@ -77,14 +84,15 @@ export const PasswordInstructionsSend: FC = memo(() => {
           <FormHelperText error sx={{ height: 20 }}>
             {emailErrorHelperText}
           </FormHelperText>
-          <Button
+          <LoadingButton
+            loading={authPageStatus === 'loading'}
             variant="contained"
             type="submit"
             sx={{ mt: 4, bgcolor: primaryColor }}
             disabled={!!isSubmitButtonDisabled}
           >
             Send instructions
-          </Button>
+          </LoadingButton>
           <FormHelperText sx={{ mt: 2, mx: 'auto' }}>
             Did you remember your password?
             <NavLink

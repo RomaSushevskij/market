@@ -1,32 +1,37 @@
-import React, { FC, memo, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, { FC, memo, SyntheticEvent, useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
+import { EmailVerify } from 'components/EmailVerify';
 import {
   LoginForm,
   PasswordInstructionsSend,
   PasswordRecoveryForm,
   RegistrationForm,
 } from 'components/forms';
-import { SnackBar } from 'components/snackBar';
 import { routes } from 'enums';
-import { useAppDispatch, useAppSelector } from 'hooks';
+import { useAppSelector } from 'hooks';
 import { authForms, AuthTabsValueType } from 'pages/authPage';
-import { setAuthPageMessage } from 'store/reducers';
-import { selectAuthMessage, selectIsAuth } from 'store/selectors';
+import { selectIsAuth } from 'store/selectors';
 
 export const AuthPage: FC = memo(() => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
+  const [searchParams] = useSearchParams();
 
   const isAuth = useAppSelector(selectIsAuth);
-  const authPageMessage = useAppSelector(selectAuthMessage);
 
   const [tabValue, setTabValue] = useState<AuthTabsValueType>(authForms.SIGN_IN);
   const [isShowTabs, setShowTabs] = useState(false);
@@ -35,10 +40,6 @@ export const AuthPage: FC = memo(() => {
     if (newTabValue === authForms.SIGN_IN) navigate(routes.AUTH_SIGN_IN);
     if (newTabValue === authForms.SIGN_UP) navigate(routes.AUTH_SIGN_UP);
   };
-
-  const onSnackBarClose = useCallback((closeValue: null) => {
-    dispatch(setAuthPageMessage(closeValue));
-  }, []);
 
   useEffect(() => {
     if (!params['*']) navigate(routes.AUTH_SIGN_IN);
@@ -58,6 +59,12 @@ export const AuthPage: FC = memo(() => {
     }
     setShowTabs(false);
   }, [params]);
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'verifyEmail') navigate(routes.VERIFY_EMAIL);
+    if (searchParams.get('mode') === 'resetPassword')
+      navigate(routes.AUTH_PASSWORD_RECOVERY);
+  }, [searchParams]);
 
   if (isAuth) {
     return <Navigate to="/" />;
@@ -92,18 +99,12 @@ export const AuthPage: FC = memo(() => {
                 path={routes.AUTH_PASSWORD_RECOVERY}
                 element={<PasswordRecoveryForm />}
               />
+
+              <Route path={routes.VERIFY_EMAIL} element={<EmailVerify />} />
             </Routes>
           </Box>
         </Paper>
       </Grid>
-      {authPageMessage && (
-        <SnackBar
-          message={authPageMessage.message}
-          severity={authPageMessage.severity}
-          autoHideDuration={7000}
-          onClose={onSnackBarClose}
-        />
-      )}
     </Grid>
   );
 });

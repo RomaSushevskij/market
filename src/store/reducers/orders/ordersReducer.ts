@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
-import { OrderFormValuesType } from '../../../components/forms/orderForm/types';
-
+import { OrderFormValuesType } from 'components/forms/orderForm/types';
 import { OrderInformationType, OrderType } from 'store/reducers/orders/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
@@ -90,22 +89,24 @@ const slice = createSlice({
 
       console.log(finalOrder);
     },
+    setOrderList(state, action: PayloadAction<{ orderList: OrderType[] }>) {
+      state.orderList = action.payload.orderList;
+    },
   },
   extraReducers: builder => {
     builder.addCase(addItemToCart.fulfilled, (state, { payload }) => {
       const { products, productId } = payload;
-      const { orderList } = state;
       const currentProduct = products.find(({ id }) => id === productId);
 
       if (currentProduct) {
-        const currentItemInCart = orderList.find(({ id }) => id === productId);
+        const currentItemInCart = state.orderList.find(({ id }) => id === productId);
 
         if (currentItemInCart) {
           currentItemInCart.count += 1;
         } else {
           const orderItem: OrderType = { ...currentProduct, count: 1 };
 
-          orderList.push(orderItem);
+          state.orderList.push(orderItem);
         }
       }
     });
@@ -113,6 +114,10 @@ const slice = createSlice({
 });
 
 export const ordersReducer = slice.reducer;
-export const { changeOrderItemCount, calculateOrdersTotalCost, generateAnOrder } =
-  slice.actions;
+export const {
+  changeOrderItemCount,
+  calculateOrdersTotalCost,
+  generateAnOrder,
+  setOrderList,
+} = slice.actions;
 export const getInitialOrderState = slice.getInitialState;

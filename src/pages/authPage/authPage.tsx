@@ -36,6 +36,9 @@ export const AuthPage: FC = memo(() => {
   const [tabValue, setTabValue] = useState<AuthTabsValueType>(authForms.SIGN_IN);
   const [isShowTabs, setShowTabs] = useState(false);
 
+  const modeQueryParam = searchParams.get('mode');
+  const oobCodeQueryParam = searchParams.get('oobCode');
+
   const onTabsChange = (event: SyntheticEvent, newTabValue: AuthTabsValueType) => {
     if (newTabValue === authForms.SIGN_IN) navigate(routes.AUTH_SIGN_IN);
     if (newTabValue === authForms.SIGN_UP) navigate(routes.AUTH_SIGN_UP);
@@ -61,7 +64,8 @@ export const AuthPage: FC = memo(() => {
   }, [params]);
 
   useEffect(() => {
-    if (searchParams.get('mode') === 'verifyEmail') navigate(routes.VERIFY_EMAIL);
+    if (modeQueryParam === 'verifyEmail')
+      navigate(`${routes.VERIFY_EMAIL}?oobCode=${oobCodeQueryParam}`);
     if (searchParams.get('mode') === 'resetPassword')
       navigate(routes.AUTH_PASSWORD_RECOVERY);
   }, [searchParams]);

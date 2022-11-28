@@ -9,6 +9,7 @@ export type AuthInitialStateType = {
   name: string | null;
   status: RequestStatusType;
   authPageMessage: AlertNotification | null;
+  uid: string | null;
 };
 
 export type SignUpDataType = Omit<SignInFormValuesType, 'rememberMe'>;

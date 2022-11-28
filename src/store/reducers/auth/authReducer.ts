@@ -29,6 +29,7 @@ export const signIn = createAsyncThunk<
   {
     email?: string | null;
     displayName?: string | null;
+    uid?: string;
     isAuth?: boolean;
     authPageMessage: AlertNotification;
   },
@@ -41,11 +42,12 @@ export const signIn = createAsyncThunk<
       const user = await authApi.signIn(signInData);
 
       if (user.emailVerified) {
-        const { email, displayName } = user;
+        const { email, displayName, uid } = user;
 
         return {
           email,
           displayName,
+          uid,
           isAuth: true,
           authPageMessage: {
             message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
@@ -118,6 +120,21 @@ export const resetPassword = createAsyncThunk<
   },
 );
 
+export const verifyEmail = createAsyncThunk<
+  undefined,
+  string,
+  { rejectValue: AlertNotification }
+>('auth/verifyEmail', async (oobCode: string, { rejectWithValue }) => {
+  try {
+    await authApi.verifyEmail(oobCode);
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
+
 const slice = createSlice({
   name: 'auth',
   initialState: {
@@ -126,6 +143,7 @@ const slice = createSlice({
     name: null,
     status: 'idle',
     authPageMessage: null,
+    uid: null,
   } as AuthInitialStateType,
   reducers: {
     setAuthPageMessage(state, action: PayloadAction<AlertNotification | null>) {
@@ -143,16 +161,32 @@ const slice = createSlice({
       action: PayloadAction<{
         email: string | null;
         displayName: string | null;
+        uid: string;
       }>,
     ) {
-      const { email, displayName } = action.payload;
+      const { email, displayName, uid } = action.payload;
 
       state.email = email;
       state.name = displayName;
+      state.uid = uid;
       state.isAuth = true;
     },
   },
-  extraReducers: builder =>
+  extraReducers: builder => {
+    // const allAuthThunks = [
+    //   signUp,
+    //   signIn,
+    //   signOut,
+    //   sendPasswordResetEmail,
+    //   resetPassword,
+    //   verifyEmail,
+    // ];
+
+    // allAuthThunks.forEach(thunk => {
+    //   builder.addCase(thunk.pending, state => {
+    //     state.status = 'loading';
+    //   });
+    // });
     builder
       .addCase(signUp.pending, state => {
         state.status = 'loading';
@@ -168,12 +202,13 @@ const slice = createSlice({
         state.status = 'loading';
       })
       .addCase(signIn.fulfilled, (state, { payload }) => {
-        const { email, displayName, isAuth, authPageMessage } = payload;
+        const { email, displayName, isAuth, authPageMessage, uid } = payload;
 
-        if (email && displayName && isAuth) {
+        if (email && displayName !== undefined && isAuth && uid) {
           state.isAuth = isAuth;
           state.email = email;
           state.name = displayName;
+          state.uid = uid;
         }
         if (authPageMessage) state.authPageMessage = authPageMessage;
         state.status = 'succeeded';
@@ -214,7 +249,18 @@ const slice = createSlice({
       .addCase(resetPassword.rejected, (state, { payload }) => {
         state.status = 'failed';
         if (payload) state.authPageMessage = payload;
-      }),
+      })
+      .addCase(verifyEmail.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(verifyEmail.fulfilled, state => {
+        state.status = 'succeeded';
+      })
+      .addCase(verifyEmail.rejected, (state, { payload }) => {
+        state.status = 'failed';
+        if (payload) state.authPageMessage = payload;
+      });
+  },
 });
 
 export const authReducer = slice.reducer;

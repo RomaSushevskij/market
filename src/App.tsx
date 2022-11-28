@@ -19,6 +19,7 @@ const App = () => {
 
   const isAuth = useAppSelector(selectIsAuth);
   const authPageMessage = useAppSelector(selectAuthMessage);
+
   const minHeight = isAuth ? 'calc(100vh - 80px)' : '100vh';
 
   const onSnackBarClose = useCallback((closeValue: null) => {
@@ -31,9 +32,9 @@ const App = () => {
     onAuthStateChanged(auth, user => {
       console.log(user);
       if (user && user.emailVerified) {
-        const { email, displayName } = user;
+        const { email, displayName, uid } = user;
 
-        dispatch(setUserAuth({ email, displayName }));
+        dispatch(setUserAuth({ email, displayName, uid }));
       }
       dispatch(initializeApp());
     });

@@ -15,8 +15,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { setOrderListToLocalStorage } from 'services/localStorage';
 import { calculateOrdersTotalCost, signOut } from 'store/reducers';
-import { selectOrderList, selectOrderTotalCost } from 'store/selectors';
+import { selectOrderList, selectOrderTotalCost, selectUid } from 'store/selectors';
 
 export const HeaderMenu: FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const HeaderMenu: FC = () => {
 
   const orderTotalCost = useAppSelector(selectOrderTotalCost);
   const orderList = useAppSelector(selectOrderList);
+  const uid = useAppSelector(selectUid);
 
   const orderItemsTotalCount = useMemo(() => {
     return orderList.reduce((sum, { count }) => sum + count, 0);
@@ -63,6 +65,7 @@ export const HeaderMenu: FC = () => {
 
   useEffect(() => {
     dispatch(calculateOrdersTotalCost());
+    setOrderListToLocalStorage(orderList, uid);
   }, [orderList]);
 
   const renderMenu = (

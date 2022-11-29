@@ -55,16 +55,16 @@ export const setOrderListToLocalStorage = (
   }
 };
 
-export const getOrderListToLocalStorage = (uid: string) => {
+export const getOrderListToLocalStorage = (uid: string): OrderType[] => {
   try {
     const serializedOrderList = localStorage.getItem(uid);
 
     if (serializedOrderList === null) {
-      return undefined;
+      return [];
     }
 
     return JSON.parse(serializedOrderList);
   } catch (err) {
-    return undefined;
+    return [];
   }
 };

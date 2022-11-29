@@ -9,7 +9,13 @@ import { Header, Preloader } from 'components';
 import { AppRoutes } from 'components/appRoutes/Routes';
 import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { initializeApp, setAuthPageMessage, setUserAuth } from 'store/reducers';
+import { getOrderListToLocalStorage } from 'services/localStorage';
+import {
+  initializeApp,
+  setAuthPageMessage,
+  setOrderList,
+  setUserAuth,
+} from 'store/reducers';
 import { selectAuthMessage, selectIsAuth, selectIsInitialize } from 'store/selectors';
 
 const App = () => {
@@ -30,11 +36,11 @@ const App = () => {
     const auth = getAuth();
 
     onAuthStateChanged(auth, user => {
-      console.log(user);
       if (user && user.emailVerified) {
         const { email, displayName, uid } = user;
 
         dispatch(setUserAuth({ email, displayName, uid }));
+        dispatch(setOrderList({ orderList: getOrderListToLocalStorage(uid) }));
       }
       dispatch(initializeApp());
     });

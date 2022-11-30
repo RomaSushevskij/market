@@ -10,8 +10,7 @@ export const fetchProducts = createAsyncThunk<
   { rejectValue: string }
 >('products/fetchProducts', async (_, { rejectWithValue }) => {
   try {
-    const { data } = await productsAPI.fetchProducts();
-    const { products } = data;
+    const products = await productsAPI.fetchProducts();
 
     return { products };
   } catch (e) {

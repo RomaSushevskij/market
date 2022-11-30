@@ -45,7 +45,6 @@ export const setOrderListToLocalStorage = (
 ) => {
   if (uid) {
     try {
-      console.log(orderList, uid);
       const serializedOrderList = JSON.stringify(orderList);
 
       localStorage.setItem(uid, serializedOrderList);

@@ -1,3 +1,5 @@
+import { AlertNotification } from 'types';
+
 export type ProductType = {
   title: string;
   image: string;
@@ -5,3 +7,12 @@ export type ProductType = {
   id: string;
 };
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed';
+
+export type ProductsInitialState = {
+  products: ProductType[];
+  status: RequestStatusType;
+  productsPageMessage: AlertNotification | null;
+  productsTotalCount: number;
+  pageSize: number;
+  currentPage: number;
+};

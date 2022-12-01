@@ -205,6 +205,19 @@ const slice = createSlice({
     );
     builder.addMatcher(
       isAnyOf(
+        signUp.fulfilled,
+        signIn.fulfilled,
+        signOut.fulfilled,
+        sendPasswordResetEmail.fulfilled,
+        resetPassword.fulfilled,
+        verifyEmail.fulfilled,
+      ),
+      state => {
+        state.status = 'succeeded';
+      },
+    );
+    builder.addMatcher(
+      isAnyOf(
         signUp.rejected,
         signIn.rejected,
         signOut.rejected,
@@ -215,19 +228,6 @@ const slice = createSlice({
       (state, { payload }) => {
         state.status = 'failed';
         if (payload) state.authPageMessage = payload;
-      },
-    );
-    builder.addMatcher(
-      isAnyOf(
-        signUp.fulfilled,
-        signIn.fulfilled,
-        signOut.fulfilled,
-        sendPasswordResetEmail.fulfilled,
-        resetPassword.fulfilled,
-        verifyEmail.fulfilled,
-      ),
-      state => {
-        state.status = 'succeeded';
       },
     );
   },

@@ -4,3 +4,4 @@ export * from './header';
 export * from './orderItem';
 export * from './preloader';
 export * from './product';
+export * from './admin';

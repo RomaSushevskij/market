@@ -1,4 +1,6 @@
 export enum routes {
+  DEFAULT = '*',
+  ROOT = '/',
   PRODUCTS = '/products',
   ORDER_LIST = '/orderList',
   AUTH_PAGE_DEEP = '/auth/*',
@@ -9,4 +11,8 @@ export enum routes {
   AUTH_SEND_INSTRUCTIONS = 'sendInstructions',
   AUTH_PASSWORD_RECOVERY = 'passwordRecovery',
   VERIFY_EMAIL = 'verifyEmail',
+}
+
+export enum adminRoutes {
+  PRODUCTS = '/products',
 }

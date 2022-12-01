@@ -8,16 +8,16 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
-import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { ProductPropsType } from './types';
 
 import { useAppDispatch } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { addItemToCart } from 'store/reducers';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
-  const theme = useTheme();
+  const { warningColor } = usePalette();
   const dispatch = useAppDispatch();
 
   const [isHoverCard, setHoverCard] = useState(false);
@@ -37,20 +37,21 @@ export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   }, [isHoverCard]);
 
   return (
-    <Grid item sx={{ minWidth: { xs: '96vw', sm: 288 } }}>
+    <Grid item sx={{ width: { xs: '96vw', sm: 288 } }}>
       <Card
         elevation={elevationValue}
         onMouseMove={onCardMouseMove}
         onMouseOut={onCardMouseOut}
+        sx={{ width: '100%' }}
       >
-        <CardMedia component="img" sx={{ width: '100%' }} image={image} />
+        <CardMedia width="100%" component="img" sx={{ width: '100%' }} image={image} />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
+          <Typography gutterBottom variant="h6" component="div" fontSize={16}>
             {title}
           </Typography>
           <Chip
             sx={{
-              bgcolor: theme.palette.warning.light,
+              bgcolor: warningColor,
               color: '#ffffff',
               fontWeight: 700,
               fontSize: 14,

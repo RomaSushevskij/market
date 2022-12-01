@@ -2,14 +2,15 @@ import { FC, memo } from 'react';
 
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useTheme } from '@mui/material/styles';
+
+import { usePalette } from 'hooks/usePalette/usePalette';
 
 export const Preloader: FC = memo(() => {
-  const theme = useTheme();
+  const { primaryColor } = usePalette();
 
   return (
     <Box minHeight="100vh" display="flex" alignItems="center">
-      <CircularProgress sx={{ color: theme.palette.primary.light }} />
+      <CircularProgress sx={{ color: primaryColor }} />
     </Box>
   );
 });

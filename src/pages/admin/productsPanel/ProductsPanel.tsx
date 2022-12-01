@@ -30,7 +30,7 @@ export const ProductsPanel: FC = () => {
 
   const { primaryColor, errorColor } = usePalette();
 
-  const [isOpenAddProductDialog, setOpenAddProductDialog] = useState(true);
+  const [isOpenAddProductDialog, setOpenAddProductDialog] = useState(false);
 
   const productsItems = products.map(({ id, title, price, image }) => {
     return (
@@ -42,11 +42,17 @@ export const ProductsPanel: FC = () => {
                 src={image}
                 alt="productImage"
                 variant="square"
-                sx={{ width: 200, height: 200 }}
+                sx={{ width: 250, height: 250 }}
               />
             }
             followCursor
-            arrow
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: 'transparent',
+                },
+              },
+            }}
           >
             <Avatar
               src={image}
@@ -77,6 +83,9 @@ export const ProductsPanel: FC = () => {
   const onAddProductClick = () => {
     setOpenAddProductDialog(true);
   };
+  const handleClose = () => {
+    setOpenAddProductDialog(false);
+  };
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -101,12 +110,13 @@ export const ProductsPanel: FC = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          sx={{ m: 1, bgcolor: primaryColor, alignSelf: 'end' }}
+          sx={{ mt: 2, bgcolor: primaryColor, alignSelf: 'end' }}
+          onClick={onAddProductClick}
         >
           Add product
         </Button>
       </Stack>
-      <Dialog open={isOpenAddProductDialog} onClose={onAddProductClick} fullWidth>
+      <Dialog open={isOpenAddProductDialog} onClose={handleClose} fullWidth>
         <DialogTitle>Product description</DialogTitle>
         <DialogContent>
           <AddProductForm />

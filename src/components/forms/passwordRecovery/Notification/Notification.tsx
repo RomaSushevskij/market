@@ -16,13 +16,15 @@ export const Notification: FC<NotificationPropsType> = props => {
   const TitleBlock = title.split(' ').map(letter => {
     if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(letter)) {
       return (
-        <Typography variant="h6" component="div" sx={{ color: primaryColor }}>
-          {letter}
-        </Typography>
+        <span key={letter}>
+          <Typography variant="h6" component="div" sx={{ color: primaryColor }}>
+            {letter}
+          </Typography>
+        </span>
       );
     }
 
-    return `${letter} `;
+    return ` ${letter} `;
   });
 
   return (

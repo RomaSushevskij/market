@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
@@ -173,34 +173,7 @@ const slice = createSlice({
     },
   },
   extraReducers: builder => {
-    // const allAuthThunks = [
-    //   signUp,
-    //   signIn,
-    //   signOut,
-    //   sendPasswordResetEmail,
-    //   resetPassword,
-    //   verifyEmail,
-    // ];
-
-    // allAuthThunks.forEach(thunk => {
-    //   builder.addCase(thunk.pending, state => {
-    //     state.status = 'loading';
-    //   });
-    // });
     builder
-      .addCase(signUp.pending, state => {
-        state.status = 'loading';
-      })
-      .addCase(signUp.fulfilled, state => {
-        state.status = 'succeeded';
-      })
-      .addCase(signUp.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
-      })
-      .addCase(signIn.pending, state => {
-        state.status = 'loading';
-      })
       .addCase(signIn.fulfilled, (state, { payload }) => {
         const { email, displayName, isAuth, authPageMessage, uid } = payload;
 
@@ -211,55 +184,52 @@ const slice = createSlice({
           state.uid = uid;
         }
         if (authPageMessage) state.authPageMessage = authPageMessage;
-        state.status = 'succeeded';
-      })
-      .addCase(signIn.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
-      })
-      .addCase(signOut.pending, state => {
-        state.status = 'loading';
       })
       .addCase(signOut.fulfilled, state => {
-        state.status = 'succeeded';
         state.isAuth = false;
         state.email = null;
         state.name = null;
-      })
-      .addCase(signOut.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
-      })
-      .addCase(sendPasswordResetEmail.pending, state => {
-        state.status = 'loading';
-      })
-      .addCase(sendPasswordResetEmail.fulfilled, state => {
-        state.status = 'succeeded';
-      })
-      .addCase(sendPasswordResetEmail.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
-      })
-      .addCase(resetPassword.pending, state => {
-        state.status = 'loading';
-      })
-      .addCase(resetPassword.fulfilled, state => {
-        state.status = 'succeeded';
-      })
-      .addCase(resetPassword.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
-      })
-      .addCase(verifyEmail.pending, state => {
-        state.status = 'loading';
-      })
-      .addCase(verifyEmail.fulfilled, state => {
-        state.status = 'succeeded';
-      })
-      .addCase(verifyEmail.rejected, (state, { payload }) => {
-        state.status = 'failed';
-        if (payload) state.authPageMessage = payload;
       });
+    builder.addMatcher(
+      isAnyOf(
+        signUp.pending,
+        signIn.pending,
+        signOut.pending,
+        sendPasswordResetEmail.pending,
+        resetPassword.pending,
+        verifyEmail.pending,
+      ),
+      state => {
+        state.status = 'loading';
+      },
+    );
+    builder.addMatcher(
+      isAnyOf(
+        signUp.rejected,
+        signIn.rejected,
+        signOut.rejected,
+        sendPasswordResetEmail.rejected,
+        resetPassword.rejected,
+        verifyEmail.rejected,
+      ),
+      (state, { payload }) => {
+        state.status = 'failed';
+        if (payload) state.authPageMessage = payload;
+      },
+    );
+    builder.addMatcher(
+      isAnyOf(
+        signUp.fulfilled,
+        signIn.fulfilled,
+        signOut.fulfilled,
+        sendPasswordResetEmail.fulfilled,
+        resetPassword.fulfilled,
+        verifyEmail.fulfilled,
+      ),
+      state => {
+        state.status = 'succeeded';
+      },
+    );
   },
 });
 

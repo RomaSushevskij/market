@@ -35,7 +35,7 @@ export const AddProductForm: FC = () => {
             InputProps={{
               endAdornment: <TitleOutlinedIcon />,
             }}
-            variant="outlined"
+            variant="standard"
             label="Title"
             sx={{ mt: 2 }}
             fullWidth
@@ -46,7 +46,7 @@ export const AddProductForm: FC = () => {
             InputProps={{
               endAdornment: <LocalAtmOutlinedIcon />,
             }}
-            variant="outlined"
+            variant="standard"
             label="Price"
             fullWidth
             sx={{ mt: 2 }}
@@ -57,7 +57,7 @@ export const AddProductForm: FC = () => {
             endIcon={<PhotoCamera />}
             variant="text"
             component="label"
-            sx={{ textAlign: 'end' }}
+            sx={{ textAlign: 'end', alignSelf: 'center' }}
             size="small"
           >
             Upload a photo
@@ -66,7 +66,7 @@ export const AddProductForm: FC = () => {
           <LoadingButton
             variant="contained"
             type="submit"
-            sx={{ mt: 4, bgcolor: primaryColor }}
+            sx={{ mt: 4, bgcolor: primaryColor, alignSelf: 'center' }}
           >
             Add product
           </LoadingButton>

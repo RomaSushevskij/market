@@ -35,7 +35,7 @@ const App = () => {
   useEffect(() => {
     const auth = getAuth();
 
-    onAuthStateChanged(auth, user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user && user.emailVerified) {
         const { email, displayName, uid } = user;
 
@@ -44,7 +44,11 @@ const App = () => {
       }
       dispatch(initializeApp());
     });
-  }, []);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   if (!isInitialized)
     return (

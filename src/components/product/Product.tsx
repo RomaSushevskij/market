@@ -42,7 +42,7 @@ export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
         elevation={elevationValue}
         onMouseMove={onCardMouseMove}
         onMouseOut={onCardMouseOut}
-        sx={{ width: '100%' }}
+        sx={{ width: '100%', height: '100%' }}
       >
         <CardMedia width="100%" component="img" sx={{ width: '100%' }} image={image} />
         <CardContent>

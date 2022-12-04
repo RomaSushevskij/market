@@ -4,9 +4,10 @@ import firebase from 'firebase/compat';
 import { authApi } from 'api';
 import { ResetPasswordPayload } from 'api/auth/types';
 import { SignInFormValuesType } from 'components';
+import { AUTH_PAGE_MESSAGES } from 'enums';
 import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
 import { AlertNotification } from 'types';
-import { AUTH_PAGE_MESSAGES, reduceErrorMessage } from 'utils/reduceErrorMessage';
+import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const signUp = createAsyncThunk<
   undefined,
@@ -235,4 +236,3 @@ const slice = createSlice({
 
 export const authReducer = slice.reducer;
 export const { setAuthPageMessage, setUserAuth } = slice.actions;
-export const getInitialAuthState = slice.getInitialState;

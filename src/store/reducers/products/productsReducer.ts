@@ -1,15 +1,16 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
-import { AddProductPayload } from 'api';
 import { productsAPI } from 'api/products/productsAPI';
+import { AUTH_PAGE_MESSAGES } from 'enums';
+import { addProduct } from 'store/reducers/adminProductsPanel';
 import { ProductsInitialState, ProductType } from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
-import { AUTH_PAGE_MESSAGES, reduceErrorMessage } from 'utils/reduceErrorMessage';
+import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const fetchProducts = createAsyncThunk<
   { products: ProductType[] },
-  void,
+  undefined,
   { rejectValue: AlertNotification }
 >('products/fetchProducts', async (_, { rejectWithValue }) => {
   try {
@@ -24,24 +25,6 @@ export const fetchProducts = createAsyncThunk<
   }
 });
 
-export const addProduct = createAsyncThunk<
-  undefined,
-  AddProductPayload,
-  { rejectValue: AlertNotification }
->(
-  'products/addProduct',
-  async (addProductPayload: AddProductPayload, { rejectWithValue }) => {
-    try {
-      await productsAPI.addProduct(addProductPayload);
-    } catch (e) {
-      const { code } = e as firebase.FirebaseError;
-      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
-
-      return rejectWithValue({ message: notificationMessage, severity: 'error' });
-    }
-  },
-);
-
 const slice = createSlice({
   name: 'products',
   initialState: {
@@ -52,21 +35,31 @@ const slice = createSlice({
     pageSize: 6,
     currentPage: 1,
   } as ProductsInitialState,
-  reducers: {},
-  extraReducers: builder =>
+  reducers: {
+    setProducts(state, action: PayloadAction<{ products: ProductType[] }>) {
+      const { products } = action.payload;
+
+      state.products = products;
+    },
+  },
+  extraReducers: builder => {
     builder
       .addCase(fetchProducts.pending, state => {
         state.status = 'loading';
       })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
+      .addCase(fetchProducts.fulfilled, (state, { payload }) => {
         state.status = 'succeeded';
-        state.products = action.payload.products;
+        state.products = payload.products;
       })
       .addCase(fetchProducts.rejected, (state, { payload }) => {
         state.status = 'failed';
         if (payload) state.productsPageMessage = payload;
-      }),
+      })
+      .addCase(addProduct.fulfilled, (state, { payload }) => {
+        state.products.push(payload.newProduct);
+      });
+  },
 });
 
 export const productsReducer = slice.reducer;
-export const getInitialProductState = slice.getInitialState;
+export const { setProducts } = slice.actions;

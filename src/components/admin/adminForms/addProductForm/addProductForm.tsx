@@ -31,7 +31,7 @@ export const AddProductForm: FC = () => {
       price: '',
     },
     onSubmit: ({ title, price }: AddProductFormValues) => {
-      dispatch(addProduct({ title, price, image: productImage64 }));
+      dispatch(addProduct({ title, price: Number(price), image: productImage64 }));
     },
   });
 

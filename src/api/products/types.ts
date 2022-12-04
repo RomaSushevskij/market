@@ -1,5 +1,5 @@
 export type AddProductPayload = {
   title: string;
-  price: string;
+  price: number;
   image: string;
 };

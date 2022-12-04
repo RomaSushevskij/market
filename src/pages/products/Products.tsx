@@ -29,7 +29,7 @@ export const Products: FC = () => {
   }
 
   return (
-    <Grid container spacing={2} justifyContent="space-around">
+    <Grid container spacing={2} justifyContent="space-around" alignItems="stretch">
       {productsItems}
     </Grid>
   );

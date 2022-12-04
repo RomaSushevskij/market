@@ -5,3 +5,4 @@ export * from './orders/types';
 export * from './auth/authReducer';
 export * from './auth/types';
 export * from './app';
+export * from './adminProductsPanel';

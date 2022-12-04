@@ -89,7 +89,7 @@ export const ProductsPanel: FC = () => {
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

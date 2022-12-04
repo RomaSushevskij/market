@@ -18,4 +18,3 @@ const slice = createSlice({
 
 export const appReducer = slice.reducer;
 export const { initializeApp } = slice.actions;
-export const getInitialAppState = slice.getInitialState;

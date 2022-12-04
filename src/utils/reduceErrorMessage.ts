@@ -1,12 +1,4 @@
-export enum AUTH_PAGE_MESSAGES {
-  INVALID_PASSWORD = 'auth/wrong-password',
-  USER_DELETED = 'auth/user-not-found',
-  NETWORK_REQUEST_FAILED = 'auth/network-request-failed',
-  EMAIL_EXISTS = 'auth/email-already-in-use',
-  NEED_VERIFY_ACCOUNT = 'You need to verify your email address to activate your account',
-  LOGGED_IN_SUCCESSFULLY = 'Logged in successfully',
-  INVALID_OOB_CODE = 'auth/invalid-action-code',
-}
+import { AUTH_PAGE_MESSAGES } from 'enums';
 
 export const reduceErrorMessage = (serverMessage: AUTH_PAGE_MESSAGES): string => {
   switch (serverMessage) {

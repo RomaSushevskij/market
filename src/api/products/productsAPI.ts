@@ -21,11 +21,8 @@ export const productsAPI = {
     return products;
   },
   async addProduct(addProductPayload: AddProductPayload) {
-    const response = await addDoc(
-      collection(db, collections.PRODUCTS),
-      addProductPayload,
-    );
+    const { id } = await addDoc(collection(db, collections.PRODUCTS), addProductPayload);
 
-    console.log(response);
+    return id;
   },
 };

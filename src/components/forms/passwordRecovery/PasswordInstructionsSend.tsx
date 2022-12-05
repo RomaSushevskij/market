@@ -21,6 +21,7 @@ import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { sendPasswordResetEmail } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const PasswordInstructionsSend: FC = memo(() => {
   const dispatch = useAppDispatch();
@@ -43,8 +44,11 @@ export const PasswordInstructionsSend: FC = memo(() => {
 
   const [isSendInstructions, setSendInstructions] = useState(false);
 
-  const emailErrorHelperText =
-    formik.errors.email && formik.touched.email ? formik.errors.email : '';
+  const emailErrorHelperText = getErrorHelperText<keyof typeof formik.values>(
+    formik.errors,
+    formik.touched,
+    'email',
+  );
   const primaryColor = theme.palette.primary.light;
   const successColor = theme.palette.success.light;
   const emailIconColor = emailErrorHelperText ? theme.palette.error.main : primaryColor;

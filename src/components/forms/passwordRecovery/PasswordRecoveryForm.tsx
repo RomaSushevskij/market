@@ -16,12 +16,16 @@ import { useSearchParams } from 'react-router-dom';
 import { Notification } from './Notification';
 
 import { ResetPasswordPayload } from 'api/auth/types';
-import { PasswordRecoveryFormValuesType } from 'components/forms/passwordRecovery/types';
+import {
+  FormikFieldsPasswordRecovery,
+  PasswordRecoveryFormValuesType,
+} from 'components/forms/passwordRecovery/types';
 import { PasswordRecoverySchema } from 'components/forms/validation';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { resetPassword } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const PasswordRecoveryForm: FC = () => {
   const dispatch = useAppDispatch();
@@ -52,19 +56,16 @@ export const PasswordRecoveryForm: FC = () => {
 
   const [isSetPassword, setPassword] = useState(false);
 
-  const getErrorHelperText = useCallback(
-    (fieldName: 'newPassword' | 'confirmNewPassword') => {
-      const errorHelperText =
-        formik.errors[fieldName] && formik.touched[fieldName]
-          ? formik.errors[fieldName]
-          : '';
-
-      return errorHelperText;
-    },
-    [formik],
+  const passwordErrorHelperText = getErrorHelperText<FormikFieldsPasswordRecovery>(
+    formik.errors,
+    formik.touched,
+    'newPassword',
   );
-  const passwordErrorHelperText = getErrorHelperText('newPassword');
-  const confirmPasswordErrorHelperText = getErrorHelperText('confirmNewPassword');
+  const confirmPasswordErrorHelperText = getErrorHelperText<FormikFieldsPasswordRecovery>(
+    formik.errors,
+    formik.touched,
+    'confirmNewPassword',
+  );
 
   const primaryColor = theme.palette.primary.light;
   const successColor = theme.palette.success.light;

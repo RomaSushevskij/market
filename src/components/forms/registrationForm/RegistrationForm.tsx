@@ -14,13 +14,14 @@ import { NavLink } from 'react-router-dom';
 
 import { SignUpSchema } from '../validation';
 
-import { SignUpFormValuesType } from './types';
+import { FormikFieldSignUp, SignUpFormValuesType } from './types';
 
 import { Notification } from 'components/forms/passwordRecovery/Notification';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { signUp } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const RegistrationForm: FC = memo(() => {
   const dispatch = useAppDispatch();
@@ -44,23 +45,23 @@ export const RegistrationForm: FC = memo(() => {
     validationSchema: SignUpSchema,
   });
 
-  const getErrorHelperText = useCallback(
-    (fieldName: 'email' | 'password' | 'confirmPassword') => {
-      const errorHelperText =
-        formik.errors[fieldName] && formik.touched[fieldName]
-          ? formik.errors[fieldName]
-          : '';
-
-      return errorHelperText;
-    },
-    [formik],
-  );
-
   const authPageStatus = useAppSelector(selectAuthPageStatus);
 
-  const emailErrorHelperText = getErrorHelperText('email');
-  const passwordErrorHelperText = getErrorHelperText('password');
-  const confirmPasswordErrorHelperText = getErrorHelperText('confirmPassword');
+  const emailErrorHelperText = getErrorHelperText<FormikFieldSignUp>(
+    formik.errors,
+    formik.touched,
+    'email',
+  );
+  const passwordErrorHelperText = getErrorHelperText<FormikFieldSignUp>(
+    formik.errors,
+    formik.touched,
+    'password',
+  );
+  const confirmPasswordErrorHelperText = getErrorHelperText<FormikFieldSignUp>(
+    formik.errors,
+    formik.touched,
+    'confirmPassword',
+  );
   const primaryColor = theme.palette.primary.light;
   const successColor = theme.palette.success.light;
   const getIconColor = useCallback((fieldError: string | undefined) => {

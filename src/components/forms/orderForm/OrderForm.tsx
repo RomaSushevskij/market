@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -10,10 +10,11 @@ import { useFormik } from 'formik';
 
 import { OrderSchema } from '../validation';
 
-import { OrderFormValuesType } from './types';
+import { FormikFieldsOrder, OrderFormValuesType } from './types';
 
 import { useAppDispatch } from 'hooks';
 import { generateAnOrder } from 'store/reducers';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const OrderForm = memo(() => {
   const dispatch = useAppDispatch();
@@ -30,21 +31,26 @@ export const OrderForm = memo(() => {
     validationSchema: OrderSchema,
   });
 
-  const getErrorHelperText = useCallback(
-    (fieldName: 'name' | 'surname' | 'address' | 'phone') => {
-      const errorHelperText =
-        formik.errors[fieldName] && formik.touched[fieldName]
-          ? formik.errors[fieldName]
-          : '';
-
-      return errorHelperText;
-    },
-    [formik],
+  const nameErrorHelperText = getErrorHelperText<FormikFieldsOrder>(
+    formik.errors,
+    formik.touched,
+    'name',
   );
-  const nameErrorHelperText = getErrorHelperText('name');
-  const surnameErrorHelperText = getErrorHelperText('surname');
-  const addressErrorHelperText = getErrorHelperText('address');
-  const phoneErrorHelperText = getErrorHelperText('phone');
+  const surnameErrorHelperText = getErrorHelperText<FormikFieldsOrder>(
+    formik.errors,
+    formik.touched,
+    'surname',
+  );
+  const addressErrorHelperText = getErrorHelperText<FormikFieldsOrder>(
+    formik.errors,
+    formik.touched,
+    'address',
+  );
+  const phoneErrorHelperText = getErrorHelperText<FormikFieldsOrder>(
+    formik.errors,
+    formik.touched,
+    'phone',
+  );
 
   const isSubmitButtonDisabled =
     nameErrorHelperText ||

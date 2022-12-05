@@ -15,12 +15,13 @@ import { NavLink } from 'react-router-dom';
 
 import { SignInSchema } from '../validation';
 
-import { SignInFormValuesType } from './types';
+import { FormikFieldSignIn, SignInFormValuesType } from './types';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { signIn } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const LoginForm = memo(() => {
   const theme = useTheme();
@@ -41,19 +42,16 @@ export const LoginForm = memo(() => {
     validationSchema: SignInSchema,
   });
 
-  const getErrorHelperText = useCallback(
-    (fieldName: 'email' | 'password') => {
-      const errorHelperText =
-        formik.errors[fieldName] && formik.touched[fieldName]
-          ? formik.errors[fieldName]
-          : '';
-
-      return errorHelperText;
-    },
-    [formik],
+  const emailErrorHelperText = getErrorHelperText<FormikFieldSignIn>(
+    formik.errors,
+    formik.touched,
+    'email',
   );
-  const emailErrorHelperText = getErrorHelperText('email');
-  const passwordErrorHelperText = getErrorHelperText('password');
+  const passwordErrorHelperText = getErrorHelperText<FormikFieldSignIn>(
+    formik.errors,
+    formik.touched,
+    'password',
+  );
   const primaryColor = theme.palette.primary.light;
   const getIconColor = useCallback((fieldError: string | undefined) => {
     return fieldError ? theme.palette.error.main : primaryColor;

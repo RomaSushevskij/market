@@ -15,9 +15,11 @@ import TextField from '@mui/material/TextField';
 import { useFormik } from 'formik';
 
 import { AddProductFormValues } from 'components/admin/adminForms/addProductForm/types';
+import { AddProductSchema } from 'components/admin/adminForms/validation';
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { addProduct } from 'store/reducers';
+import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const AddProductForm: FC = () => {
   const dispatch = useAppDispatch();
@@ -27,13 +29,24 @@ export const AddProductForm: FC = () => {
   const formik = useFormik({
     initialValues: {
       title: '',
-      image: '',
       price: '',
     },
     onSubmit: ({ title, price }: AddProductFormValues) => {
       dispatch(addProduct({ title, price: Number(price), image: productImage64 }));
     },
+    validationSchema: AddProductSchema,
   });
+
+  const titleErrorHelperText = getErrorHelperText<keyof typeof formik.values>(
+    formik.errors,
+    formik.touched,
+    'title',
+  );
+  const priceErrorHelperText = getErrorHelperText<keyof typeof formik.values>(
+    formik.errors,
+    formik.touched,
+    'price',
+  );
 
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +83,9 @@ export const AddProductForm: FC = () => {
             fullWidth
             {...formik.getFieldProps('title')}
           />
-          <FormHelperText error sx={{ height: 20 }} />
+          <FormHelperText error sx={{ height: 20 }}>
+            {titleErrorHelperText}
+          </FormHelperText>
           <TextField
             InputProps={{
               endAdornment: <LocalAtmOutlinedIcon />,
@@ -81,7 +96,9 @@ export const AddProductForm: FC = () => {
             sx={{ mt: 2 }}
             {...formik.getFieldProps('price')}
           />
-          <FormHelperText error sx={{ height: 20 }} />
+          <FormHelperText error sx={{ height: 20 }}>
+            {priceErrorHelperText}
+          </FormHelperText>
           <Avatar
             src={productImageURL}
             alt="Product Image"

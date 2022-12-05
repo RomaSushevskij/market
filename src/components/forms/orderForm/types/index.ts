@@ -4,3 +4,5 @@ export type OrderFormValuesType = {
   address: string;
   phone: string;
 };
+
+export type FormikFieldsOrder = keyof OrderFormValuesType;

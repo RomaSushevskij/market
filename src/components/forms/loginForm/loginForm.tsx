@@ -1,9 +1,8 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useTheme } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,12 +18,13 @@ import { FormikFieldSignIn, SignInFormValuesType } from './types';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { signIn } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
-import { getErrorHelperText } from 'utils/formikHelpers';
+import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
 export const LoginForm = memo(() => {
-  const theme = useTheme();
+  const { primaryColor } = usePalette();
   const dispatch = useAppDispatch();
   const authPageStatus = useAppSelector(selectAuthPageStatus);
 
@@ -52,12 +52,10 @@ export const LoginForm = memo(() => {
     formik.touched,
     'password',
   );
-  const primaryColor = theme.palette.primary.light;
-  const getIconColor = useCallback((fieldError: string | undefined) => {
-    return fieldError ? theme.palette.error.main : primaryColor;
-  }, []);
-  const emailIconColor = getIconColor(emailErrorHelperText);
-  const passwordIconColor = getIconColor(passwordErrorHelperText);
+
+  const emailIconColor = useIconColor(emailErrorHelperText);
+  const passwordIconColor = useIconColor(passwordErrorHelperText);
+
   const isSubmitButtonDisabled =
     emailErrorHelperText ||
     passwordErrorHelperText ||

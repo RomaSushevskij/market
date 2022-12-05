@@ -1,4 +1,8 @@
+import { useMemo } from 'react';
+
 import { FormikErrors, FormikTouched } from 'formik';
+
+import { usePalette } from 'hooks/usePalette/usePalette';
 
 export const getErrorHelperText = <T>(
   errors: FormikErrors<unknown>,
@@ -12,4 +16,13 @@ export const getErrorHelperText = <T>(
       : '';
 
   return errorHelperText;
+};
+
+export const useIconColor = (fieldError: string | undefined) => {
+  const { primaryColor, errorColor } = usePalette();
+  const iconColor = useMemo(() => {
+    return fieldError ? errorColor : primaryColor;
+  }, [errorColor, primaryColor, fieldError]);
+
+  return iconColor;
 };

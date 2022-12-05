@@ -1,9 +1,8 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useTheme } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -23,13 +22,14 @@ import {
 import { PasswordRecoverySchema } from 'components/forms/validation';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { resetPassword } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
-import { getErrorHelperText } from 'utils/formikHelpers';
+import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
 export const PasswordRecoveryForm: FC = () => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
+  const { successColor } = usePalette();
   const [searchParams] = useSearchParams();
 
   const oobCode = searchParams.get('oobCode') || '';
@@ -67,15 +67,8 @@ export const PasswordRecoveryForm: FC = () => {
     'confirmNewPassword',
   );
 
-  const primaryColor = theme.palette.primary.light;
-  const successColor = theme.palette.success.light;
-
-  const getIconColor = useCallback((fieldError: string | undefined) => {
-    return fieldError ? theme.palette.error.main : primaryColor;
-  }, []);
-
-  const passwordIconColor = getIconColor(passwordErrorHelperText);
-  const confirmPasswordIconColor = getIconColor(confirmPasswordErrorHelperText);
+  const passwordIconColor = useIconColor(passwordErrorHelperText);
+  const confirmPasswordIconColor = useIconColor(confirmPasswordErrorHelperText);
 
   const isSubmitButtonDisabled =
     passwordErrorHelperText ||
@@ -120,7 +113,9 @@ export const PasswordRecoveryForm: FC = () => {
           </FormHelperText>
           <TextField
             InputProps={{
-              endAdornment: <LockOpenOutlinedIcon sx={{ color: primaryColor }} />,
+              endAdornment: (
+                <LockOpenOutlinedIcon sx={{ color: confirmPasswordIconColor }} />
+              ),
             }}
             variant="outlined"
             label="Confirm password"

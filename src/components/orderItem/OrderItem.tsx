@@ -9,17 +9,17 @@ import CardMedia from '@mui/material/CardMedia';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { OrderItemPropsType } from './types';
 
 import { useAppDispatch } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { changeOrderItemCount } from 'store/reducers';
 
 export const OrderItem: FC<OrderItemPropsType> = memo(
   ({ title, price, image, count, id }: OrderItemPropsType) => {
-    const theme = useTheme();
+    const { warningColor } = usePalette();
     const dispatch = useAppDispatch();
 
     const onChangeOrdersCount = (action: 'add' | 'remove') => {
@@ -42,7 +42,7 @@ export const OrderItem: FC<OrderItemPropsType> = memo(
               </Typography>
               <Chip
                 sx={{
-                  bgcolor: theme.palette.warning.light,
+                  bgcolor: warningColor,
                   color: '#ffffff',
                   fontWeight: 700,
                   fontSize: 14,

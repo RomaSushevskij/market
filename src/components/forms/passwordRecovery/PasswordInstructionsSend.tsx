@@ -3,7 +3,6 @@ import React, { FC, memo, useState } from 'react';
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import MarkEmailReadOutlined from '@mui/icons-material/MarkEmailReadOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useTheme } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -19,13 +18,14 @@ import { Notification } from './Notification';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { sendPasswordResetEmail } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
-import { getErrorHelperText } from 'utils/formikHelpers';
+import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
 export const PasswordInstructionsSend: FC = memo(() => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
+  const { primaryColor, successColor } = usePalette();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -49,9 +49,8 @@ export const PasswordInstructionsSend: FC = memo(() => {
     formik.touched,
     'email',
   );
-  const primaryColor = theme.palette.primary.light;
-  const successColor = theme.palette.success.light;
-  const emailIconColor = emailErrorHelperText ? theme.palette.error.main : primaryColor;
+
+  const emailIconColor = useIconColor(emailErrorHelperText);
   const isSubmitButtonDisabled = emailErrorHelperText || !formik.values.email;
 
   if (isSendInstructions)

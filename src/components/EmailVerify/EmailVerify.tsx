@@ -3,19 +3,19 @@ import { FC, useState } from 'react';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useSearchParams } from 'react-router-dom';
 
 import { Notification } from 'components/forms/passwordRecovery/Notification';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { verifyEmail } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
 
 export const EmailVerify: FC = () => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
+  const { primaryColor, successColor } = usePalette();
   const [searchParams] = useSearchParams();
 
   const [isVerifyEmail, setVerifyEmail] = useState(false);
@@ -23,8 +23,6 @@ export const EmailVerify: FC = () => {
   const authPageStatus = useAppSelector(selectAuthPageStatus);
 
   const oobCode = searchParams.get('oobCode') || '';
-  const successColor = theme.palette.success.light;
-  const primaryColor = theme.palette.primary.light;
 
   const onVerifyEmailClick = async () => {
     const resultAction = await dispatch(verifyEmail(oobCode));

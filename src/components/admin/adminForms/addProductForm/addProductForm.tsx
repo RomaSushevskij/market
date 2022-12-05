@@ -7,7 +7,6 @@ import TitleOutlinedIcon from '@mui/icons-material/TitleOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import { blue } from '@mui/material/colors';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -19,13 +18,16 @@ import { AddProductSchema } from 'components/admin/adminForms/validation';
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { addProduct } from 'store/reducers';
-import { getErrorHelperText } from 'utils/formikHelpers';
+import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
 export const AddProductForm: FC = () => {
   const dispatch = useAppDispatch();
   const { primaryColor } = usePalette();
+  const inputFileRef = useRef<HTMLInputElement>(null);
+
   const [productImageURL, setProductImageURL] = useState('');
   const [productImage64, setProductImage64] = useState('');
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -48,7 +50,14 @@ export const AddProductForm: FC = () => {
     'price',
   );
 
-  const inputFileRef = useRef<HTMLInputElement>(null);
+  const titleIconColor = useIconColor(titleErrorHelperText);
+  const priceIconColor = useIconColor(priceErrorHelperText);
+
+  const isSubmitButtonDisabled =
+    titleErrorHelperText ||
+    priceErrorHelperText ||
+    !formik.values.price ||
+    !formik.values.title;
 
   const onChangeProductImage = (e: ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
@@ -67,20 +76,19 @@ export const AddProductForm: FC = () => {
     }
   };
 
-  const blueColorDegree = 500;
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <FormControl fullWidth>
         <FormGroup>
           <TextField
             InputProps={{
-              endAdornment: <TitleOutlinedIcon />,
+              endAdornment: <TitleOutlinedIcon sx={{ color: titleIconColor }} />,
             }}
             variant="standard"
             label="Title"
             sx={{ mt: 2 }}
             fullWidth
+            error={!!titleErrorHelperText}
             {...formik.getFieldProps('title')}
           />
           <FormHelperText error sx={{ height: 20 }}>
@@ -88,11 +96,12 @@ export const AddProductForm: FC = () => {
           </FormHelperText>
           <TextField
             InputProps={{
-              endAdornment: <LocalAtmOutlinedIcon />,
+              endAdornment: <LocalAtmOutlinedIcon sx={{ color: priceIconColor }} />,
             }}
             variant="standard"
             label="Price"
             fullWidth
+            error={!!priceErrorHelperText}
             sx={{ mt: 2 }}
             {...formik.getFieldProps('price')}
           />
@@ -110,13 +119,11 @@ export const AddProductForm: FC = () => {
               borderWidth: 1,
               borderStyle: 'dashed',
               padding: 0,
-              borderColor: blue[blueColorDegree],
+              borderColor: primaryColor,
               alignSelf: 'center',
             }}
           >
-            <AddPhotoAlternateOutlinedIcon
-              sx={{ fontSize: 60, color: blue[blueColorDegree] }}
-            />
+            <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 60, color: primaryColor }} />
           </Avatar>
           <Button
             endIcon={<PhotoCamera />}
@@ -136,6 +143,7 @@ export const AddProductForm: FC = () => {
             />
           </Button>
           <LoadingButton
+            disabled={!!isSubmitButtonDisabled}
             variant="contained"
             type="submit"
             sx={{ mt: 4, bgcolor: primaryColor, alignSelf: 'center' }}

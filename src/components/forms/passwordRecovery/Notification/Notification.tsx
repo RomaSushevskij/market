@@ -2,16 +2,16 @@ import React, { FC } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { NavLink } from 'react-router-dom';
 
 import { NotificationPropsType } from './types';
 
+import { usePalette } from 'hooks/usePalette/usePalette';
+
 export const Notification: FC<NotificationPropsType> = props => {
   const { title, linkTitle, linkPath, icon } = props;
-  const theme = useTheme();
-  const primaryColor = theme.palette.primary.light;
+  const { primaryColor } = usePalette();
 
   const TitleBlock = title.split(' ').map(letter => {
     if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(letter)) {

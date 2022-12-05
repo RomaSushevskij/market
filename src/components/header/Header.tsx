@@ -4,7 +4,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
@@ -14,10 +13,11 @@ import { HeaderMenu } from './menu/Menu';
 import { ProgressBar } from 'components/progressBar';
 import { routes } from 'enums';
 import { useAppSelector } from 'hooks';
-import { selectProductsPageStatus, selectAuthPageStatus } from 'store/selectors';
+import { usePalette } from 'hooks/usePalette/usePalette';
+import { selectAuthPageStatus, selectProductsPageStatus } from 'store/selectors';
 
 export const Header: FC = memo(() => {
-  const theme = useTheme();
+  const { primaryColor } = usePalette();
   const navigate = useNavigate();
 
   const productsPageStatus = useAppSelector(selectProductsPageStatus);
@@ -30,7 +30,7 @@ export const Header: FC = memo(() => {
 
   return (
     <Box sx={{ flexGrow: 1 }} mb={10}>
-      <AppBar position="fixed" sx={{ bgcolor: theme.palette.primary.light }}>
+      <AppBar position="fixed" sx={{ bgcolor: primaryColor }}>
         <Toolbar>
           <IconButton
             size="large"

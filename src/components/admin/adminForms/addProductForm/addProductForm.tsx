@@ -35,7 +35,7 @@ export const AddProductForm: FC<AddProductProps> = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues: {
       title: '',
-      price: '',
+      price: 0,
     },
     onSubmit: async ({ title, price }: AddProductFormValues) => {
       const resultAction = await dispatch(

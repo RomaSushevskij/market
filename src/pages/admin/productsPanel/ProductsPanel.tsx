@@ -21,19 +21,31 @@ import { AddProductForm } from 'components/admin/adminForms';
 import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { fetchProducts, setAdminProductsPageMessage } from 'store/reducers';
+import {
+  deleteProduct,
+  fetchProducts,
+  setAdminProductsPageMessage,
+} from 'store/reducers';
 import { selectProducts } from 'store/selectors';
-import { selectAdminProductsPageMessage } from 'store/selectors/adminProductsPanelSelectors';
+import {
+  selectAdminProductsPageMessage,
+  selectAdminProductsStatus,
+} from 'store/selectors/adminProductsPanelSelectors';
 
 export const ProductsPanel: FC = () => {
   const dispatch = useAppDispatch();
 
   const products = useAppSelector(selectProducts);
   const adminProductsPageMessage = useAppSelector(selectAdminProductsPageMessage);
+  const adminProductsStatus = useAppSelector(selectAdminProductsStatus);
 
   const { primaryColor, errorColor } = usePalette();
 
   const [isOpenAddProductDialog, setOpenAddProductDialog] = useState(false);
+
+  const onDeleteProductClick = (id: string) => () => {
+    dispatch(deleteProduct(id));
+  };
 
   const productsItems = products.map(({ id, title, price, image }) => {
     return (
@@ -69,12 +81,15 @@ export const ProductsPanel: FC = () => {
         <TableCell>{price}</TableCell>
         <TableCell align="center">
           <Tooltip title="Edit product">
-            <IconButton sx={{ color: primaryColor }}>
+            <IconButton
+              sx={{ color: primaryColor }}
+              disabled={adminProductsStatus === 'loading'}
+            >
               <EditIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete product">
-            <IconButton sx={{ color: errorColor }}>
+            <IconButton sx={{ color: errorColor }} onClick={onDeleteProductClick(id)}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>

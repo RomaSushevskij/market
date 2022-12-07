@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
 import { collections } from 'api/enums';
 import { AddProductPayload } from 'api/products/types';
@@ -21,10 +21,11 @@ export const productsAPI = {
     return products;
   },
   async addProduct(addProductPayload: AddProductPayload) {
-    // eslint-disable-next-line no-debugger
-    debugger;
     const { id } = await addDoc(collection(db, collections.PRODUCTS), addProductPayload);
 
     return id;
+  },
+  async deleteProduct(productId: string) {
+    await deleteDoc(doc(db, collections.PRODUCTS, productId));
   },
 };

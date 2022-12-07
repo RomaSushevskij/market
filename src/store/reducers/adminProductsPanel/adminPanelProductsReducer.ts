@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { AddProductPayload, productsAPI } from 'api';
@@ -8,8 +8,13 @@ import { ProductType } from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
+type AddProductThunk = {
+  adminProductsPageMessage: AlertNotification;
+  newProduct: ProductType;
+};
+
 export const addProduct = createAsyncThunk<
-  { adminProductsPageMessage: AlertNotification; newProduct: ProductType },
+  AddProductThunk,
   AddProductPayload,
   { rejectValue: AlertNotification }
 >(
@@ -17,6 +22,7 @@ export const addProduct = createAsyncThunk<
   async (addProductPayload: AddProductPayload, { rejectWithValue }) => {
     try {
       const id = await productsAPI.addProduct(addProductPayload);
+
       const adminProductsPageMessage: AlertNotification = {
         message: ADMIN_PANEL_PRODUCTS_MESSAGES.PRODUCT_ADDED_SUCCESSFULLY,
         severity: 'success',
@@ -24,14 +30,35 @@ export const addProduct = createAsyncThunk<
       const newProduct: ProductType = { id, ...addProductPayload };
 
       return { adminProductsPageMessage, newProduct };
-    } catch (e) {
-      const { code } = e as firebase.FirebaseError;
+    } catch (error) {
+      const { code } = error as firebase.FirebaseError;
       const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
 
       return rejectWithValue({ message: notificationMessage, severity: 'error' });
     }
   },
 );
+
+export const deleteProduct = createAsyncThunk<
+  { productId: string; adminProductsPageMessage: AlertNotification },
+  string,
+  { rejectValue: AlertNotification }
+>('products/deleteProduct', async (productId: string, { rejectWithValue }) => {
+  try {
+    await productsAPI.deleteProduct(productId);
+    const adminProductsPageMessage: AlertNotification = {
+      message: ADMIN_PANEL_PRODUCTS_MESSAGES.PRODUCT_REMOVED_SUCCESSFULLY,
+      severity: 'success',
+    };
+
+    return { productId, adminProductsPageMessage };
+  } catch (error) {
+    const { code } = error as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
 
 const slice = createSlice({
   name: 'adminPanelProducts',
@@ -56,17 +83,23 @@ const slice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(addProduct.pending, state => {
+      .addMatcher(isAnyOf(addProduct.pending, deleteProduct.pending), state => {
         state.adminProductsStatus = 'loading';
       })
-      .addCase(addProduct.fulfilled, (state, { payload }) => {
-        state.adminProductsStatus = 'succeeded';
-        state.adminProductsPageMessage = payload.adminProductsPageMessage;
-      })
-      .addCase(addProduct.rejected, (state, { payload }) => {
-        state.adminProductsStatus = 'failed';
-        if (payload) state.adminProductsPageMessage = payload;
-      });
+      .addMatcher(
+        isAnyOf(addProduct.fulfilled, deleteProduct.fulfilled),
+        (state, { payload }) => {
+          state.adminProductsStatus = 'succeeded';
+          state.adminProductsPageMessage = payload.adminProductsPageMessage;
+        },
+      )
+      .addMatcher(
+        isAnyOf(addProduct.rejected, deleteProduct.rejected),
+        (state, { payload }) => {
+          state.adminProductsStatus = 'failed';
+          if (payload) state.adminProductsPageMessage = payload;
+        },
+      );
   },
 });
 

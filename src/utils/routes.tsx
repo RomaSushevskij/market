@@ -32,4 +32,12 @@ export const publicRoutes: RouteType[] = [
 
 export const adminPrivateRoutes: RouteType[] = [
   { path: adminRoutes.PRODUCTS, component: <ProductsPanel /> },
+  {
+    path: routes.ROOT,
+    component: <ProductsPanel />,
+  },
+  {
+    path: routes.DEFAULT,
+    component: <ProductsPanel />,
+  },
 ];

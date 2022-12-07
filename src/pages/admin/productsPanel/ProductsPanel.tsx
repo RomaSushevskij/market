@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,15 +18,18 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 
 import { AddProductForm } from 'components/admin/adminForms';
+import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { fetchProducts } from 'store/reducers';
+import { fetchProducts, setAdminProductsPageMessage } from 'store/reducers';
 import { selectProducts } from 'store/selectors';
+import { selectAdminProductsPageMessage } from 'store/selectors/adminProductsPanelSelectors';
 
 export const ProductsPanel: FC = () => {
   const dispatch = useAppDispatch();
 
   const products = useAppSelector(selectProducts);
+  const adminProductsPageMessage = useAppSelector(selectAdminProductsPageMessage);
 
   const { primaryColor, errorColor } = usePalette();
 
@@ -83,9 +86,14 @@ export const ProductsPanel: FC = () => {
   const onAddProductClick = () => {
     setOpenAddProductDialog(true);
   };
+
   const handleClose = () => {
     setOpenAddProductDialog(false);
   };
+
+  const onSnackBarClose = useCallback((closeValue: null) => {
+    dispatch(setAdminProductsPageMessage(closeValue));
+  }, []);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -119,9 +127,17 @@ export const ProductsPanel: FC = () => {
       <Dialog open={isOpenAddProductDialog} onClose={handleClose} fullWidth>
         <DialogTitle>Product description</DialogTitle>
         <DialogContent>
-          <AddProductForm />
+          <AddProductForm onSubmit={handleClose} />
         </DialogContent>
       </Dialog>
+      {adminProductsPageMessage && (
+        <SnackBar
+          message={adminProductsPageMessage.message}
+          severity={adminProductsPageMessage.severity}
+          autoHideDuration={7000}
+          onClose={onSnackBarClose}
+        />
+      )}
     </>
   );
 };

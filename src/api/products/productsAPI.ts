@@ -21,6 +21,8 @@ export const productsAPI = {
     return products;
   },
   async addProduct(addProductPayload: AddProductPayload) {
+    // eslint-disable-next-line no-debugger
+    debugger;
     const { id } = await addDoc(collection(db, collections.PRODUCTS), addProductPayload);
 
     return id;

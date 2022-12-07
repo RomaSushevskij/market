@@ -15,15 +15,19 @@ import { useFormik } from 'formik';
 
 import { AddProductFormValues } from 'components/admin/adminForms/addProductForm/types';
 import { AddProductSchema } from 'components/admin/adminForms/validation';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
+import { AddProductProps } from 'pages/admin/productsPanel/types';
 import { addProduct } from 'store/reducers';
+import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
-export const AddProductForm: FC = () => {
+export const AddProductForm: FC<AddProductProps> = ({ onSubmit }) => {
   const dispatch = useAppDispatch();
   const { primaryColor } = usePalette();
   const inputFileRef = useRef<HTMLInputElement>(null);
+
+  const pageStatus = useAppSelector(selectAdminProductsStatus);
 
   const [productImageURL, setProductImageURL] = useState('');
   const [productImage64, setProductImage64] = useState('');
@@ -33,8 +37,14 @@ export const AddProductForm: FC = () => {
       title: '',
       price: '',
     },
-    onSubmit: ({ title, price }: AddProductFormValues) => {
-      dispatch(addProduct({ title, price: Number(price), image: productImage64 }));
+    onSubmit: async ({ title, price }: AddProductFormValues) => {
+      const resultAction = await dispatch(
+        addProduct({ title, price: Number(price), image: productImage64 }),
+      );
+
+      if (addProduct.fulfilled.match(resultAction)) {
+        onSubmit();
+      }
     },
     validationSchema: AddProductSchema,
   });
@@ -57,7 +67,8 @@ export const AddProductForm: FC = () => {
     titleErrorHelperText ||
     priceErrorHelperText ||
     !formik.values.price ||
-    !formik.values.title;
+    !formik.values.title ||
+    !productImage64;
 
   const onChangeProductImage = (e: ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
@@ -113,8 +124,8 @@ export const AddProductForm: FC = () => {
             alt="Product Image"
             variant="rounded"
             sx={{
-              width: 250,
-              height: 250,
+              width: 200,
+              height: 200,
               bgcolor: 'transparent',
               borderWidth: 1,
               borderStyle: 'dashed',
@@ -143,6 +154,7 @@ export const AddProductForm: FC = () => {
             />
           </Button>
           <LoadingButton
+            loading={pageStatus === 'loading'}
             disabled={!!isSubmitButtonDisabled}
             variant="contained"
             type="submit"

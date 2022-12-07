@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { AddProductPayload, productsAPI } from 'api';
@@ -42,7 +42,18 @@ const slice = createSlice({
     adminPageSize: 6,
     adminCurrentPage: 1,
   } as AdminPanelProductsInitialState,
-  reducers: {},
+  reducers: {
+    setAdminProductsPageMessage(state, action: PayloadAction<AlertNotification | null>) {
+      if (action.payload) {
+        const { message, severity } = action.payload;
+
+        state.adminProductsPageMessage = { message, severity };
+
+        return;
+      }
+      state.adminProductsPageMessage = action.payload;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(addProduct.pending, state => {
@@ -60,3 +71,4 @@ const slice = createSlice({
 });
 
 export const adminPanelProductsReducer = slice.reducer;
+export const { setAdminProductsPageMessage } = slice.actions;

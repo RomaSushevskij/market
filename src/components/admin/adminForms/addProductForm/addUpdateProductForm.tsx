@@ -17,29 +17,58 @@ import { AddProductFormValues } from 'components/admin/adminForms/addProductForm
 import { AddProductSchema } from 'components/admin/adminForms/validation';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { AddProductProps } from 'pages/admin/productsPanel/types';
-import { addProduct } from 'store/reducers';
+import { AddUpdateProductProps } from 'pages/admin/productsPanel/types';
+import { addProduct, updateProduct } from 'store/reducers';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
-export const AddProductForm: FC<AddProductProps> = ({ onSubmit }) => {
+export const AddUpdateProductForm: FC<AddUpdateProductProps> = ({
+  onSubmit,
+  formType,
+  activeProduct,
+}) => {
   const dispatch = useAppDispatch();
   const { primaryColor } = usePalette();
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const pageStatus = useAppSelector(selectAdminProductsStatus);
 
-  const [productImageURL, setProductImageURL] = useState('');
-  const [productImage64, setProductImage64] = useState('');
+  const [productImageURL, setProductImageURL] = useState(
+    activeProduct ? activeProduct.image : '',
+  );
+  const [productImage64, setProductImage64] = useState(
+    activeProduct ? activeProduct.image : '',
+  );
 
   const formik = useFormik({
     initialValues: {
-      title: '',
-      price: 0,
+      title: activeProduct ? activeProduct.title : '',
+      price: activeProduct ? activeProduct.price : 0,
     },
     onSubmit: async ({ title, price }: AddProductFormValues) => {
+      if (activeProduct) {
+        const resultAction = await dispatch(
+          updateProduct({
+            title,
+            price: Number(price),
+            image: productImage64,
+            id: activeProduct.id,
+          }),
+        );
+
+        if (updateProduct.fulfilled.match(resultAction)) {
+          onSubmit();
+        }
+
+        return;
+      }
+
       const resultAction = await dispatch(
-        addProduct({ title, price: Number(price), image: productImage64 }),
+        addProduct({
+          title,
+          price: Number(price),
+          image: productImage64,
+        }),
       );
 
       if (addProduct.fulfilled.match(resultAction)) {
@@ -160,7 +189,7 @@ export const AddProductForm: FC<AddProductProps> = ({ onSubmit }) => {
             type="submit"
             sx={{ mt: 4, bgcolor: primaryColor, alignSelf: 'center' }}
           >
-            Add product
+            {formType === 'Add' ? 'Add product' : 'Update product'}
           </LoadingButton>
         </FormGroup>
       </FormControl>

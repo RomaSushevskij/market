@@ -3,9 +3,13 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -17,13 +21,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 
-import { AddProductForm } from 'components/admin/adminForms';
+import { AddUpdateProductForm } from 'components/admin/adminForms';
 import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import {
   deleteProduct,
   fetchProducts,
+  ProductType,
   setAdminProductsPageMessage,
 } from 'store/reducers';
 import { selectProducts } from 'store/selectors';
@@ -42,9 +47,27 @@ export const ProductsPanel: FC = () => {
   const { primaryColor, errorColor } = usePalette();
 
   const [isOpenAddProductDialog, setOpenAddProductDialog] = useState(false);
+  const [isOpenUpdateProductDialog, setOpenUpdateProductDialog] = useState(false);
+  const [isOpenDeleteProductDialog, setOpenDeleteProductDialog] = useState(false);
+  const [activeProduct, setActiveProduct] = useState<ProductType>({} as ProductType);
 
-  const onDeleteProductClick = (id: string) => () => {
-    dispatch(deleteProduct(id));
+  const onDeleteIconClick = (product: ProductType) => () => {
+    setOpenDeleteProductDialog(true);
+    setActiveProduct(product);
+  };
+
+  const onDeleteProduct = async () => {
+    const resultAction = await dispatch(deleteProduct(activeProduct.id));
+
+    if (deleteProduct.fulfilled.match(resultAction)) {
+      setOpenDeleteProductDialog(false);
+    }
+  };
+
+  const onUpdateProductClick = (product: ProductType) => () => {
+    setOpenUpdateProductDialog(true);
+
+    setActiveProduct(product);
   };
 
   const productsItems = products.map(({ id, title, price, image }) => {
@@ -84,12 +107,17 @@ export const ProductsPanel: FC = () => {
             <IconButton
               sx={{ color: primaryColor }}
               disabled={adminProductsStatus === 'loading'}
+              onClick={onUpdateProductClick({ id, title, price, image })}
             >
               <EditIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete product">
-            <IconButton sx={{ color: errorColor }} onClick={onDeleteProductClick(id)}>
+            <IconButton
+              sx={{ color: errorColor }}
+              onClick={onDeleteIconClick({ ...activeProduct, id })}
+              disabled={adminProductsStatus === 'loading'}
+            >
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -102,8 +130,16 @@ export const ProductsPanel: FC = () => {
     setOpenAddProductDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseAddProductDialog = () => {
     setOpenAddProductDialog(false);
+  };
+
+  const handleCloseUpdateProductDialog = () => {
+    setOpenUpdateProductDialog(false);
+  };
+
+  const handleCloseDeleteProductDialog = () => {
+    setOpenDeleteProductDialog(false);
   };
 
   const onSnackBarClose = useCallback((closeValue: null) => {
@@ -139,11 +175,59 @@ export const ProductsPanel: FC = () => {
           Add product
         </Button>
       </Stack>
-      <Dialog open={isOpenAddProductDialog} onClose={handleClose} fullWidth>
+      <Dialog
+        open={isOpenAddProductDialog}
+        onClose={handleCloseAddProductDialog}
+        fullWidth
+      >
         <DialogTitle>Product description</DialogTitle>
         <DialogContent>
-          <AddProductForm onSubmit={handleClose} />
+          <AddUpdateProductForm onSubmit={handleCloseAddProductDialog} formType="Add" />
         </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isOpenUpdateProductDialog}
+        onClose={handleCloseUpdateProductDialog}
+        fullWidth
+      >
+        <DialogTitle>Product description</DialogTitle>
+        <DialogContent>
+          <AddUpdateProductForm
+            onSubmit={handleCloseUpdateProductDialog}
+            activeProduct={activeProduct}
+            formType="Update"
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isOpenDeleteProductDialog}
+        onClose={handleCloseDeleteProductDialog}
+        fullWidth
+      >
+        <DialogTitle>Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this product?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-around' }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={handleCloseDeleteProductDialog}
+            disabled={adminProductsStatus === 'loading'}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={onDeleteProduct}
+            disabled={adminProductsStatus === 'loading'}
+          >
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
       {adminProductsPageMessage && (
         <SnackBar

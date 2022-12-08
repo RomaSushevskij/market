@@ -1,4 +1,4 @@
-import { RequestStatusType } from 'store/reducers/products/types';
+import {ProductType, RequestStatusType} from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
 
 export type AdminPanelProductsInitialState = {
@@ -7,4 +7,9 @@ export type AdminPanelProductsInitialState = {
   adminProductsTotalCount: number;
   adminPageSize: number;
   adminCurrentPage: number;
+};
+
+export type ReturnedPostThunk = {
+  adminProductsPageMessage: AlertNotification;
+  newProduct: ProductType;
 };

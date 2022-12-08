@@ -3,7 +3,11 @@ import firebase from 'firebase/compat';
 
 import { productsAPI } from 'api/products/productsAPI';
 import { AUTH_PAGE_MESSAGES } from 'enums';
-import { addProduct, deleteProduct } from 'store/reducers/adminProductsPanel';
+import {
+  addProduct,
+  deleteProduct,
+  updateProduct,
+} from 'store/reducers/adminProductsPanel';
 import { ProductsInitialState, ProductType } from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
@@ -67,6 +71,18 @@ const slice = createSlice({
           const indexOfCurrentProduct = state.products.indexOf(currentProduct);
 
           state.products.splice(indexOfCurrentProduct, 1);
+        }
+      })
+      .addCase(updateProduct.fulfilled, (state, { payload }) => {
+        const { updateProductPayload } = payload;
+        const currentProduct = state.products.find(
+          product => product.id === updateProductPayload.id,
+        );
+
+        if (currentProduct) {
+          const indexOfCurrentProduct = state.products.indexOf(currentProduct);
+
+          state.products.splice(indexOfCurrentProduct, 1, updateProductPayload);
         }
       });
   },

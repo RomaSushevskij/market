@@ -1,2 +1,2 @@
 export * from './types';
-export * from './addProductForm';
+export * from 'components/admin/adminForms/addProductForm/addUpdateProductForm';

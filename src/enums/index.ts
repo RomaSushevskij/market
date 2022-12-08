@@ -33,4 +33,5 @@ export enum ADMIN_PANEL_PRODUCTS_MESSAGES {
   PRODUCT_ADDED_SUCCESSFULLY = 'Product added successfully',
   NETWORK_ERROR = 'Network error',
   PRODUCT_REMOVED_SUCCESSFULLY = 'Product removed successfully',
+  PRODUCT_UPDATED_SUCCESSFULLY = 'Product updated successfully',
 }

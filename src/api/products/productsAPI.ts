@@ -1,4 +1,11 @@
-import { addDoc, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 
 import { collections } from 'api/enums';
 import { AddProductPayload } from 'api/products/types';
@@ -27,5 +34,14 @@ export const productsAPI = {
   },
   async deleteProduct(productId: string) {
     await deleteDoc(doc(db, collections.PRODUCTS, productId));
+  },
+  async updateProduct(updateProductPayload: ProductType) {
+    const { id, price, title, image } = updateProductPayload;
+
+    await updateDoc(doc(db, collections.PRODUCTS, id), {
+      title,
+      price,
+      image,
+    });
   },
 };

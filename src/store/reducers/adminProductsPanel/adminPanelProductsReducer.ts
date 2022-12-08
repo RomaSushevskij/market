@@ -3,18 +3,16 @@ import firebase from 'firebase/compat';
 
 import { AddProductPayload, productsAPI } from 'api';
 import { ADMIN_PANEL_PRODUCTS_MESSAGES, AUTH_PAGE_MESSAGES } from 'enums';
-import { AdminPanelProductsInitialState } from 'store/reducers/adminProductsPanel/types';
+import {
+  AdminPanelProductsInitialState,
+  ReturnedPostThunk,
+} from 'store/reducers/adminProductsPanel/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
-type AddProductThunk = {
-  adminProductsPageMessage: AlertNotification;
-  newProduct: ProductType;
-};
-
 export const addProduct = createAsyncThunk<
-  AddProductThunk,
+  ReturnedPostThunk,
   AddProductPayload,
   { rejectValue: AlertNotification }
 >(
@@ -60,6 +58,30 @@ export const deleteProduct = createAsyncThunk<
   }
 });
 
+export const updateProduct = createAsyncThunk<
+  { adminProductsPageMessage: AlertNotification; updateProductPayload: ProductType },
+  ProductType,
+  { rejectValue: AlertNotification }
+>(
+  'products/updateProduct',
+  async (updateProductPayload: ProductType, { rejectWithValue }) => {
+    try {
+      await productsAPI.updateProduct(updateProductPayload);
+      const adminProductsPageMessage: AlertNotification = {
+        message: ADMIN_PANEL_PRODUCTS_MESSAGES.PRODUCT_UPDATED_SUCCESSFULLY,
+        severity: 'success',
+      };
+
+      return { adminProductsPageMessage, updateProductPayload };
+    } catch (error) {
+      const { code } = error as firebase.FirebaseError;
+      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+      return rejectWithValue({ message: notificationMessage, severity: 'error' });
+    }
+  },
+);
+
 const slice = createSlice({
   name: 'adminPanelProducts',
   initialState: {
@@ -83,18 +105,21 @@ const slice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addMatcher(isAnyOf(addProduct.pending, deleteProduct.pending), state => {
-        state.adminProductsStatus = 'loading';
-      })
       .addMatcher(
-        isAnyOf(addProduct.fulfilled, deleteProduct.fulfilled),
+        isAnyOf(addProduct.pending, deleteProduct.pending, updateProduct.pending),
+        state => {
+          state.adminProductsStatus = 'loading';
+        },
+      )
+      .addMatcher(
+        isAnyOf(addProduct.fulfilled, deleteProduct.fulfilled, updateProduct.fulfilled),
         (state, { payload }) => {
           state.adminProductsStatus = 'succeeded';
           state.adminProductsPageMessage = payload.adminProductsPageMessage;
         },
       )
       .addMatcher(
-        isAnyOf(addProduct.rejected, deleteProduct.rejected),
+        isAnyOf(addProduct.rejected, deleteProduct.rejected, updateProduct.rejected),
         (state, { payload }) => {
           state.adminProductsStatus = 'failed';
           if (payload) state.adminProductsPageMessage = payload;

@@ -3,3 +3,8 @@ export type AddProductPayload = {
   price: number;
   image: string;
 };
+
+export type FetchProductsPayload = {
+  pageSize: number;
+  currentPage: number;
+};

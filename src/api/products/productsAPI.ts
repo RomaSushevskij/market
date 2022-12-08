@@ -1,20 +1,31 @@
 import {
   addDoc,
   collection,
-  getDocs,
   deleteDoc,
   doc,
+  getDocs,
+  limit,
+  query,
+  startAt,
   updateDoc,
 } from 'firebase/firestore';
 
 import { collections } from 'api/enums';
-import { AddProductPayload } from 'api/products/types';
+import { AddProductPayload, FetchProductsPayload } from 'api/products/types';
 import { db } from 'services/firebase';
 import { ProductType } from 'store/reducers';
 
 export const productsAPI = {
-  async fetchProducts() {
-    const response = await getDocs(collection(db, collections.PRODUCTS));
+  async fetchProducts({ pageSize, currentPage }: FetchProductsPayload) {
+    const { size, docs } = await getDocs(collection(db, collections.PRODUCTS));
+    const firstProductOfPage = docs[pageSize * currentPage - pageSize];
+
+    const payload = query(
+      collection(db, collections.PRODUCTS),
+      limit(pageSize),
+      startAt(firstProductOfPage),
+    );
+    const response = await getDocs(payload);
     const products = response.docs.map(doc => {
       const productData = doc.data() as Omit<ProductType, 'id'>;
       const product: ProductType = {
@@ -25,7 +36,7 @@ export const productsAPI = {
       return product;
     });
 
-    return products;
+    return { products, productsTotalCount: size };
   },
   async addProduct(addProductPayload: AddProductPayload) {
     const { id } = await addDoc(collection(db, collections.PRODUCTS), addProductPayload);

@@ -13,14 +13,17 @@ import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const fetchProducts = createAsyncThunk<
-  { products: ProductType[] },
+  { products: ProductType[]; productsTotalCount: number },
   undefined,
   { rejectValue: AlertNotification }
 >('products/fetchProducts', async (_, { rejectWithValue }) => {
   try {
-    const products = await productsAPI.fetchProducts();
+    const { products, productsTotalCount } = await productsAPI.fetchProducts({
+      pageSize: 3,
+      currentPage: 2,
+    });
 
-    return { products };
+    return { products, productsTotalCount };
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
     const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
@@ -52,8 +55,11 @@ const slice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchProducts.fulfilled, (state, { payload }) => {
+        const { products, productsTotalCount } = payload;
+
         state.status = 'succeeded';
-        state.products = payload.products;
+        state.products = products;
+        state.productsTotalCount = productsTotalCount;
       })
       .addCase(fetchProducts.rejected, (state, { payload }) => {
         state.status = 'failed';

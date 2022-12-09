@@ -21,7 +21,7 @@ export const Products: FC = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchProducts());
+    dispatch(fetchProducts({ isAdmin: false }));
   }, []);
 
   if (!isAuth) {

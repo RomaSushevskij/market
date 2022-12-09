@@ -88,7 +88,7 @@ const slice = createSlice({
     adminProductsStatus: 'idle',
     adminProductsPageMessage: null,
     adminProductsTotalCount: 0,
-    adminPageSize: 6,
+    adminPageSize: 3,
     adminCurrentPage: 1,
   } as AdminPanelProductsInitialState,
   reducers: {
@@ -101,6 +101,14 @@ const slice = createSlice({
         return;
       }
       state.adminProductsPageMessage = action.payload;
+    },
+    setAdminProductsTotalCount(
+      state,
+      action: PayloadAction<{ adminProductsTotalCount: number }>,
+    ) {
+      const { adminProductsTotalCount } = action.payload;
+
+      state.adminProductsTotalCount = adminProductsTotalCount;
     },
   },
   extraReducers: builder => {
@@ -129,4 +137,4 @@ const slice = createSlice({
 });
 
 export const adminPanelProductsReducer = slice.reducer;
-export const { setAdminProductsPageMessage } = slice.actions;
+export const { setAdminProductsPageMessage, setAdminProductsTotalCount } = slice.actions;

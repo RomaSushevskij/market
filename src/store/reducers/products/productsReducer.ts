@@ -6,6 +6,7 @@ import { AUTH_PAGE_MESSAGES } from 'enums';
 import {
   addProduct,
   deleteProduct,
+  setAdminProductsTotalCount,
   updateProduct,
 } from 'store/reducers/adminProductsPanel';
 import { ProductsInitialState, ProductType } from 'store/reducers/products/types';
@@ -13,17 +14,25 @@ import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
 export const fetchProducts = createAsyncThunk<
-  { products: ProductType[]; productsTotalCount: number },
-  undefined,
+  { products: ProductType[] },
+  { isAdmin: boolean },
   { rejectValue: AlertNotification }
->('products/fetchProducts', async (_, { rejectWithValue }) => {
+>('products/fetchProducts', async (adminIndication, { dispatch, rejectWithValue }) => {
   try {
     const { products, productsTotalCount } = await productsAPI.fetchProducts({
       pageSize: 3,
       currentPage: 2,
     });
 
-    return { products, productsTotalCount };
+    if (adminIndication.isAdmin) {
+      dispatch(
+        setAdminProductsTotalCount({ adminProductsTotalCount: productsTotalCount }),
+      );
+    } else {
+      dispatch(setProductsTotalCount({ productsTotalCount }));
+    }
+
+    return { products };
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
     const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
@@ -39,7 +48,7 @@ const slice = createSlice({
     status: 'idle',
     productsPageMessage: null,
     productsTotalCount: 0,
-    pageSize: 6,
+    pageSize: 2,
     currentPage: 1,
   } as ProductsInitialState,
   reducers: {
@@ -48,6 +57,11 @@ const slice = createSlice({
 
       state.products = products;
     },
+    setProductsTotalCount(state, action: PayloadAction<{ productsTotalCount: number }>) {
+      const { productsTotalCount } = action.payload;
+
+      state.productsTotalCount = productsTotalCount;
+    },
   },
   extraReducers: builder => {
     builder
@@ -55,11 +69,10 @@ const slice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchProducts.fulfilled, (state, { payload }) => {
-        const { products, productsTotalCount } = payload;
+        const { products } = payload;
 
         state.status = 'succeeded';
         state.products = products;
-        state.productsTotalCount = productsTotalCount;
       })
       .addCase(fetchProducts.rejected, (state, { payload }) => {
         state.status = 'failed';
@@ -95,4 +108,4 @@ const slice = createSlice({
 });
 
 export const productsReducer = slice.reducer;
-export const { setProducts } = slice.actions;
+export const { setProducts, setProductsTotalCount } = slice.actions;

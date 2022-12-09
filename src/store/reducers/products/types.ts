@@ -1,5 +1,10 @@
 import { AlertNotification } from 'types';
 
+export type FetchProductsThunkArg = {
+  currentPage: number;
+  isAdmin: boolean;
+};
+
 export type ProductType = {
   title: string;
   image: string;

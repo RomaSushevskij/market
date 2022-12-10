@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
@@ -11,25 +11,42 @@ import {
   TEN_ITEMS_PER_PAGE,
   TWENTY_ITEMS_PER_PAGE,
 } from 'components/paginationBlock/constants';
+import { PaginationBlockProps } from 'components/paginationBlock/types';
 
 const pageSizes = [FIVE_ITEMS_PER_PAGE, TEN_ITEMS_PER_PAGE, TWENTY_ITEMS_PER_PAGE];
 
-export const PaginationBlock: FC = () => {
-  const [pageSize, setPageSize] = useState(pageSizes[0]);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setPageSize(Number(event.target.value));
+export const PaginationBlock: FC<PaginationBlockProps> = ({
+  onPageChange,
+  itemsTotalCount,
+  onPageSizeChange,
+  pageSize,
+  currentPage,
+}) => {
+  const onPageLimitChange = (event: SelectChangeEvent) => {
+    onPageSizeChange(Number(event.target.value));
   };
+
+  const onPageNumberChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    onPageChange(value);
+  };
+  const pageCount = Math.ceil(itemsTotalCount / pageSize);
 
   return (
     <Stack direction="row" justifyContent="center">
-      <Pagination count={10} variant="outlined" color="primary" shape="rounded" />
+      <Pagination
+        count={pageCount}
+        variant="outlined"
+        color="primary"
+        shape="rounded"
+        onChange={onPageNumberChange}
+        page={currentPage}
+      />
       <Typography ml={2} mr={1} alignSelf="center" variant="body2">
         Items per page:
       </Typography>
       <Select
         value={String(pageSize)}
-        onChange={handleChange}
+        onChange={onPageLimitChange}
         size="small"
         sx={{ p: 0, alignSelf: 'center' }}
         inputProps={{

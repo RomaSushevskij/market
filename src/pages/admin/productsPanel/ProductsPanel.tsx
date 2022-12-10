@@ -22,13 +22,21 @@ import { usePalette } from 'hooks/usePalette/usePalette';
 import { ProductRow } from 'pages/admin/productsPanel/productRow/productRow';
 import { fetchProducts, ProductType, setAdminProductsPageMessage } from 'store/reducers';
 import { selectProducts } from 'store/selectors';
-import { selectAdminProductsPageMessage } from 'store/selectors/adminProductsPanelSelectors';
+import {
+  selectAdminCurrentPage,
+  selectAdminPageSize,
+  selectAdminProductsPageMessage,
+  selectAdminProductsTotalCount,
+} from 'store/selectors/adminProductsPanelSelectors';
 
 export const ProductsPanel: FC = () => {
   const dispatch = useAppDispatch();
 
   const products = useAppSelector(selectProducts);
   const adminProductsPageMessage = useAppSelector(selectAdminProductsPageMessage);
+  const adminProductsTotalCount = useAppSelector(selectAdminProductsTotalCount);
+  const adminPageSize = useAppSelector(selectAdminPageSize);
+  const adminCurrentPage = useAppSelector(selectAdminCurrentPage);
 
   const { primaryColor } = usePalette();
 
@@ -50,6 +58,14 @@ export const ProductsPanel: FC = () => {
     setOpenUpdateProductDialog(true);
 
     setActiveProduct(product);
+  };
+
+  const onPaginationPageChange = (pageNumber: number) => {
+    dispatch(fetchProducts({ isAdmin: true, currentPage: pageNumber }));
+  };
+
+  const onPaginationPageSizeChange = (pageSize: number) => {
+    dispatch(fetchProducts({ isAdmin: true, pageSize, currentPage: 1 }));
   };
 
   const onSnackBarClose = useCallback(
@@ -100,7 +116,13 @@ export const ProductsPanel: FC = () => {
             p: 1,
           }}
         >
-          <PaginationBlock />
+          <PaginationBlock
+            onPageChange={onPaginationPageChange}
+            itemsTotalCount={adminProductsTotalCount}
+            pageSize={adminPageSize}
+            currentPage={adminCurrentPage}
+            onPageSizeChange={onPaginationPageSizeChange}
+          />
         </Paper>
         <Button
           variant="contained"

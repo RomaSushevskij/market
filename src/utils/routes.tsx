@@ -1,7 +1,6 @@
 import { RouteType } from 'components/appRoutes/types';
-import { adminRoutes, routes } from 'enums';
+import { routes } from 'enums';
 import { OrderList, Products } from 'pages';
-import { ProductsPanel } from 'pages/admin';
 import { AuthPage } from 'pages/authPage/authPage';
 
 export const privateRoutes: RouteType[] = [
@@ -27,17 +26,5 @@ export const publicRoutes: RouteType[] = [
   {
     path: routes.AUTH_PAGE_DEEP,
     component: <AuthPage />,
-  },
-];
-
-export const adminPrivateRoutes: RouteType[] = [
-  { path: adminRoutes.PRODUCTS, component: <ProductsPanel /> },
-  {
-    path: routes.ROOT,
-    component: <ProductsPanel />,
-  },
-  {
-    path: routes.DEFAULT,
-    component: <ProductsPanel />,
   },
 ];

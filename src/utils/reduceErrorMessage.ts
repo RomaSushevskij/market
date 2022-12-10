@@ -1,6 +1,8 @@
 import { AUTH_PAGE_MESSAGES } from 'enums';
 
 export const reduceErrorMessage = (serverMessage: AUTH_PAGE_MESSAGES): string => {
+  // eslint-disable-next-line no-debugger
+  debugger;
   switch (serverMessage) {
     case AUTH_PAGE_MESSAGES.INVALID_PASSWORD: {
       return 'Incorrect password';

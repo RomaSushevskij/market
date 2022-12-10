@@ -1,7 +1,8 @@
 import { AlertNotification } from 'types';
 
 export type FetchProductsThunkArg = {
-  currentPage: number;
+  currentPage?: number;
+  pageSize?: number;
   isAdmin: boolean;
 };
 

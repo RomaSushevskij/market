@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,16 +12,16 @@ import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { ProductRowType } from 'pages/admin/productsPanel/productRow/types';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
+import { toDollars } from 'utils';
 
-export const ProductRow: FC<ProductRowType> = ({
-  currentProduct,
-  onUpdateProduct,
-  onDeleteProduct,
-}) => {
+export const ProductRow: FC<ProductRowType> = memo(prop => {
+  const { currentProduct, onUpdateProduct, onDeleteProduct } = prop;
   const { title, price, image, id } = currentProduct;
   const { primaryColor, errorColor } = usePalette();
 
   const adminProductsStatus = useAppSelector(selectAdminProductsStatus);
+
+  const formattedPrice = toDollars.format(price);
 
   return (
     <TableRow key={id}>
@@ -53,7 +53,7 @@ export const ProductRow: FC<ProductRowType> = ({
         </Tooltip>
       </TableCell>
       <TableCell>{title}</TableCell>
-      <TableCell>{price}</TableCell>
+      <TableCell>{formattedPrice}</TableCell>
       <TableCell align="center">
         <Tooltip title="Edit product">
           <IconButton
@@ -76,4 +76,4 @@ export const ProductRow: FC<ProductRowType> = ({
       </TableCell>
     </TableRow>
   );
-};
+});

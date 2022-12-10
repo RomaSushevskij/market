@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import { setOrderListToLocalStorage } from 'services/localStorage';
 import { calculateOrdersTotalCost, signOut } from 'store/reducers';
 import { selectOrderList, selectOrderTotalCost, selectUid } from 'store/selectors';
+import { toDollars } from 'utils';
 
 export const HeaderMenu: FC = () => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export const HeaderMenu: FC = () => {
   );
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const formattedOrderTotalCost = toDollars.format(orderTotalCost);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -139,7 +141,7 @@ export const HeaderMenu: FC = () => {
       <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
         {orderTotalCost > 0 && (
           <Typography variant="body1" fontWeight="bold" component="span">
-            $ {orderTotalCost}
+            {formattedOrderTotalCost}
           </Typography>
         )}
         <IconButton

@@ -15,23 +15,29 @@ import { ProductPropsType } from './types';
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { addItemToCart } from 'store/reducers';
+import { toDollars } from 'utils';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
   const { warningColor } = usePalette();
   const dispatch = useAppDispatch();
+
+  const hoverElevationValue = 10;
+  const formattedPrice = toDollars.format(price);
 
   const [isHoverCard, setHoverCard] = useState(false);
 
   const onAddToCartClick = () => {
     dispatch(addItemToCart(id));
   };
+
   const onCardMouseMove = () => {
     setHoverCard(true);
   };
+
   const onCardMouseOut = () => {
     setHoverCard(false);
   };
-  const hoverElevationValue = 10;
+
   const elevationValue = useMemo(() => {
     return isHoverCard ? hoverElevationValue : 1;
   }, [isHoverCard]);
@@ -57,7 +63,7 @@ export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {
               fontSize: 14,
             }}
             size="medium"
-            label={`$ ${price}`}
+            label={formattedPrice}
           />
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>

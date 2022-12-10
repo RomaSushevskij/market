@@ -41,7 +41,7 @@ export const DeleteProductDialog: FC<DeleteProductDialogProps> = ({
           Are you sure you want to delete this product?
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: 'space-around' }}>
+      <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
         <Button
           variant="outlined"
           color="inherit"

@@ -7,6 +7,7 @@ import {
   AdminPanelProductsInitialState,
   ReturnedPostThunk,
 } from 'store/reducers/adminProductsPanel/types';
+import { fetchProducts } from 'store/reducers/products/productsReducer';
 import { ProductType } from 'store/reducers/products/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
@@ -88,7 +89,7 @@ const slice = createSlice({
     adminProductsStatus: 'idle',
     adminProductsPageMessage: null,
     adminProductsTotalCount: 0,
-    adminPageSize: 3,
+    adminPageSize: 5,
     adminCurrentPage: 1,
   } as AdminPanelProductsInitialState,
   reducers: {
@@ -110,9 +111,30 @@ const slice = createSlice({
 
       state.adminProductsTotalCount = adminProductsTotalCount;
     },
+    setAdminPageSize(state, action: PayloadAction<{ pageSize: number }>) {
+      const { pageSize } = action.payload;
+
+      state.adminPageSize = pageSize;
+    },
+    setAdminCurrentPage(state, action: PayloadAction<{ currentPage: number }>) {
+      const { currentPage } = action.payload;
+
+      state.adminCurrentPage = currentPage;
+    },
   },
   extraReducers: builder => {
     builder
+      .addCase(fetchProducts.fulfilled, (state, { payload }) => {
+        const { thunkArg, productsTotalCount } = payload;
+        const { isAdmin, pageSize, currentPage } = thunkArg;
+
+        if (isAdmin) {
+          state.adminProductsStatus = 'succeeded';
+          state.adminProductsTotalCount = productsTotalCount;
+          if (pageSize) state.adminPageSize = pageSize;
+          if (currentPage) state.adminCurrentPage = currentPage;
+        }
+      })
       .addMatcher(
         isAnyOf(addProduct.pending, deleteProduct.pending, updateProduct.pending),
         state => {
@@ -137,4 +159,9 @@ const slice = createSlice({
 });
 
 export const adminPanelProductsReducer = slice.reducer;
-export const { setAdminProductsPageMessage, setAdminProductsTotalCount } = slice.actions;
+export const {
+  setAdminProductsPageMessage,
+  setAdminProductsTotalCount,
+  setAdminPageSize,
+  setAdminCurrentPage,
+} = slice.actions;

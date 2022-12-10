@@ -16,11 +16,14 @@ import { OrderItemPropsType } from './types';
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { changeOrderItemCount } from 'store/reducers';
+import { toDollars } from 'utils';
 
 export const OrderItem: FC<OrderItemPropsType> = memo(
   ({ title, price, image, count, id }: OrderItemPropsType) => {
     const { warningColor } = usePalette();
     const dispatch = useAppDispatch();
+
+    const formattedPrice = toDollars.format(price);
 
     const onChangeOrdersCount = (action: 'add' | 'remove') => {
       return () => {
@@ -48,7 +51,7 @@ export const OrderItem: FC<OrderItemPropsType> = memo(
                   fontSize: 14,
                 }}
                 size="medium"
-                label={`$ ${price}`}
+                label={formattedPrice}
               />
             </Stack>
           </CardContent>

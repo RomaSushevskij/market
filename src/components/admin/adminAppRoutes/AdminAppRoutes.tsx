@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { Route, Routes } from 'react-router-dom';
 
-import { adminPrivateRoutes } from 'utils/routes';
+import { adminPrivateRoutes } from 'utils/adminRoutes';
 
 export const AdminAppRoutes: FC = () => {
   return (

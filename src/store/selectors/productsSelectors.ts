@@ -10,3 +10,8 @@ export const selectProductsPageStatus = (state: AppStateType): RequestStatusType
 export const selectProductsPageMessage = (
   state: AppStateType,
 ): AlertNotification | null => state.products.productsPageMessage;
+export const selectProductsTotalCount = (state: AppStateType): number =>
+  state.products.productsTotalCount;
+export const selectCurrentPage = (state: AppStateType): number =>
+  state.products.currentPage;
+export const selectPageSize = (state: AppStateType): number => state.products.pageSize;

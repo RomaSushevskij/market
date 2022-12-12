@@ -34,7 +34,7 @@ export const AdminAuthPage: FC = memo(() => {
             <Typography variant="h6" component="div" color={primaryColor}>
               {authForms.SIGN_IN}
             </Typography>
-            <LoginForm />
+            <LoginForm isAdmin />
           </Box>
         </Paper>
       </Grid>

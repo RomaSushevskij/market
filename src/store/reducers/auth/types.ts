@@ -13,3 +13,5 @@ export type AuthInitialStateType = {
 };
 
 export type SignUpDataType = Omit<SignInFormValuesType, 'rememberMe'>;
+
+export type SignInThunkArg = SignInFormValuesType & { isAuthForAdmin: boolean };

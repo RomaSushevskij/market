@@ -93,7 +93,7 @@ export const AuthPage: FC = memo(() => {
               </Box>
             )}
             <Routes>
-              <Route path={routes.AUTH_SIGN_IN} element={<LoginForm />} />
+              <Route path={routes.AUTH_SIGN_IN} element={<LoginForm isAdmin={false} />} />
               <Route path={routes.AUTH_SIGN_UP} element={<RegistrationForm />} />
               <Route
                 path={routes.AUTH_SEND_INSTRUCTIONS}

@@ -3,13 +3,16 @@ import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
 import { ResetPasswordPayload } from 'api/auth/types';
-import { SignInFormValuesType } from 'components';
 import { AUTH_PAGE_MESSAGES } from 'enums';
-import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types';
+import {
+  AuthInitialStateType,
+  SignInThunkArg,
+  SignUpDataType,
+} from 'store/reducers/auth/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
-const adminId = process.env['REACT_APP_FIREBASE_ADMIN_ID '];
+const adminId = process.env.REACT_APP_FIREBASE_ADMIN_ID;
 
 export const signUp = createAsyncThunk<
   undefined,
@@ -37,47 +40,66 @@ export const signIn = createAsyncThunk<
     isAdmin?: boolean;
     authPageMessage: AlertNotification;
   },
-  SignInFormValuesType,
+  SignInThunkArg,
   { rejectValue: AlertNotification }
->(
-  'auth/signIn',
-  async (signInData: SignInFormValuesType, { dispatch, rejectWithValue }) => {
-    try {
-      const user = await authApi.signIn(signInData);
+>('auth/signIn', async (signInData: SignInThunkArg, { dispatch, rejectWithValue }) => {
+  try {
+    const user = await authApi.signIn(signInData);
 
-      if (user.emailVerified) {
-        const { email, displayName, uid } = user;
-        const isAdmin = adminId === uid;
+    if (user.emailVerified) {
+      const { email, displayName, uid } = user;
+
+      if (signInData.isAuthForAdmin) {
+        if (adminId === uid) {
+          return {
+            email,
+            displayName,
+            uid,
+            isAdmin: true,
+            isAuth: true,
+            authPageMessage: {
+              message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
+              severity: 'success',
+            },
+          };
+        }
 
         return {
-          email,
-          displayName,
-          uid,
-          isAdmin,
-          isAuth: true,
           authPageMessage: {
-            message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
-            severity: 'success',
+            message: AUTH_PAGE_MESSAGES.ACCOUNT_NOT_ADMIN,
+            severity: 'error',
           },
         };
       }
 
-      dispatch(signOut());
-
       return {
+        email,
+        displayName,
+        uid,
+        isAdmin: false,
+        isAuth: true,
         authPageMessage: {
-          message: AUTH_PAGE_MESSAGES.NEED_VERIFY_ACCOUNT,
-          severity: 'warning',
+          message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
+          severity: 'success',
         },
       };
-    } catch (e) {
-      const { code } = e as firebase.FirebaseError;
-      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
-
-      return rejectWithValue({ message: notificationMessage, severity: 'error' });
     }
-  },
-);
+
+    dispatch(signOut());
+
+    return {
+      authPageMessage: {
+        message: AUTH_PAGE_MESSAGES.NEED_VERIFY_ACCOUNT,
+        severity: 'warning',
+      },
+    };
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
 
 export const signOut = createAsyncThunk<
   undefined,

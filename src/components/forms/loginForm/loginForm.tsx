@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { FC, memo } from 'react';
 
 import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
@@ -14,7 +14,7 @@ import { NavLink } from 'react-router-dom';
 
 import { SignInSchema } from '../validation';
 
-import { FormikFieldSignIn, SignInFormValuesType } from './types';
+import { FormikFieldSignIn, LoginFormProps, SignInFormValuesType } from './types';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
@@ -23,7 +23,8 @@ import { signIn } from 'store/reducers';
 import { selectAuthPageStatus } from 'store/selectors';
 import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 
-export const LoginForm = memo(() => {
+export const LoginForm: FC<LoginFormProps> = memo(prop => {
+  const { isAdmin } = prop;
   const { primaryColor } = usePalette();
   const dispatch = useAppDispatch();
   const authPageStatus = useAppSelector(selectAuthPageStatus);
@@ -37,7 +38,7 @@ export const LoginForm = memo(() => {
     onSubmit: (values: SignInFormValuesType) => {
       const { email, password, rememberMe } = values;
 
-      dispatch(signIn({ email, password, rememberMe }));
+      dispatch(signIn({ email, password, rememberMe, isAuthForAdmin: isAdmin }));
     },
     validationSchema: SignInSchema,
   });

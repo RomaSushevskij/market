@@ -12,22 +12,24 @@ import { defineAppType } from 'utils';
 
 const appType = defineAppType();
 const adminId = process.env.REACT_APP_FIREBASE_ADMIN_ID;
+const auth = getAuth();
 
 export const AppConfig: FC = () => {
   const dispatch = useAppDispatch();
-  const auth = getAuth();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
-      console.log(user);
       if (user && user.emailVerified) {
         const { email, displayName, uid } = user;
 
-        if (uid === adminId) {
-          dispatch(setAdminAuth());
+        if (appType === 'adminApp') {
+          if (uid === adminId) {
+            dispatch(setAdminAuth());
+          }
+        } else {
+          dispatch(setUserAuth({ email, displayName, uid }));
+          dispatch(setOrderList({ orderList: getOrderListToLocalStorage(uid) }));
         }
-        dispatch(setUserAuth({ email, displayName, uid }));
-        dispatch(setOrderList({ orderList: getOrderListToLocalStorage(uid) }));
       }
       dispatch(initializeApp());
     });
@@ -35,7 +37,7 @@ export const AppConfig: FC = () => {
     return () => {
       unsubscribe();
     };
-  }, [auth, dispatch]);
+  }, [dispatch]);
 
   return <>{appType === 'adminApp' ? <AdminApp /> : <App />} </>;
 };

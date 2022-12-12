@@ -106,7 +106,7 @@ export const ProductsPanel: FC = () => {
 
   return (
     <>
-      {products.length && (
+      {!!products.length && (
         <>
           <Stack>
             <Box position="relative">

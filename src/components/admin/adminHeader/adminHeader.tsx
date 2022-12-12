@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+import { AdminHeaderMenu } from 'components/admin/adminHeader/adminHeaderMenu/adminHeaderMenu';
 import { ProgressBar } from 'components/progressBar';
 import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
@@ -32,6 +33,7 @@ export const AdminHeader: FC = memo(() => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Admin panel
           </Typography>
+          <AdminHeaderMenu />
         </Toolbar>
       </AppBar>
       {adminProductsStatus === 'loading' && <ProgressBar />}

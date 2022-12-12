@@ -8,7 +8,10 @@ import {
   deleteProduct,
   updateProduct,
 } from 'store/reducers/adminProductsPanel';
-import { DEFAULT_PAGE_SIZE } from 'store/reducers/products/constants';
+import {
+  DEFAULT_ADMIN_PANEL_PAGE_SIZE,
+  DEFAULT_PRODUCTS_PAGE_SIZE,
+} from 'store/reducers/products/constants';
 import {
   FetchProductsThunkArg,
   ProductsInitialState,
@@ -27,11 +30,18 @@ export const fetchProducts = createAsyncThunk<
   { rejectValue: AlertNotification }
 >('products/fetchProducts', async (thunkArg, { getState, rejectWithValue }) => {
   try {
-    const { pageSize, currentPage } = thunkArg;
+    const { isAdmin, pageSize, currentPage } = thunkArg;
+
     const getProductsState = getState as () => ProductsInitialState;
-    const defaultPageSize = getProductsState().pageSize;
+    const pageSizeFromState = getProductsState().pageSize;
+
+    const resultPageSize =
+      pageSize ||
+      pageSizeFromState ||
+      (isAdmin ? DEFAULT_ADMIN_PANEL_PAGE_SIZE : DEFAULT_PRODUCTS_PAGE_SIZE);
+
     const { products, productsTotalCount } = await productsAPI.fetchProducts({
-      pageSize: pageSize || defaultPageSize || DEFAULT_PAGE_SIZE,
+      pageSize: resultPageSize,
       currentPage: currentPage || 1,
     });
 
@@ -51,7 +61,7 @@ const slice = createSlice({
     status: 'idle',
     productsPageMessage: null,
     productsTotalCount: 0,
-    pageSize: 5,
+    pageSize: 3,
     currentPage: 1,
   } as ProductsInitialState,
   reducers: {
@@ -101,25 +111,20 @@ const slice = createSlice({
         state.products.push(payload.newProduct);
       })
       .addCase(deleteProduct.fulfilled, (state, { payload }) => {
-        const currentProduct = state.products.find(
+        const indexOfCurrentProduct = state.products.findIndex(
           product => product.id === payload.productId,
         );
 
-        if (currentProduct) {
-          const indexOfCurrentProduct = state.products.indexOf(currentProduct);
-
-          state.products.splice(indexOfCurrentProduct, 1);
-        }
+        if (indexOfCurrentProduct !== -1) state.products.splice(indexOfCurrentProduct, 1);
       })
       .addCase(updateProduct.fulfilled, (state, { payload }) => {
         const { updateProductPayload } = payload;
-        const currentProduct = state.products.find(
+
+        const indexOfCurrentProduct = state.products.findIndex(
           product => product.id === updateProductPayload.id,
         );
 
-        if (currentProduct) {
-          const indexOfCurrentProduct = state.products.indexOf(currentProduct);
-
+        if (indexOfCurrentProduct !== -1) {
           state.products.splice(indexOfCurrentProduct, 1, updateProductPayload);
         }
       });

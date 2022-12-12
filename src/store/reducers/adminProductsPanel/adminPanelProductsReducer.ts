@@ -136,7 +136,12 @@ const slice = createSlice({
         }
       })
       .addMatcher(
-        isAnyOf(addProduct.pending, deleteProduct.pending, updateProduct.pending),
+        isAnyOf(
+          fetchProducts.pending,
+          addProduct.pending,
+          deleteProduct.pending,
+          updateProduct.pending,
+        ),
         state => {
           state.adminProductsStatus = 'loading';
         },
@@ -149,7 +154,12 @@ const slice = createSlice({
         },
       )
       .addMatcher(
-        isAnyOf(addProduct.rejected, deleteProduct.rejected, updateProduct.rejected),
+        isAnyOf(
+          fetchProducts.rejected,
+          addProduct.rejected,
+          deleteProduct.rejected,
+          updateProduct.rejected,
+        ),
         (state, { payload }) => {
           state.adminProductsStatus = 'failed';
           if (payload) state.adminProductsPageMessage = payload;

@@ -4,4 +4,5 @@ export type PaginationBlockProps = {
   itemsTotalCount: number;
   pageSize: number;
   currentPage: number;
+  pageSizeOptions?: number[];
 };

@@ -15,6 +15,7 @@ export enum routes {
 
 export enum adminRoutes {
   PRODUCTS = '/products',
+  AUTH_PAGE = '/auth',
   DEFAULT = '*',
   ROOT = '/',
 }
@@ -27,6 +28,7 @@ export enum AUTH_PAGE_MESSAGES {
   NEED_VERIFY_ACCOUNT = 'You need to verify your email address to activate your account',
   LOGGED_IN_SUCCESSFULLY = 'Logged in successfully',
   INVALID_OOB_CODE = 'auth/invalid-action-code',
+  INVALID_ARGUMENT = 'invalid-argument',
 }
 
 export enum ADMIN_PANEL_PRODUCTS_MESSAGES {

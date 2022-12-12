@@ -9,6 +9,8 @@ import { AuthInitialStateType, SignUpDataType } from 'store/reducers/auth/types'
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
 
+const adminId = process.env['REACT_APP_FIREBASE_ADMIN_ID '];
+
 export const signUp = createAsyncThunk<
   undefined,
   SignUpDataType,
@@ -32,6 +34,7 @@ export const signIn = createAsyncThunk<
     displayName?: string | null;
     uid?: string;
     isAuth?: boolean;
+    isAdmin?: boolean;
     authPageMessage: AlertNotification;
   },
   SignInFormValuesType,
@@ -44,11 +47,13 @@ export const signIn = createAsyncThunk<
 
       if (user.emailVerified) {
         const { email, displayName, uid } = user;
+        const isAdmin = adminId === uid;
 
         return {
           email,
           displayName,
           uid,
+          isAdmin,
           isAuth: true,
           authPageMessage: {
             message: AUTH_PAGE_MESSAGES.LOGGED_IN_SUCCESSFULLY,
@@ -56,6 +61,7 @@ export const signIn = createAsyncThunk<
           },
         };
       }
+
       dispatch(signOut());
 
       return {
@@ -176,13 +182,15 @@ const slice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(signIn.fulfilled, (state, { payload }) => {
-        const { email, displayName, isAuth, authPageMessage, uid } = payload;
+        const { email, displayName, isAuth, authPageMessage, uid, isAdmin } = payload;
 
-        if (email && displayName !== undefined && isAuth && uid) {
-          state.isAuth = isAuth;
-          state.email = email;
-          state.name = displayName;
-          state.uid = uid;
+        if (!isAdmin) {
+          if (email && displayName !== undefined && isAuth && uid) {
+            state.isAuth = isAuth;
+            state.email = email;
+            state.name = displayName;
+            state.uid = uid;
+          }
         }
         if (authPageMessage) state.authPageMessage = authPageMessage;
       })

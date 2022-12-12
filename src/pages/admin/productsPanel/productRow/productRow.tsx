@@ -14,6 +14,8 @@ import { ProductRowType } from 'pages/admin/productsPanel/productRow/types';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 import { toDollars } from 'utils';
 
+const tableCellStyle = { py: 1 };
+
 export const ProductRow: FC<ProductRowType> = memo(prop => {
   const { currentProduct, onUpdateProduct, onDeleteProduct } = prop;
   const { title, price, image, id } = currentProduct;
@@ -25,7 +27,7 @@ export const ProductRow: FC<ProductRowType> = memo(prop => {
 
   return (
     <TableRow key={id}>
-      <TableCell>
+      <TableCell sx={tableCellStyle}>
         <Tooltip
           title={
             <Avatar
@@ -52,9 +54,9 @@ export const ProductRow: FC<ProductRowType> = memo(prop => {
           />
         </Tooltip>
       </TableCell>
-      <TableCell>{title}</TableCell>
-      <TableCell>{formattedPrice}</TableCell>
-      <TableCell align="center">
+      <TableCell sx={tableCellStyle}>{title}</TableCell>
+      <TableCell sx={tableCellStyle}>{formattedPrice}</TableCell>
+      <TableCell align="center" sx={tableCellStyle}>
         <Tooltip title="Edit product">
           <IconButton
             sx={{ color: primaryColor }}

@@ -1,8 +1,6 @@
 import { AUTH_PAGE_MESSAGES } from 'enums';
 
 export const reduceErrorMessage = (serverMessage: AUTH_PAGE_MESSAGES): string => {
-  // eslint-disable-next-line no-debugger
-  debugger;
   switch (serverMessage) {
     case AUTH_PAGE_MESSAGES.INVALID_PASSWORD: {
       return 'Incorrect password';
@@ -13,7 +11,8 @@ export const reduceErrorMessage = (serverMessage: AUTH_PAGE_MESSAGES): string =>
     case AUTH_PAGE_MESSAGES.INVALID_OOB_CODE: {
       return 'The link to reset is invalid. This can happen if the link is malformed, expired, or has already been used';
     }
-    case AUTH_PAGE_MESSAGES.NETWORK_REQUEST_FAILED: {
+    case AUTH_PAGE_MESSAGES.NETWORK_REQUEST_FAILED:
+    case AUTH_PAGE_MESSAGES.INVALID_ARGUMENT: {
       return 'Network error';
     }
     case AUTH_PAGE_MESSAGES.EMAIL_EXISTS: {

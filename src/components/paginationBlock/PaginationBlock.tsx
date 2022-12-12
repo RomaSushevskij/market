@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
@@ -15,13 +15,16 @@ import { PaginationBlockProps } from 'components/paginationBlock/types';
 
 const pageSizes = [FIVE_ITEMS_PER_PAGE, TEN_ITEMS_PER_PAGE, TWENTY_ITEMS_PER_PAGE];
 
-export const PaginationBlock: FC<PaginationBlockProps> = ({
-  onPageChange,
-  itemsTotalCount,
-  onPageSizeChange,
-  pageSize,
-  currentPage,
-}) => {
+export const PaginationBlock: FC<PaginationBlockProps> = memo(prop => {
+  const {
+    onPageChange,
+    itemsTotalCount,
+    onPageSizeChange,
+    pageSize,
+    currentPage,
+    pageSizeOptions,
+  } = prop;
+
   const onPageLimitChange = (event: SelectChangeEvent) => {
     onPageSizeChange(Number(event.target.value));
   };
@@ -30,6 +33,8 @@ export const PaginationBlock: FC<PaginationBlockProps> = ({
     onPageChange(value);
   };
   const pageCount = Math.ceil(itemsTotalCount / pageSize);
+
+  const resultPageSizes = pageSizeOptions || pageSizes;
 
   return (
     <Stack direction="row" justifyContent="center">
@@ -53,7 +58,7 @@ export const PaginationBlock: FC<PaginationBlockProps> = ({
           sx: { fontSize: 14, p: 0.6 },
         }}
       >
-        {pageSizes.map(pageSize => (
+        {resultPageSizes.map(pageSize => (
           <MenuItem key={pageSize} value={pageSize} sx={{ fontSize: 14 }}>
             {pageSize}
           </MenuItem>
@@ -61,4 +66,4 @@ export const PaginationBlock: FC<PaginationBlockProps> = ({
       </Select>
     </Stack>
   );
-};
+});

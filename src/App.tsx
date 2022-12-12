@@ -1,24 +1,17 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import './App.module.scss';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { Header, Preloader } from 'components';
 import { AppRoutes } from 'components/appRoutes/Routes';
 import { SnackBar } from 'components/snackBar';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { getOrderListToLocalStorage } from 'services/localStorage';
-import {
-  initializeApp,
-  setAuthPageMessage,
-  setOrderList,
-  setUserAuth,
-} from 'store/reducers';
+import { setAuthPageMessage } from 'store/reducers';
 import { selectAuthMessage, selectIsAuth, selectIsInitialize } from 'store/selectors';
 
-const App = () => {
+const App: FC = () => {
   const dispatch = useAppDispatch();
 
   const isInitialized = useAppSelector(selectIsInitialize);
@@ -28,27 +21,12 @@ const App = () => {
 
   const minHeight = isAuth ? 'calc(100vh - 80px)' : '100vh';
 
-  const onSnackBarClose = useCallback((closeValue: null) => {
-    dispatch(setAuthPageMessage(closeValue));
-  }, []);
-
-  useEffect(() => {
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      if (user && user.emailVerified) {
-        const { email, displayName, uid } = user;
-
-        dispatch(setUserAuth({ email, displayName, uid }));
-        dispatch(setOrderList({ orderList: getOrderListToLocalStorage(uid) }));
-      }
-      dispatch(initializeApp());
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [dispatch]);
+  const onSnackBarClose = useCallback(
+    (closeValue: null) => {
+      dispatch(setAuthPageMessage(closeValue));
+    },
+    [dispatch],
+  );
 
   if (!isInitialized)
     return (

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
@@ -7,10 +7,14 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+import { ProgressBar } from 'components/progressBar';
+import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
+import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 
-export const AdminHeader: FC = () => {
+export const AdminHeader: FC = memo(() => {
   const { primaryColor } = usePalette();
+  const adminProductsStatus = useAppSelector(selectAdminProductsStatus);
 
   return (
     <Box sx={{ flexGrow: 1 }} mb={10}>
@@ -26,10 +30,11 @@ export const AdminHeader: FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Shop
+            Admin panel
           </Typography>
         </Toolbar>
       </AppBar>
+      {adminProductsStatus === 'loading' && <ProgressBar />}
     </Box>
   );
-};
+});

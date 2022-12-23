@@ -2,6 +2,7 @@ export enum routes {
   DEFAULT = '*',
   ROOT = '/',
   PRODUCTS = '/products',
+  CART_ORDER_LIST = '/cartOrderList',
   ORDER_LIST = '/orderList',
   AUTH_PAGE_DEEP = '/auth/*',
   AUTH_PAGE = '/auth',

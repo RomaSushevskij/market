@@ -1,12 +1,17 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
@@ -17,7 +22,12 @@ import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { setOrderListToLocalStorage } from 'services/localStorage';
 import { calculateOrdersTotalCost, signOut } from 'store/reducers';
-import { selectOrderList, selectOrderTotalCost, selectUid } from 'store/selectors';
+import {
+  selectEmail,
+  selectOrderList,
+  selectOrderTotalCost,
+  selectUid,
+} from 'store/selectors';
 import { toDollars } from 'utils';
 
 export const HeaderMenu: FC = () => {
@@ -27,6 +37,7 @@ export const HeaderMenu: FC = () => {
   const orderTotalCost = useAppSelector(selectOrderTotalCost);
   const orderList = useAppSelector(selectOrderList);
   const uid = useAppSelector(selectUid);
+  const email = useAppSelector(selectEmail);
 
   const orderItemsTotalCount = useMemo(() => {
     return orderList.reduce((sum, { count }) => sum + count, 0);
@@ -62,6 +73,12 @@ export const HeaderMenu: FC = () => {
 
   const onShoppingCartClick = () => {
     setMobileMoreAnchorEl(null);
+    setAnchorEl(null);
+    navigate(routes.CART_ORDER_LIST);
+  };
+
+  const onShoppingListClick = () => {
+    setAnchorEl(null);
     navigate(routes.ORDER_LIST);
   };
 
@@ -86,8 +103,41 @@ export const HeaderMenu: FC = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={onLogOutMenuItemClick}>Logout</MenuItem>
+      <ListSubheader sx={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
+        Account
+      </ListSubheader>
+      <ListSubheader
+        sx={{ fontWeight: 'normal', lineHeight: 0, mb: 3, textAlign: 'center' }}
+      >
+        {email}
+      </ListSubheader>
+      <MenuItem onClick={onShoppingCartClick}>
+        <ListItemIcon>
+          <ShoppingCartIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Cart</ListItemText>
+        <Badge badgeContent={orderItemsTotalCount} color="error" />
+      </MenuItem>
+      <Divider />
+      <MenuItem onClick={handleMenuClose}>
+        <ListItemIcon>
+          <AccountCircle fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Profile</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={onShoppingListClick}>
+        <ListItemIcon>
+          <AssignmentIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Shopping list</ListItemText>
+      </MenuItem>
+      <Divider />
+      <MenuItem onClick={onLogOutMenuItemClick}>
+        <ListItemIcon>
+          <LogoutIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Logout</ListItemText>
+      </MenuItem>
     </Menu>
   );
 
@@ -120,7 +170,7 @@ export const HeaderMenu: FC = () => {
         <p>Profile</p>
       </MenuItem>
       <MenuItem onClick={onShoppingCartClick}>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+        <IconButton size="large" color="inherit">
           <Badge badgeContent={orderItemsTotalCount} color="error">
             <ShoppingCartIcon />
           </Badge>

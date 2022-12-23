@@ -61,7 +61,7 @@ const slice = createSlice({
     status: 'idle',
     productsPageMessage: null,
     productsTotalCount: 0,
-    pageSize: 3,
+    pageSize: 6,
     currentPage: 1,
   } as ProductsInitialState,
   reducers: {

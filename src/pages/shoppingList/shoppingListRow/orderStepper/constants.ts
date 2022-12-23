@@ -1,0 +1,1 @@
+export const MAX_VALUE_SCREEN_ENDPOINT = 480;

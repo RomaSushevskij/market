@@ -13,7 +13,7 @@ import { routes } from 'enums';
 import { useAppSelector } from 'hooks';
 import { selectIsAuth, selectOrderList, selectOrderTotalCost } from 'store/selectors';
 
-export const OrderList: FC = () => {
+export const CartOrderList: FC = () => {
   const orderList = useAppSelector(selectOrderList);
   const orderTotalCost = useAppSelector(selectOrderTotalCost);
   const isAuth = useAppSelector(selectIsAuth);
@@ -63,7 +63,7 @@ export const OrderList: FC = () => {
               </Typography>
             </Typography>
           </Grid>
-          <Grid item width={{ xs: '100%', sm: 300 }} mx="auto">
+          <Grid item width={{ xs: '100%', sm: 270 }} mx="auto">
             <Paper sx={{ p: 2 }}>
               <OrderForm />
             </Paper>

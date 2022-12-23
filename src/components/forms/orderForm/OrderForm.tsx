@@ -13,7 +13,7 @@ import { OrderSchema } from '../validation';
 import { FormikFieldsOrder, OrderFormValuesType } from './types';
 
 import { useAppDispatch } from 'hooks';
-import { generateAnOrder } from 'store/reducers';
+import { addOrder } from 'store/reducers';
 import { getErrorHelperText } from 'utils/formikHelpers';
 
 export const OrderForm = memo(() => {
@@ -26,7 +26,7 @@ export const OrderForm = memo(() => {
       phone: '',
     } as OrderFormValuesType,
     onSubmit: (values: OrderFormValuesType) => {
-      dispatch(generateAnOrder({ customerInformation: values }));
+      dispatch(addOrder(values));
     },
     validationSchema: OrderSchema,
   });

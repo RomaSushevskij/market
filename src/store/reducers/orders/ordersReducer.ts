@@ -1,8 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
+import { ordersApi } from 'api/orders';
 import { OrderFormValuesType } from 'components/forms/orderForm/types';
-import { OrderInformationType, OrderType } from 'store/reducers/orders/types';
+import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
+import {
+  OrderInformationType,
+  OrdersInitialState,
+  OrderType,
+} from 'store/reducers/orders/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
 
@@ -26,26 +32,55 @@ export const addItemToCart = createAsyncThunk<
   }
 });
 
+export const addOrder = createAsyncThunk(
+  'orders/addOrder',
+  async (customerInformation: OrderFormValuesType, { getState }) => {
+    const state = getState() as AppStateType;
+    const { cartOrderList } = state.orders;
+    const { uid } = state.auth;
+
+    const cartOrderInformation = {
+      ...customerInformation,
+      totalCost: state.orders.cartOrderInformation.totalCost,
+    };
+    const orderDate = new Date().getTime();
+
+    if (uid) {
+      const finalOrder: Omit<AdminOrder, 'orderId'> = {
+        ...cartOrderInformation,
+        orderList: cartOrderList,
+        uid,
+        orderDate,
+        orderStatus: 'Order confirmation',
+      };
+      const id = await ordersApi.addOrder(finalOrder);
+
+      console.log(id);
+    }
+  },
+);
+
 const slice = createSlice({
   name: 'orders',
   initialState: {
-    orderList: [] as OrderType[],
-    orderInformation: {
+    userOrders: [] as AdminOrder[],
+    cartOrderList: [] as OrderType[],
+    cartOrderInformation: {
       name: '',
       surname: '',
       address: '',
       phone: '',
       totalCost: 0,
     } as OrderInformationType,
-  },
+  } as OrdersInitialState,
   reducers: {
     changeOrderItemCount(
       state,
       action: PayloadAction<{ productId: string; changeType: 'add' | 'remove' }>,
     ) {
       const { productId, changeType } = action.payload;
-      const { orderList } = state;
-      const currentItemInCart = orderList.find(({ id }) => id === productId);
+      const { cartOrderList } = state;
+      const currentItemInCart = cartOrderList.find(({ id }) => id === productId);
 
       if (currentItemInCart) {
         if (changeType === 'add') {
@@ -58,17 +93,17 @@ const slice = createSlice({
 
           return;
         }
-        const currentItemIndex = orderList.indexOf(currentItemInCart);
+        const currentItemIndex = cartOrderList.indexOf(currentItemInCart);
 
         if (currentItemIndex > -1) {
-          orderList.splice(currentItemIndex, 1);
+          cartOrderList.splice(currentItemIndex, 1);
         }
       }
     },
     calculateOrdersTotalCost(state) {
-      const { orderList, orderInformation } = state;
+      const { cartOrderList, cartOrderInformation } = state;
 
-      orderInformation.totalCost = orderList.reduce(
+      cartOrderInformation.totalCost = cartOrderList.reduce(
         (sum, { price, count }) => sum + price * count,
         0,
       );
@@ -78,19 +113,19 @@ const slice = createSlice({
       action: PayloadAction<{ customerInformation: OrderFormValuesType }>,
     ) {
       const { customerInformation } = action.payload;
-      const { orderList } = state;
+      const { cartOrderList } = state;
 
-      state.orderInformation = {
+      state.cartOrderInformation = {
         ...customerInformation,
-        totalCost: state.orderInformation.totalCost,
+        totalCost: state.cartOrderInformation.totalCost,
       };
 
-      const finalOrder = { ...state.orderInformation, orderList };
+      const finalOrder = { ...state.cartOrderInformation, cartOrderList };
 
       console.log(finalOrder);
     },
     setOrderList(state, action: PayloadAction<{ orderList: OrderType[] }>) {
-      state.orderList = action.payload.orderList;
+      state.cartOrderList = action.payload.orderList;
     },
   },
   extraReducers: builder => {
@@ -99,14 +134,14 @@ const slice = createSlice({
       const currentProduct = products.find(({ id }) => id === productId);
 
       if (currentProduct) {
-        const currentItemInCart = state.orderList.find(({ id }) => id === productId);
+        const currentItemInCart = state.cartOrderList.find(({ id }) => id === productId);
 
         if (currentItemInCart) {
           currentItemInCart.count += 1;
         } else {
           const orderItem: OrderType = { ...currentProduct, count: 1 };
 
-          state.orderList.push(orderItem);
+          state.cartOrderList.push(orderItem);
         }
       }
     });
@@ -120,4 +155,3 @@ export const {
   generateAnOrder,
   setOrderList,
 } = slice.actions;
-export const getInitialOrderState = slice.getInitialState;

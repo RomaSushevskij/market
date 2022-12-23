@@ -1,17 +1,9 @@
 import { RouteType } from 'components/appRoutes/types';
 import { routes } from 'enums';
-import { OrderList, Products } from 'pages';
+import { CartOrderList, Products } from 'pages';
 import { AuthPage } from 'pages/authPage/authPage';
 
 export const privateRoutes: RouteType[] = [
-  {
-    path: routes.PRODUCTS,
-    component: <Products />,
-  },
-  {
-    path: routes.ORDER_LIST,
-    component: <OrderList />,
-  },
   {
     path: routes.ROOT,
     component: <Products />,
@@ -19,6 +11,14 @@ export const privateRoutes: RouteType[] = [
   {
     path: routes.DEFAULT,
     component: <Products />,
+  },
+  {
+    path: routes.PRODUCTS,
+    component: <Products />,
+  },
+  {
+    path: routes.CART_ORDER_LIST,
+    component: <CartOrderList />,
   },
 ];
 

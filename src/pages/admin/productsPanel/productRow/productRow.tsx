@@ -26,7 +26,7 @@ export const ProductRow: FC<ProductRowType> = memo(prop => {
   const formattedPrice = toDollars.format(price);
 
   return (
-    <TableRow key={id}>
+    <TableRow>
       <TableCell sx={tableCellStyle}>
         <Tooltip
           title={

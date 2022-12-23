@@ -1,11 +1,10 @@
 import React, { FC, memo } from 'react';
 
-import MenuIcon from '@mui/icons-material/Menu';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
 import { HeaderMenu } from './menu/Menu';
@@ -32,19 +31,15 @@ export const Header: FC = memo(() => {
     <Box sx={{ flexGrow: 1 }} mb={10}>
       <AppBar position="fixed" sx={{ bgcolor: primaryColor }}>
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={onMenuIconButtonClick}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Shop
-          </Typography>
+          <Box flexGrow={1}>
+            <Button
+              startIcon={<LocalMallIcon sx={{ transform: 'scale(1.5)', mr: 2 }} />}
+              sx={{ fontSize: 22, color: 'inherit', textTransform: 'inherit' }}
+              onClick={onMenuIconButtonClick}
+            >
+              i-Shop
+            </Button>
+          </Box>
           <HeaderMenu />
         </Toolbar>
       </AppBar>

@@ -33,7 +33,7 @@ export const LoginForm: FC<LoginFormProps> = memo(prop => {
     initialValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      rememberMe: true,
     } as SignInFormValuesType,
     onSubmit: (values: SignInFormValuesType) => {
       const { email, password, rememberMe } = values;
@@ -105,11 +105,13 @@ export const LoginForm: FC<LoginFormProps> = memo(prop => {
           <FormHelperText error sx={{ height: 20 }}>
             {passwordErrorHelperText}
           </FormHelperText>
-          <FormControlLabel
-            label="Remember me"
-            control={<Checkbox {...formik.getFieldProps('rememberMe')} />}
-            sx={{ mt: 2 }}
-          />
+          {!isAdmin && (
+            <FormControlLabel
+              label="Remember me"
+              control={<Checkbox {...formik.getFieldProps('rememberMe')} />}
+              sx={{ mt: 2 }}
+            />
+          )}
           <LoadingButton
             variant="contained"
             type="submit"
@@ -119,28 +121,36 @@ export const LoginForm: FC<LoginFormProps> = memo(prop => {
           >
             login
           </LoadingButton>
-          <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
-            {'Forgot your'}{' '}
-            <NavLink
-              to={`${routes.AUTH_PAGE}/${routes.AUTH_SEND_INSTRUCTIONS}`}
-              style={{
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                color: primaryColor,
-              }}
-            >
-              password?
-            </NavLink>
-          </FormHelperText>
-          <FormHelperText sx={{ mx: 'auto' }}>
-            Don&apos;t have an account?
-            <NavLink
-              to={`${routes.AUTH_PAGE}/${routes.AUTH_SIGN_UP}`}
-              style={{ textDecoration: 'none', fontWeight: 'bold', color: primaryColor }}
-            >
-              {'  Sign Up'}
-            </NavLink>
-          </FormHelperText>
+          {!isAdmin && (
+            <>
+              <FormHelperText sx={{ mx: 'auto', mt: 2 }}>
+                {'Forgot your'}{' '}
+                <NavLink
+                  to={`${routes.AUTH_PAGE}/${routes.AUTH_SEND_INSTRUCTIONS}`}
+                  style={{
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    color: primaryColor,
+                  }}
+                >
+                  password?
+                </NavLink>
+              </FormHelperText>
+              <FormHelperText sx={{ mx: 'auto' }}>
+                Don&apos;t have an account?
+                <NavLink
+                  to={`${routes.AUTH_PAGE}/${routes.AUTH_SIGN_UP}`}
+                  style={{
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    color: primaryColor,
+                  }}
+                >
+                  {'  Sign Up'}
+                </NavLink>
+              </FormHelperText>
+            </>
+          )}
         </FormGroup>
       </FormControl>
     </form>

@@ -167,7 +167,7 @@ export const verifyEmail = createAsyncThunk<
 const slice = createSlice({
   name: 'auth',
   initialState: {
-    isAuth: false,
+    isAuth: true,
     email: null,
     name: null,
     status: 'idle',

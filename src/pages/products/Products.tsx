@@ -11,7 +11,6 @@ import {
   FIFTEEN_ITEMS_PER_PAGE,
   NINE_ITEMS_PER_PAGE,
   SIX_ITEMS_PER_PAGE,
-  THREE_ITEMS_PER_PAGE,
   TWELVE_ITEMS_PER_PAGE,
 } from 'components/paginationBlock/constants';
 import { SnackBar } from 'components/snackBar';
@@ -28,7 +27,6 @@ import {
 } from 'store/selectors';
 
 const pageSizeOptions = [
-  THREE_ITEMS_PER_PAGE,
   SIX_ITEMS_PER_PAGE,
   NINE_ITEMS_PER_PAGE,
   TWELVE_ITEMS_PER_PAGE,

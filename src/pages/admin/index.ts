@@ -1,1 +1,1 @@
-export * from './productsPanel';
+export * from './adminProductsPanel';

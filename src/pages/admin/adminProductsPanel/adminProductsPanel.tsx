@@ -23,8 +23,9 @@ import { SnackBar } from 'components/snackBar';
 import { adminRoutes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { ProductRow } from 'pages/admin/productsPanel/productRow/productRow';
-import { fetchProducts, ProductType, setAdminProductsPageMessage } from 'store/reducers';
+import { ProductRow } from 'pages/admin/adminProductsPanel/productRow/productRow';
+import { fetchProducts, ProductType } from 'store/reducers';
+import { setAdminProductsPageMessage } from 'store/reducers/adminProductsPanel';
 import { selectProducts } from 'store/selectors';
 import { selectIsAdminAuth } from 'store/selectors/adminAuthSelectors';
 import {
@@ -35,7 +36,7 @@ import {
   selectAdminProductsTotalCount,
 } from 'store/selectors/adminProductsPanelSelectors';
 
-export const ProductsPanel: FC = () => {
+export const AdminProductsPanel: FC = () => {
   const dispatch = useAppDispatch();
 
   const products = useAppSelector(selectProducts);

@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { AddUpdateProductForm } from 'components/admin/adminForms';
-import { AddProductDialogProps } from 'pages/admin/productsPanel/addProductDialog/types';
+import { AddProductDialogProps } from 'pages/admin/adminProductsPanel/addProductDialog/types';
 
 export const AddProductDialog: FC<AddProductDialogProps> = ({ open, setOpen }) => {
   const handleCloseAddProductDialog = () => {

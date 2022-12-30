@@ -15,7 +15,8 @@ import { DropDownMenu } from './dropDownMenu/dropDownMenu';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { setOrderListToLocalStorage } from 'services/localStorage';
-import { calculateOrdersTotalCost, signOut } from 'store/reducers';
+import { signOut } from 'store/reducers';
+import { calculateOrdersTotalCost } from 'store/reducers/orders/ordersReducer';
 import {
   selectEmail,
   selectOrderList,

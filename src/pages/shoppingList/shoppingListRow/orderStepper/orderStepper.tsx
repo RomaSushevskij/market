@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import TaskAlt from '@mui/icons-material/TaskAlt';
@@ -149,12 +149,18 @@ export const OrderStepIcon = (props: StepIconProps, isAdmin: boolean) => {
 };
 
 export const OrderStepper: FC<OrderStepperProps> = prop => {
-  const { orderStatus, isAdmin } = prop;
+  const { orderStatus, isAdmin, orderId } = prop;
   const { errorColor } = usePalette();
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
-  const activeStep = orderDeliverySteps.indexOf(orderStatus.step);
+  const activeStep = useMemo(() => {
+    if (orderStatus.step === 'Delivered') {
+      return orderDeliverySteps.length;
+    }
+
+    return orderDeliverySteps.indexOf(orderStatus.step);
+  }, [orderStatus]);
 
   const onStepStatusClick = () => {
     setEditDialogOpen(true);
@@ -202,7 +208,13 @@ export const OrderStepper: FC<OrderStepperProps> = prop => {
             );
           })}
         </Stepper>
-        <ManageOrderDialog open={isEditDialogOpen} setOpen={setEditDialogOpen} />
+        {isAdmin && (
+          <ManageOrderDialog
+            open={isEditDialogOpen}
+            setOpen={setEditDialogOpen}
+            orderId={orderId}
+          />
+        )}
       </Box>
       {isAdmin && (
         <Button

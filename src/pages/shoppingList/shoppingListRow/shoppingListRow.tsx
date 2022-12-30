@@ -1,6 +1,7 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -61,6 +62,16 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
       clearTimeout(timerId);
     };
   }, [isExpanded]);
+
+  const orderStatusChipLabel =
+    orderStatus.state === 'error' ? (
+      <span style={{ display: 'flex', alignItems: 'center' }}>
+        {orderStatus.step}
+        <WarningAmberIcon fontSize="small" sx={{ pl: 1 }} />
+      </span>
+    ) : (
+      orderStatus.step
+    );
 
   const accordionSummaries = orderList.map(
     ({ id, title, price, count }, index, array) => {
@@ -129,11 +140,15 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           <Typography>{formattedProductsNumber}</Typography>
           <Typography sx={{ fontWeight: 'bold' }}>{formattedPrice}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>{formattedDate}</Typography>
-          <Chip label={orderStatus.step} variant="outlined" color={orderStatus.state} />
+          <Chip
+            label={orderStatusChipLabel}
+            variant="outlined"
+            color={orderStatus.state}
+          />
         </Stack>
       </AccordionSummary>
       <Box sx={{ width: '100%', mb: 2 }}>
-        <OrderStepper orderStatus={orderStatus} isAdmin={isAdmin} />
+        <OrderStepper orderStatus={orderStatus} isAdmin={isAdmin} orderId={orderId} />
       </Box>
       {accordionSummaries}
       <AccordionDetails

@@ -21,7 +21,8 @@ import { FormikFieldsOrder, OrderFormValuesType } from './types';
 
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { addOrder, OrderInformationType } from 'store/reducers';
+import { OrderInformationType } from 'store/reducers';
+import { addOrder } from 'store/reducers/orders/ordersReducer';
 import { selectOrdersPageStatus } from 'store/selectors';
 import { getErrorHelperText } from 'utils/formikHelpers';
 import { getValidAddressString } from 'utils/getValidAddressString';

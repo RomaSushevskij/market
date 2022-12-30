@@ -17,8 +17,8 @@ import { AddProductFormValues } from 'components/admin/adminForms/addProductForm
 import { AddProductSchema } from 'components/admin/adminForms/validation';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { AddUpdateProductProps } from 'pages/admin/productsPanel/types';
-import { addProduct, updateProduct } from 'store/reducers';
+import { AddUpdateProductProps } from 'pages/admin/adminProductsPanel/types';
+import { addProduct, updateProduct } from 'store/reducers/adminProductsPanel';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 import { getErrorHelperText, useIconColor } from 'utils/formikHelpers';
 

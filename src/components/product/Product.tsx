@@ -14,7 +14,7 @@ import { ProductPropsType } from './types';
 
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { addItemToCart } from 'store/reducers';
+import { addItemToCart } from 'store/reducers/orders/ordersReducer';
 import { toDollars } from 'utils';
 
 export const Product: FC<ProductPropsType> = ({ title, price, image, id }) => {

@@ -4,6 +4,7 @@ import firebase from 'firebase/compat';
 
 import { ordersApi } from 'api/orders';
 import { AUTH_PAGE_MESSAGES } from 'enums';
+import { editOrderStatus } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 import {
   OrderInformationType,
@@ -213,6 +214,18 @@ const slice = createSlice({
       .addCase(addOrder.rejected, (state, { payload }) => {
         state.ordersPageStatus = 'failed';
         if (payload) state.ordersPageMessage = payload;
+      })
+      .addCase(editOrderStatus.fulfilled, (state, { payload }) => {
+        const { updateOrderStatusPayload } = payload;
+        const { orderId, orderStatus } = updateOrderStatusPayload;
+
+        const indexOfCurrentOrder = state.userOrders.findIndex(
+          order => order.orderId === orderId,
+        );
+
+        if (indexOfCurrentOrder !== -1) {
+          state.userOrders[indexOfCurrentOrder].orderStatus = orderStatus;
+        }
       });
   },
 });

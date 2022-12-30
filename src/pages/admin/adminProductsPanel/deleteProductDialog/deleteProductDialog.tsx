@@ -8,8 +8,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { DeleteProductDialogProps } from 'pages/admin/productsPanel/deleteProductDialog/types';
-import { deleteProduct } from 'store/reducers';
+import { DeleteProductDialogProps } from 'pages/admin/adminProductsPanel/deleteProductDialog/types';
+import { deleteProduct } from 'store/reducers/adminProductsPanel';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 
 export const DeleteProductDialog: FC<DeleteProductDialogProps> = ({

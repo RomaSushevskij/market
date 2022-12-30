@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { AdminAuthInitialState } from 'store/reducers/adminAuth/types';
 import { signIn, signOut } from 'store/reducers/auth/authReducer';
@@ -13,7 +13,14 @@ const slice = createSlice({
     adminEmail: null,
   } as AdminAuthInitialState,
   reducers: {
-    setAdminAuth(state) {
+    setAdminAuth(
+      state,
+      action: PayloadAction<{ email: string | null; displayName: string | null }>,
+    ) {
+      const { email, displayName } = action.payload;
+
+      state.adminEmail = email;
+      state.adminName = displayName;
       state.isAdminAuth = true;
     },
   },

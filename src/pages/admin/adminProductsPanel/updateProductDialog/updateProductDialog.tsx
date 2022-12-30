@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { AddUpdateProductForm } from 'components/admin/adminForms';
-import { UpdateProductDialogProps } from 'pages/admin/productsPanel/updateProductDialog/typex';
+import { UpdateProductDialogProps } from 'pages/admin/adminProductsPanel/updateProductDialog/typex';
 
 export const UpdateProductDialog: FC<UpdateProductDialogProps> = ({
   open,

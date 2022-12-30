@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
-import { adminPanelProductsReducer } from 'store/reducers';
 import { adminAuthReducer } from 'store/reducers/adminAuth';
 import { adminOrdersReducer } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
+import { adminPanelProductsReducer } from 'store/reducers/adminProductsPanel';
 import { appReducer } from 'store/reducers/app';
 import { authReducer } from 'store/reducers/auth/authReducer';
 import { ordersReducer } from 'store/reducers/orders/ordersReducer';

@@ -9,8 +9,8 @@ import { adminRoutes, routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { ShoppingListRow } from 'pages/shoppingList/shoppingListRow/shoppingListRow';
 import { ShoppingListProps } from 'pages/shoppingList/types';
-import { fetchOrders } from 'store/reducers';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
+import { fetchOrders } from 'store/reducers/orders/ordersReducer';
 import {
   selectAdminOrders,
   selectIsAuth,

@@ -43,9 +43,11 @@ export const ordersApi = {
   },
   async editOrderStatus(updateOrderStatusPayload: UpdateOrderStatusPayload) {
     const { orderStatus, orderId } = updateOrderStatusPayload;
+    const { description } = orderStatus;
 
     await updateDoc(doc(db, collections.ORDERS, orderId), {
-      orderStatus,
+      ...orderStatus,
+      description: description || '',
     });
   },
 };

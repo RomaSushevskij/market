@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { ProductRowType } from 'pages/admin/productsPanel/productRow/types';
+import { ProductRowType } from 'pages/admin/adminProductsPanel/productRow/types';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 import { toDollars } from 'utils';
 

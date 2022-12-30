@@ -6,8 +6,9 @@ import { AdminApp } from 'AdminApp';
 import App from 'App';
 import { useAppDispatch } from 'hooks';
 import { getOrderListToLocalStorage } from 'services/localStorage';
-import { initializeApp, setOrderList, setUserAuth } from 'store/reducers';
+import { initializeApp, setUserAuth } from 'store/reducers';
 import { setAdminAuth } from 'store/reducers/adminAuth';
+import { setOrderList } from 'store/reducers/orders/ordersReducer';
 import { defineAppType } from 'utils';
 
 const appType = defineAppType();
@@ -24,7 +25,7 @@ export const AppConfig: FC = () => {
 
         if (appType === 'adminApp') {
           if (uid === adminId) {
-            dispatch(setAdminAuth());
+            dispatch(setAdminAuth({ email, displayName }));
           }
         } else {
           dispatch(setUserAuth({ email, displayName, uid }));

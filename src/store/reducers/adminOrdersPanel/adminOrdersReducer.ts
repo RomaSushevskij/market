@@ -78,7 +78,9 @@ const slice = createSlice({
           order => order.orderId === orderId,
         );
 
-        state.orders[indexOfCurrentOrder].orderStatus = orderStatus;
+        if (indexOfCurrentOrder !== -1) {
+          state.orders[indexOfCurrentOrder].orderStatus = orderStatus;
+        }
       })
       .addCase(editOrderStatus.rejected, (state, { payload }) => {
         state.adminOrdersStatus = 'failed';

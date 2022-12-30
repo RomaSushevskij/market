@@ -15,7 +15,7 @@ import { OrderItemPropsType } from './types';
 
 import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { changeOrderItemCount } from 'store/reducers';
+import { changeOrderItemCount } from 'store/reducers/orders/ordersReducer';
 import { toDollars } from 'utils';
 
 export const OrderItem: FC<OrderItemPropsType> = memo(

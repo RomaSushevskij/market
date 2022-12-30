@@ -1,5 +1,6 @@
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,20 +13,33 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { ManageOrderDialogProps } from 'pages/admin/adminOrdersPanel/manageOrderDialog/types';
 import { orderDeliverySteps } from 'pages/shoppingList/shoppingListRow/orderStepper';
+import { editOrderStatus } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import {
+  OrderStatus,
   OrderStatusStateType,
   OrderStepStatus,
 } from 'store/reducers/adminOrdersPanel/types';
+import { selectAdminOrders, selectAdminOrdersStatus } from 'store/selectors';
 
 export const ManageOrderDialog: FC<ManageOrderDialogProps> = prop => {
-  const { open, setOpen } = prop;
+  const { open, setOpen, orderId } = prop;
 
-  const [statusType, setStatusType] = React.useState<OrderStatusStateType>('success');
-  const [statusStep, setStatusStep] =
-    React.useState<OrderStepStatus>('Order confirmation');
-  const [statusDescription, setStatusDescription] = useState('');
+  const dispatch = useAppDispatch();
+
+  const adminOrdersStatus = useAppSelector(selectAdminOrdersStatus);
+  const adminOrders = useAppSelector(selectAdminOrders);
+
+  const currentOrderStatus = useMemo(() => {
+    return adminOrders.filter(order => order.orderId === orderId)[0].orderStatus;
+  }, [adminOrders, orderId]);
+  const { step, state, description } = currentOrderStatus;
+
+  const [statusType, setStatusType] = React.useState<OrderStatusStateType>(state);
+  const [statusStep, setStatusStep] = React.useState<OrderStepStatus>(step);
+  const [statusDescription, setStatusDescription] = useState(description);
 
   const handleClose = () => {
     setOpen(false);
@@ -43,20 +57,27 @@ export const ManageOrderDialog: FC<ManageOrderDialogProps> = prop => {
     setStatusDescription(event.target.value);
   };
 
-  const onEditStatusClick = () => {
+  const onEditStatusClick = async () => {
+    let orderStatus: OrderStatus;
+
     if (statusType === 'error') {
-      console.log({
+      orderStatus = {
         state: statusType,
         step: statusStep,
         description: statusDescription,
-      });
-
-      return;
+      };
+    } else {
+      orderStatus = {
+        state: statusType,
+        step: statusStep,
+      };
     }
-    console.log({
-      state: statusType,
-      step: statusStep,
-    });
+
+    const resultAction = await dispatch(editOrderStatus({ orderStatus, orderId }));
+
+    if (editOrderStatus.fulfilled.match(resultAction)) {
+      setOpen(false);
+    }
   };
 
   const menuSteps = orderDeliverySteps.map(step => {
@@ -128,12 +149,22 @@ export const ManageOrderDialog: FC<ManageOrderDialogProps> = prop => {
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
-        <Button variant="outlined" color="inherit" onClick={handleClose}>
+        <Button
+          disabled={adminOrdersStatus === 'loading'}
+          variant="outlined"
+          color="inherit"
+          onClick={handleClose}
+        >
           Cancel
         </Button>
-        <Button variant="outlined" color="error" onClick={onEditStatusClick}>
+        <LoadingButton
+          loading={adminOrdersStatus === 'loading'}
+          variant="outlined"
+          color="success"
+          onClick={onEditStatusClick}
+        >
           Edit
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

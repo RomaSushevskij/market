@@ -1,7 +1,10 @@
 export type OrderFormValuesType = {
   name: string;
   surname: string;
-  address: string;
+  city: string;
+  street: string;
+  house: string;
+  apartment: string;
   phone: string;
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, useState } from 'react';
 
 import TaskAlt from '@mui/icons-material/TaskAlt';
 import WarningAmber from '@mui/icons-material/WarningAmber';
@@ -15,56 +15,48 @@ import { styled, Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 
 import { usePalette } from 'hooks/usePalette/usePalette';
+import { ManageOrderDialog } from 'pages/admin/adminOrdersPanel/manageOrderDialog';
 import { MAX_VALUE_SCREEN_ENDPOINT } from 'pages/shoppingList/shoppingListRow/orderStepper/constants';
-import { OrderStatus } from 'store/reducers/adminOrdersPanel/types';
+import { OrderStepperProps } from 'pages/shoppingList/shoppingListRow/orderStepper/types';
+import { OrderStepStatus } from 'store/reducers/adminOrdersPanel/types';
 
-const steps: OrderStatus[] = [
+export const orderDeliverySteps: OrderStepStatus[] = [
   'Order confirmation',
   'Issued',
   'Delivery in progress',
   'Delivered',
 ];
 
-type OrderStatusCustom = {
-  state: 'success' | 'error';
-  step: OrderStatus;
-  description?: string;
-};
-
-const orderStatus: OrderStatusCustom = {
-  state: 'error',
-  step: 'Issued',
-  description: 'Some error occurred',
-};
-
-const OrderStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(
-  ({ theme, ownerState }) => ({
-    display: 'flex',
-    height: 22,
-    alignItems: 'center',
-    color: '#d9d9de',
-    ...(ownerState.active && {
-      color: theme.palette.success.light,
-    }),
-    '& .CustomStepIcon-completedIcon': {
-      color: theme.palette.success.light,
-      zIndex: 1,
-      fontSize: 26,
-    },
-    '& .CustomStepIcon-circle': {
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      backgroundColor: 'currentColor',
-    },
-    '& .CustomStepIcon-error': {
-      fontSize: 26,
-      color: theme.palette.error.light,
-    },
+const OrderStepIconRoot = styled('div')<{
+  ownerState: { active?: boolean };
+  isAdmin: boolean;
+}>(({ theme, ownerState, isAdmin }) => ({
+  display: 'flex',
+  height: 22,
+  alignItems: 'center',
+  color: '#d9d9de',
+  cursor: `${isAdmin ? 'pointer' : 'auto'}`,
+  ...(ownerState.active && {
+    color: theme.palette.success.light,
   }),
-);
+  '& .CustomStepIcon-completedIcon': {
+    color: theme.palette.success.light,
+    zIndex: 1,
+    fontSize: 26,
+  },
+  '& .CustomStepIcon-circle': {
+    width: 8,
+    height: 8,
+    borderRadius: '50%',
+    backgroundColor: 'currentColor',
+  },
+  '& .CustomStepIcon-error': {
+    fontSize: 26,
+    color: theme.palette.error.light,
+  },
+}));
 
-const OrderConnector = styled(StepConnector)(({ theme }) => ({
+export const OrderConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 10,
     left: `calc(-50% + 20px)`,
@@ -93,19 +85,24 @@ const OrderConnector = styled(StepConnector)(({ theme }) => ({
     },
   },
   [`& .${stepConnectorClasses.line}`]: {
-    borderColor: '#d9d9de',
+    borderColowr: '#d9d9de',
     borderTopWidth: 2,
     borderRadius: 1,
   },
 }));
 
-const stepLabelStyle: SxProps<Theme> = {
+export const getStepLabelStyle = (isAdmin: boolean): SxProps<Theme> => ({
   '& .MuiStepLabel-label': {
     fontSize: { xs: '11px', sm: '14px' },
     position: 'absolute',
     left: '50%',
     transform: 'translateX(-50%)',
     fontWeight: '100',
+    cursor: `${isAdmin ? 'pointer' : 'auto'}`,
+    '&: hover': {
+      backgroundColor: 'red',
+    },
+
     '&.Mui-disabled, &.Mui-active, &.Mui-completed': {
       fontWeight: '100',
       mt: 1,
@@ -114,37 +111,38 @@ const stepLabelStyle: SxProps<Theme> = {
       color: '#b4b4bb',
     },
   },
-};
+});
 
-const end = 490;
-const end1 = 633;
-const stepStyle: SxProps<Theme> = theme => ({
+const screenEndPoint1 = 490;
+const screenEndPoint2 = 633;
+
+export const stepStyle: SxProps<Theme> = theme => ({
   '&.MuiStep-root': {
-    [theme.breakpoints.between('xs', end)]: {
+    [theme.breakpoints.between('xs', screenEndPoint1)]: {
       pb: 2,
     },
-    [theme.breakpoints.between('sm', end1)]: {
+    [theme.breakpoints.between('sm', screenEndPoint2)]: {
       pb: 4,
     },
-    [theme.breakpoints.up(end1)]: {
+    [theme.breakpoints.up(screenEndPoint2)]: {
       pb: 1,
     },
   },
 });
 
-const OrderStepIcon = (props: StepIconProps) => {
+export const OrderStepIcon = (props: StepIconProps, isAdmin: boolean) => {
   const { active, completed, className, error } = props;
 
   if (completed) {
     return (
-      <OrderStepIconRoot ownerState={{ active }} className={className}>
+      <OrderStepIconRoot ownerState={{ active }} className={className} isAdmin={isAdmin}>
         <TaskAlt className="CustomStepIcon-completedIcon" />
       </OrderStepIconRoot>
     );
   }
 
   return (
-    <OrderStepIconRoot ownerState={{ active }} className={className}>
+    <OrderStepIconRoot ownerState={{ active }} className={className} isAdmin={isAdmin}>
       {error ? (
         <WarningAmber className="CustomStepIcon-error" />
       ) : (
@@ -154,21 +152,30 @@ const OrderStepIcon = (props: StepIconProps) => {
   );
 };
 
-export const OrderStepper = () => {
-  const activeStep = steps.indexOf(orderStatus.step);
+export const OrderStepper: FC<OrderStepperProps> = prop => {
+  const { orderStatus, isAdmin } = prop;
   const { errorColor } = usePalette();
+
+  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+
+  const activeStep = orderDeliverySteps.indexOf(orderStatus.step);
+
+  const onStepStatusClick = () => {
+    setEditDialogOpen(true);
+  };
 
   return (
     <Stack justifyContent="center">
-      <Box sx={{ margin: '50px 5vw' }}>
+      <Box sx={{ mt: 1, mb: 4 }}>
         <Stepper activeStep={activeStep} alternativeLabel connector={<OrderConnector />}>
-          {steps.map(label => {
+          {orderDeliverySteps.map(label => {
             const isError = label === orderStatus.step && orderStatus.state === 'error';
 
             return (
               <Step key={label} sx={stepStyle}>
                 {isError ? (
                   <Tooltip
+                    placement="top"
                     title={orderStatus.description}
                     componentsProps={{
                       tooltip: {
@@ -179,18 +186,20 @@ export const OrderStepper = () => {
                     }}
                   >
                     <StepLabel
-                      sx={stepLabelStyle}
-                      StepIconComponent={OrderStepIcon}
+                      sx={getStepLabelStyle(isAdmin)}
+                      StepIconComponent={props => OrderStepIcon(props, isAdmin)}
                       error={isError}
+                      onClick={onStepStatusClick}
                     >
                       {label}
                     </StepLabel>
                   </Tooltip>
                 ) : (
                   <StepLabel
-                    sx={stepLabelStyle}
-                    StepIconComponent={OrderStepIcon}
+                    sx={getStepLabelStyle(isAdmin)}
+                    StepIconComponent={props => OrderStepIcon(props, isAdmin)}
                     error={isError}
+                    onClick={onStepStatusClick}
                   >
                     {label}
                   </StepLabel>
@@ -199,6 +208,7 @@ export const OrderStepper = () => {
             );
           })}
         </Stepper>
+        <ManageOrderDialog open={isEditDialogOpen} setOpen={setEditDialogOpen} />
       </Box>
     </Stack>
   );

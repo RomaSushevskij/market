@@ -40,9 +40,12 @@ export const PasswordRecoverySchema: SchemaOf<PasswordRecoveryFormValuesType> =
       .oneOf([ref('newPassword'), null], 'The password confirmation does not match'),
   });
 
-export const OrderSchema: SchemaOf<OrderFormValuesType> = object().shape({
-  name: string().required('Field is required'),
-  surname: string().required('Field is required'),
-  address: string().required('Field is required'),
-  phone: string().required('Field is required'),
-});
+export const OrderSchema: SchemaOf<Omit<OrderFormValuesType, 'apartment'>> =
+  object().shape({
+    name: string().required('Field is required'),
+    surname: string().required('Field is required'),
+    city: string().required('Field is required'),
+    street: string().required('Field is required'),
+    house: string().required('Field is required'),
+    phone: string().required('Field is required'),
+  });

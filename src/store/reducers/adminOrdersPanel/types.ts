@@ -1,11 +1,16 @@
 import { OrderType } from 'store/reducers/orders/types';
 
-export type OrderStatus =
+export type OrderStepStatus =
   | 'Order confirmation'
   | 'Delivery in progress'
   | 'Delivered'
-  | 'Issued'
-  | 'Canceled';
+  | 'Issued';
+export type OrderStatusStateType = 'success' | 'error';
+export type OrderStatus = {
+  state: OrderStatusStateType;
+  step: OrderStepStatus;
+  description?: string;
+};
 export type AdminOrder = {
   orderList: OrderType[];
   orderId: string;
@@ -17,6 +22,7 @@ export type AdminOrder = {
   totalCost: number;
   orderDate: number;
   orderStatus: OrderStatus;
+  productsNumber: number;
 };
 export type AdminOrdersInitialState = {
   orders: AdminOrder[];

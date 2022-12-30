@@ -16,6 +16,8 @@ export enum routes {
 
 export enum adminRoutes {
   PRODUCTS = '/products',
+  ORDERS = '/orders',
+  USERS = '/users',
   AUTH_PAGE = '/auth',
   DEFAULT = '*',
   ROOT = '/',

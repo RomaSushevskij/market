@@ -8,4 +8,9 @@ export type ShoppingListRowProps = {
   orderDate: number;
   orderStatus: OrderStatus;
   orderList: OrderType[];
+  phone: string;
+  name: string;
+  surname: string;
+  address: string;
+  isAdmin: boolean;
 };

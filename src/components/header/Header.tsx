@@ -13,7 +13,11 @@ import { ProgressBar } from 'components/progressBar';
 import { routes } from 'enums';
 import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
-import { selectAuthPageStatus, selectProductsPageStatus } from 'store/selectors';
+import {
+  selectAuthPageStatus,
+  selectOrdersPageStatus,
+  selectProductsPageStatus,
+} from 'store/selectors';
 
 export const Header: FC = memo(() => {
   const { primaryColor } = usePalette();
@@ -21,7 +25,11 @@ export const Header: FC = memo(() => {
 
   const productsPageStatus = useAppSelector(selectProductsPageStatus);
   const authPageStatus = useAppSelector(selectAuthPageStatus);
-  const isLoading = productsPageStatus === 'loading' || authPageStatus === 'loading';
+  const ordersPageStatus = useAppSelector(selectOrdersPageStatus);
+  const isLoading =
+    productsPageStatus === 'loading' ||
+    authPageStatus === 'loading' ||
+    ordersPageStatus === 'loading';
 
   const onMenuIconButtonClick = () => {
     navigate(routes.PRODUCTS);

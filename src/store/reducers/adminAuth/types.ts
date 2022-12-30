@@ -6,4 +6,5 @@ export type AdminAuthInitialState = {
   adminName: string | null;
   adminAuthStatus: RequestStatusType;
   adminAuthPageMessage: AlertNotification | null;
+  adminEmail: string | null;
 };

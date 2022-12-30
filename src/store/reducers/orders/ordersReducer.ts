@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import firebase from 'firebase/compat';
 
 import { ordersApi } from 'api/orders';
-import { OrderFormValuesType } from 'components/forms/orderForm/types';
+import { AUTH_PAGE_MESSAGES } from 'enums';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 import {
   OrderInformationType,
@@ -11,6 +12,8 @@ import {
 } from 'store/reducers/orders/types';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
+import { AlertNotification } from 'types';
+import { reduceErrorMessage } from 'utils';
 
 export const addItemToCart = createAsyncThunk<
   { products: ProductType[]; productId: string },
@@ -32,33 +35,70 @@ export const addItemToCart = createAsyncThunk<
   }
 });
 
-export const addOrder = createAsyncThunk(
+export const addOrder = createAsyncThunk<
+  void,
+  Omit<OrderInformationType, 'totalCost'>,
+  { rejectValue: AlertNotification }
+>(
   'orders/addOrder',
-  async (customerInformation: OrderFormValuesType, { getState }) => {
-    const state = getState() as AppStateType;
-    const { cartOrderList } = state.orders;
-    const { uid } = state.auth;
+  async (
+    customerInformation: Omit<OrderInformationType, 'totalCost'>,
+    { getState, rejectWithValue },
+  ) => {
+    try {
+      const state = getState() as AppStateType;
+      const { cartOrderList } = state.orders;
+      const { uid } = state.auth;
 
-    const cartOrderInformation = {
-      ...customerInformation,
-      totalCost: state.orders.cartOrderInformation.totalCost,
-    };
-    const orderDate = new Date().getTime();
-
-    if (uid) {
-      const finalOrder: Omit<AdminOrder, 'orderId'> = {
-        ...cartOrderInformation,
-        orderList: cartOrderList,
-        uid,
-        orderDate,
-        orderStatus: 'Order confirmation',
+      const cartOrderInformation = {
+        ...customerInformation,
+        totalCost: state.orders.cartOrderInformation.totalCost,
       };
-      const id = await ordersApi.addOrder(finalOrder);
+      const orderDate = new Date().getTime();
 
-      console.log(id);
+      if (uid) {
+        const productsNumber = cartOrderList.reduce((sum, { count }) => sum + count, 0);
+        const finalOrder: Omit<AdminOrder, 'orderId'> = {
+          ...cartOrderInformation,
+          orderList: cartOrderList,
+          uid,
+          orderDate,
+          orderStatus: { state: 'success', step: 'Order confirmation' },
+          productsNumber,
+        };
+        const id = await ordersApi.addOrder(finalOrder);
+
+        console.log(id);
+      }
+    } catch (e) {
+      const { code } = e as firebase.FirebaseError;
+      const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+      return rejectWithValue({ message: notificationMessage, severity: 'error' });
     }
   },
 );
+
+export const fetchOrders = createAsyncThunk<
+  { orders: AdminOrder[] },
+  string | undefined,
+  { rejectValue: AlertNotification }
+  // eslint-disable-next-line default-param-last
+>('orders/fetchOrdersForUser', async (userId, { rejectWithValue }) => {
+  try {
+    const orders = await ordersApi.fetchOrders(userId);
+    const sortingByDateOrders = orders.sort((order1, order2) => {
+      return order2.orderDate - order1.orderDate;
+    });
+
+    return { orders: sortingByDateOrders };
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+    const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
+
+    return rejectWithValue({ message: notificationMessage, severity: 'error' });
+  }
+});
 
 const slice = createSlice({
   name: 'orders',
@@ -72,6 +112,8 @@ const slice = createSlice({
       phone: '',
       totalCost: 0,
     } as OrderInformationType,
+    ordersPageStatus: 'idle',
+    ordersPageMessage: null,
   } as OrdersInitialState,
   reducers: {
     changeOrderItemCount(
@@ -110,7 +152,7 @@ const slice = createSlice({
     },
     generateAnOrder(
       state,
-      action: PayloadAction<{ customerInformation: OrderFormValuesType }>,
+      action: PayloadAction<{ customerInformation: OrderInformationType }>,
     ) {
       const { customerInformation } = action.payload;
       const { cartOrderList } = state;
@@ -129,22 +171,47 @@ const slice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(addItemToCart.fulfilled, (state, { payload }) => {
-      const { products, productId } = payload;
-      const currentProduct = products.find(({ id }) => id === productId);
+    builder
+      .addCase(addItemToCart.fulfilled, (state, { payload }) => {
+        const { products, productId } = payload;
+        const currentProduct = products.find(({ id }) => id === productId);
 
-      if (currentProduct) {
-        const currentItemInCart = state.cartOrderList.find(({ id }) => id === productId);
+        if (currentProduct) {
+          const currentItemInCart = state.cartOrderList.find(
+            ({ id }) => id === productId,
+          );
 
-        if (currentItemInCart) {
-          currentItemInCart.count += 1;
-        } else {
-          const orderItem: OrderType = { ...currentProduct, count: 1 };
+          if (currentItemInCart) {
+            currentItemInCart.count += 1;
+          } else {
+            const orderItem: OrderType = { ...currentProduct, count: 1 };
 
-          state.cartOrderList.push(orderItem);
+            state.cartOrderList.push(orderItem);
+          }
         }
-      }
-    });
+      })
+      .addCase(fetchOrders.pending, state => {
+        state.ordersPageStatus = 'loading';
+      })
+      .addCase(fetchOrders.fulfilled, (state, { payload }) => {
+        state.ordersPageStatus = 'succeeded';
+        state.userOrders = payload.orders;
+      })
+      .addCase(fetchOrders.rejected, (state, { payload }) => {
+        state.ordersPageStatus = 'failed';
+        if (payload) state.ordersPageMessage = payload;
+      })
+      .addCase(addOrder.pending, state => {
+        state.ordersPageStatus = 'loading';
+      })
+      .addCase(addOrder.fulfilled, state => {
+        state.ordersPageStatus = 'succeeded';
+        state.cartOrderList = [];
+      })
+      .addCase(addOrder.rejected, (state, { payload }) => {
+        state.ordersPageStatus = 'failed';
+        if (payload) state.ordersPageMessage = payload;
+      });
   },
 });
 

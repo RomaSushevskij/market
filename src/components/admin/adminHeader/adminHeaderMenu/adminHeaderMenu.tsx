@@ -1,100 +1,55 @@
 import React, { FC, memo, useState } from 'react';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from 'hooks';
+import { DropDownMenu } from 'components/header/menu/dropDownMenu';
+import { adminRoutes } from 'enums';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { signOut } from 'store/reducers';
+import { selectIsAdminEmail } from 'store/selectors/adminAuthSelectors';
 
 export const AdminHeaderMenu: FC = memo(() => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const adminEmail = useAppSelector(selectIsAdminEmail);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(
-    null,
-  );
   const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   const onLogOutMenuItemClick = () => {
     setAnchorEl(null);
-    setMobileMoreAnchorEl(null);
     dispatch(signOut());
   };
-  const menuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
 
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Orders</MenuItem>
-      <MenuItem onClick={onLogOutMenuItemClick}>Logout</MenuItem>
-    </Menu>
-  );
+  const onOrdersClick = () => {
+    navigate(adminRoutes.ORDERS);
+    setAnchorEl(null);
+  };
 
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" color="inherit">
-          <ReceiptLongIcon />
-        </IconButton>
-        <p>Orders</p>
-      </MenuItem>
-      <MenuItem onClick={onLogOutMenuItemClick}>
-        <IconButton size="large" color="inherit">
-          <LogoutIcon />
-        </IconButton>
-        <p>LogOut</p>
-      </MenuItem>
-    </Menu>
-  );
+  const onProductsClick = () => {
+    navigate(adminRoutes.PRODUCTS);
+    setAnchorEl(null);
+  };
+
+  const onUsersClick = () => {
+    navigate(adminRoutes.USERS);
+    setAnchorEl(null);
+  };
 
   return (
     <Stack direction="row" alignItems="center">
@@ -103,7 +58,6 @@ export const AdminHeaderMenu: FC = memo(() => {
           size="large"
           edge="end"
           aria-label="account of current user"
-          aria-controls={menuId}
           aria-haspopup="true"
           onClick={handleProfileMenuOpen}
           color="inherit"
@@ -115,9 +69,8 @@ export const AdminHeaderMenu: FC = memo(() => {
         <IconButton
           size="large"
           aria-label="show more"
-          aria-controls={mobileMenuId}
           aria-haspopup="true"
-          onClick={handleMobileMenuOpen}
+          onClick={handleProfileMenuOpen}
           color="inherit"
         >
           <Badge color="error">
@@ -125,8 +78,17 @@ export const AdminHeaderMenu: FC = memo(() => {
           </Badge>
         </IconButton>
       </Box>
-      {renderMobileMenu}
-      {renderMenu}
+      <DropDownMenu
+        isAdmin
+        accountName={adminEmail}
+        anchorEl={anchorEl}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+        onLogOutMenuItemClick={onLogOutMenuItemClick}
+        onOrdersClick={onOrdersClick}
+        onProductsClick={onProductsClick}
+        onUsersClick={onUsersClick}
+      />
     </Stack>
   );
 });

@@ -10,6 +10,7 @@ const slice = createSlice({
     adminName: null,
     adminAuthStatus: 'idle',
     adminAuthPageMessage: null,
+    adminEmail: null,
   } as AdminAuthInitialState,
   reducers: {
     setAdminAuth(state) {
@@ -19,11 +20,12 @@ const slice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(signIn.fulfilled, (state, { payload }) => {
-        const { isAuth, isAdmin } = payload;
+        const { isAuth, isAdmin, email } = payload;
 
-        if (isAdmin && isAuth) {
+        if (isAdmin && isAuth && email) {
           state.isAdminAuth = isAuth;
           state.adminName = 'Admin';
+          state.adminEmail = email;
         }
       })
       .addCase(signOut.fulfilled, state => {

@@ -67,8 +67,8 @@ export const AuthPage: FC = memo(() => {
     if (modeQueryParam === 'verifyEmail')
       navigate(`${routes.VERIFY_EMAIL}?oobCode=${oobCodeQueryParam}`);
     if (searchParams.get('mode') === 'resetPassword')
-      navigate(routes.AUTH_PASSWORD_RECOVERY);
-  }, [searchParams]);
+      navigate(`${routes.AUTH_PASSWORD_RECOVERY}?oobCode=${oobCodeQueryParam}`);
+  }, [searchParams, modeQueryParam, oobCodeQueryParam, navigate]);
 
   if (isAuth) {
     return <Navigate to="/" />;

@@ -1,54 +1,46 @@
-import React, { FC, memo, useEffect, useMemo, useState } from 'react';
+import React, { FC, memo, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { collection, getDocs } from 'firebase/firestore';
+import { Navigate } from 'react-router-dom';
 
-import { collections } from 'api/enums';
-import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
+import { adminRoutes, routes } from 'enums';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { ShoppingListRow } from 'pages/shoppingList/shoppingListRow/shoppingListRow';
-import { db } from 'services/firebase';
-import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
+import { ShoppingListProps } from 'pages/shoppingList/types';
+import { fetchOrders } from 'store/reducers';
+import { selectIsAuth, selectUid, selectUserOrders } from 'store/selectors';
+import { selectIsAdminAuth } from 'store/selectors/adminAuthSelectors';
 
-export const ShoppingList: FC = memo(() => {
-  const [orders, setOrders] = useState<AdminOrder[]>();
+export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
+  const { isAdmin } = prop;
 
-  const productsNumber = useMemo(() => {
-    let productsNumber = 0;
+  const dispatch = useAppDispatch();
 
-    orders?.forEach(adminOrder => {
-      const orderCount = adminOrder.orderList.reduce((sum, productOrder) => {
-        return sum + productOrder.count;
-      }, 0);
-
-      productsNumber += orderCount;
-    });
-
-    return productsNumber;
-  }, [orders]);
+  const userOrders = useAppSelector(selectUserOrders);
+  const uId = useAppSelector(selectUid) as string;
+  const isAuth = useAppSelector(selectIsAuth);
+  const isAdminAuth = useAppSelector(selectIsAdminAuth);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      const { docs } = await getDocs(collection(db, collections.ORDERS));
-      const orders = docs.map(doc => {
-        const orderData = doc.data() as AdminOrder;
-        const order: AdminOrder = {
-          ...orderData,
-          orderId: doc.id,
-        };
+    if (isAdmin) dispatch(fetchOrders());
+    else dispatch(fetchOrders(uId));
+  }, [dispatch, uId, isAdmin]);
 
-        return order;
-      });
-
-      setOrders(orders);
-    };
-
-    fetchOrders();
-  }, []);
-  // const userOrders = useAppSelector(selectUserOrders);
-  const orderAccordions = orders?.map(
-    ({ orderList, orderId, totalCost, orderStatus, orderDate }) => {
+  const orderAccordions = userOrders.map(
+    ({
+      orderList,
+      orderId,
+      totalCost,
+      orderStatus,
+      orderDate,
+      productsNumber,
+      phone,
+      name,
+      surname,
+      address,
+    }) => {
       return (
         <ShoppingListRow
           key={orderId}
@@ -58,19 +50,30 @@ export const ShoppingList: FC = memo(() => {
           orderStatus={orderStatus}
           orderDate={orderDate}
           productsNumber={productsNumber}
+          phone={phone}
+          name={name}
+          surname={surname}
+          address={address}
+          isAdmin={isAdmin}
         />
       );
     },
   );
 
+  if (isAdmin && !isAdminAuth) {
+    return <Navigate to={adminRoutes.AUTH_PAGE} />;
+  }
+  if (!isAdmin && !isAuth) {
+    return <Navigate to={routes.AUTH_PAGE} />;
+  }
+
   return (
     <Box>
       <Paper>
         <Typography sx={{ p: 2 }} variant="h6" component="div">
-          Shopping list
+          {isAdmin ? 'Orders' : 'Shopping list'}
         </Typography>
         {orderAccordions}
-        <OrderStepper />
       </Paper>
     </Box>
   );

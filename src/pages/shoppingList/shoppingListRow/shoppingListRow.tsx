@@ -17,7 +17,19 @@ import { formatDate } from 'utils/formatDate';
 import { formatPieceCount } from 'utils/formatPieceCount';
 
 export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
-  const { totalCost, orderId, orderList, orderDate, orderStatus, productsNumber } = prop;
+  const {
+    totalCost,
+    orderId,
+    orderList,
+    orderDate,
+    orderStatus,
+    productsNumber,
+    phone,
+    name,
+    surname,
+    address,
+    isAdmin,
+  } = prop;
 
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
@@ -38,7 +50,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     let timerId: ReturnType<typeof setTimeout>;
 
     if (isExpanded) {
-      setAccordionBgc('#fff3e0');
+      setAccordionBgc('#fff9e2');
     } else {
       timerId = setTimeout(() => {
         setAccordionBgc('#ffffff');
@@ -55,13 +67,13 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
       const formattedCount = formatPieceCount(count);
 
       return (
-        <>
+        <div key={id}>
           <Divider />
           <AccordionDetails
             key={id}
             sx={{
               display: 'flex',
-              justifyContent: 'space-around',
+              justifyContent: 'space-between',
               padding: '8px',
             }}
           >
@@ -79,18 +91,29 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
             </Typography>
           </AccordionDetails>
           {index === array.length - 1 && <Divider />}
-        </>
+        </div>
       );
     },
   );
 
   return (
-    <Accordion
-      onClick={onAccordionClick}
-      expanded={isExpanded}
-      sx={{ backgroundColor: accordionBgc }}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+    <Accordion expanded={isExpanded} sx={{ backgroundColor: accordionBgc }}>
+      <AccordionSummary
+        expandIcon={
+          <ExpandMoreIcon
+            color={`${isExpanded ? 'success' : 'primary'}`}
+            onClick={onAccordionClick}
+            sx={{
+              p: 0.5,
+              ml: 0.5,
+              backgroundColor: `${
+                isExpanded ? 'rgba(232,245,233,0.65)' : 'rgba(225,245,254,0.6)'
+              }`,
+              borderRadius: '50%',
+            }}
+          />
+        }
+      >
         <Stack
           width={{ sm: '100%' }}
           direction={{ sm: 'row' }}
@@ -106,14 +129,27 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           <Typography>{formattedProductsNumber}</Typography>
           <Typography sx={{ fontWeight: 'bold' }}>{formattedPrice}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>{formattedDate}</Typography>
-          <Chip label={orderStatus} variant="outlined" color="success" />
+          <Chip label={orderStatus.step} variant="outlined" color={orderStatus.state} />
         </Stack>
       </AccordionSummary>
       <Box sx={{ width: '100%', mb: 2 }}>
-        <OrderStepper />
+        <OrderStepper orderStatus={orderStatus} isAdmin={isAdmin} />
       </Box>
       {accordionSummaries}
-      <AccordionDetails sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <AccordionDetails
+        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+            Delivery:
+          </Typography>
+          <Typography variant="body2">{address}</Typography>
+          <Typography variant="body2">
+            {`${name} `}
+            {surname}
+          </Typography>
+          <Typography variant="body2">{phone}</Typography>
+        </Box>
         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
           {`Total cost: ${formattedPrice}`}
         </Typography>

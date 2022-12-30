@@ -66,6 +66,7 @@ export const addOrder = createAsyncThunk<
           orderDate,
           orderStatus: { state: 'success', step: 'Order confirmation' },
           productsNumber,
+          isViewedByAdmin: false,
         };
         const id = await ordersApi.addOrder(finalOrder);
 

@@ -25,6 +25,7 @@ export type AdminOrder = {
   orderDate: number;
   orderStatus: OrderStatus;
   productsNumber: number;
+  isViewedByAdmin: boolean;
 };
 export type AdminOrdersInitialState = {
   orders: AdminOrder[];

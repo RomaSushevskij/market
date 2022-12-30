@@ -1,9 +1,11 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -11,6 +13,7 @@ import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
+import { usePalette } from 'hooks/usePalette/usePalette';
 import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
 import { ShoppingListRowProps } from 'pages/shoppingList/shoppingListRow/types';
 import { toDollars } from 'utils';
@@ -33,6 +36,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
   } = prop;
 
   const theme = useTheme();
+  const { errorColor } = usePalette();
   const primaryColor = theme.palette.primary.main;
 
   const [isExpanded, setExpanded] = useState<boolean>(false);
@@ -147,9 +151,18 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           />
         </Stack>
       </AccordionSummary>
-      <Box sx={{ width: '100%', mb: 2 }}>
+      <Stack sx={{ width: '100%', mb: 2 }}>
         <OrderStepper orderStatus={orderStatus} isAdmin={isAdmin} orderId={orderId} />
-      </Box>
+        <Button
+          variant="outlined"
+          color="error"
+          sx={{ color: errorColor, borderColor: errorColor, alignSelf: 'center', mt: 2 }}
+          size="small"
+          endIcon={<DeleteIcon />}
+        >
+          Delete order
+        </Button>
+      </Stack>
       {accordionSummaries}
       <AccordionDetails
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}

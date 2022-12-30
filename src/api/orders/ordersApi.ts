@@ -1,7 +1,15 @@
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 
 import { collections } from 'api/enums';
-import { AddOrderPayload } from 'api/orders/types';
+import { AddOrderPayload, UpdateOrderStatusPayload } from 'api/orders/types';
 import { db } from 'services/firebase';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 
@@ -32,5 +40,12 @@ export const ordersApi = {
     const { id } = await addDoc(collection(db, collections.ORDERS), addOrderPayload);
 
     return id;
+  },
+  async editOrderStatus(updateOrderStatusPayload: UpdateOrderStatusPayload) {
+    const { orderStatus, orderId } = updateOrderStatusPayload;
+
+    await updateDoc(doc(db, collections.ORDERS, orderId), {
+      orderStatus,
+    });
   },
 };

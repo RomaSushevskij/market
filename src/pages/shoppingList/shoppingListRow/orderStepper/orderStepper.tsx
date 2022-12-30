@@ -1,9 +1,11 @@
 import React, { FC, useState } from 'react';
 
+import EditIcon from '@mui/icons-material/Edit';
 import TaskAlt from '@mui/icons-material/TaskAlt';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import { SxProps } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Step from '@mui/material/Step';
 import StepConnector from '@mui/material/StepConnector';
@@ -30,12 +32,11 @@ export const orderDeliverySteps: OrderStepStatus[] = [
 const OrderStepIconRoot = styled('div')<{
   ownerState: { active?: boolean };
   isAdmin: boolean;
-}>(({ theme, ownerState, isAdmin }) => ({
+}>(({ theme, ownerState }) => ({
   display: 'flex',
   height: 22,
   alignItems: 'center',
   color: '#d9d9de',
-  cursor: `${isAdmin ? 'pointer' : 'auto'}`,
   ...(ownerState.active && {
     color: theme.palette.success.light,
   }),
@@ -91,18 +92,13 @@ export const OrderConnector = styled(StepConnector)(({ theme }) => ({
   },
 }));
 
-export const getStepLabelStyle = (isAdmin: boolean): SxProps<Theme> => ({
+export const getStepLabelStyle = (): SxProps<Theme> => ({
   '& .MuiStepLabel-label': {
     fontSize: { xs: '11px', sm: '14px' },
     position: 'absolute',
     left: '50%',
     transform: 'translateX(-50%)',
     fontWeight: '100',
-    cursor: `${isAdmin ? 'pointer' : 'auto'}`,
-    '&: hover': {
-      backgroundColor: 'red',
-    },
-
     '&.Mui-disabled, &.Mui-active, &.Mui-completed': {
       fontWeight: '100',
       mt: 1,
@@ -186,20 +182,18 @@ export const OrderStepper: FC<OrderStepperProps> = prop => {
                     }}
                   >
                     <StepLabel
-                      sx={getStepLabelStyle(isAdmin)}
+                      sx={getStepLabelStyle()}
                       StepIconComponent={props => OrderStepIcon(props, isAdmin)}
                       error={isError}
-                      onClick={onStepStatusClick}
                     >
                       {label}
                     </StepLabel>
                   </Tooltip>
                 ) : (
                   <StepLabel
-                    sx={getStepLabelStyle(isAdmin)}
+                    sx={getStepLabelStyle()}
                     StepIconComponent={props => OrderStepIcon(props, isAdmin)}
                     error={isError}
-                    onClick={onStepStatusClick}
                   >
                     {label}
                   </StepLabel>
@@ -210,6 +204,17 @@ export const OrderStepper: FC<OrderStepperProps> = prop => {
         </Stepper>
         <ManageOrderDialog open={isEditDialogOpen} setOpen={setEditDialogOpen} />
       </Box>
+      {isAdmin && (
+        <Button
+          size="small"
+          variant="outlined"
+          sx={{ alignSelf: 'center', mt: 2 }}
+          onClick={onStepStatusClick}
+          endIcon={<EditIcon />}
+        >
+          Edit order status
+        </Button>
+      )}
     </Stack>
   );
 };

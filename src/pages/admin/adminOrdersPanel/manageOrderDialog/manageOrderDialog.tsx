@@ -99,7 +99,7 @@ export const ManageOrderDialog: FC<ManageOrderDialogProps> = prop => {
                   <MenuItem value="error">Error</MenuItem>
                 </TextField>
                 <TextField
-                  sx={{ mb: { xs: 2, sm: 0 } }}
+                  sx={{ mb: { xs: 2, sm: 0 }, minWidth: '200px' }}
                   autoFocus
                   select
                   value={statusStep}

@@ -80,7 +80,7 @@ export const addOrder = createAsyncThunk<
 );
 
 export const fetchOrders = createAsyncThunk<
-  { orders: AdminOrder[] },
+  { orders: AdminOrder[]; userId: string | undefined },
   string | undefined,
   { rejectValue: AlertNotification }
   // eslint-disable-next-line default-param-last
@@ -91,7 +91,7 @@ export const fetchOrders = createAsyncThunk<
       return order2.orderDate - order1.orderDate;
     });
 
-    return { orders: sortingByDateOrders };
+    return { orders: sortingByDateOrders, userId };
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
     const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
@@ -195,7 +195,9 @@ const slice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, { payload }) => {
         state.ordersPageStatus = 'succeeded';
-        state.userOrders = payload.orders;
+        const { orders, userId } = payload;
+
+        if (userId) state.userOrders = orders;
       })
       .addCase(fetchOrders.rejected, (state, { payload }) => {
         state.ordersPageStatus = 'failed';

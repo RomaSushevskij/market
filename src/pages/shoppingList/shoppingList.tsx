@@ -1,4 +1,4 @@
-import React, { FC, memo, useEffect } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -10,7 +10,13 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import { ShoppingListRow } from 'pages/shoppingList/shoppingListRow/shoppingListRow';
 import { ShoppingListProps } from 'pages/shoppingList/types';
 import { fetchOrders } from 'store/reducers';
-import { selectIsAuth, selectUid, selectUserOrders } from 'store/selectors';
+import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
+import {
+  selectAdminOrders,
+  selectIsAuth,
+  selectUid,
+  selectUserOrders,
+} from 'store/selectors';
 import { selectIsAdminAuth } from 'store/selectors/adminAuthSelectors';
 
 export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
@@ -19,16 +25,26 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
   const dispatch = useAppDispatch();
 
   const userOrders = useAppSelector(selectUserOrders);
+  const adminOrders = useAppSelector(selectAdminOrders);
   const uId = useAppSelector(selectUid) as string;
   const isAuth = useAppSelector(selectIsAuth);
   const isAdminAuth = useAppSelector(selectIsAdminAuth);
+
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
   useEffect(() => {
     if (isAdmin) dispatch(fetchOrders());
     else dispatch(fetchOrders(uId));
   }, [dispatch, uId, isAdmin]);
 
-  const orderAccordions = userOrders.map(
+  useEffect(() => {
+    if (isAdmin) setOrders(adminOrders);
+    else {
+      setOrders(userOrders);
+    }
+  }, [isAdmin, adminOrders, userOrders]);
+
+  const orderAccordions = orders.map(
     ({
       orderList,
       orderId,

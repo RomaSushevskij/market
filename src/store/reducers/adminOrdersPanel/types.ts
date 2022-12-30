@@ -1,4 +1,6 @@
 import { OrderType } from 'store/reducers/orders/types';
+import { RequestStatusType } from 'store/reducers/products/types';
+import { AlertNotification } from 'types';
 
 export type OrderStepStatus =
   | 'Order confirmation'
@@ -29,4 +31,6 @@ export type AdminOrdersInitialState = {
   pageSize: number;
   currentPage: number;
   ordersTotalCount: number;
+  adminOrdersPageMessage: AlertNotification | null;
+  adminOrdersStatus: RequestStatusType;
 };

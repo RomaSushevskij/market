@@ -41,3 +41,6 @@ export enum ADMIN_PANEL_PRODUCTS_MESSAGES {
   PRODUCT_REMOVED_SUCCESSFULLY = 'Product removed successfully',
   PRODUCT_UPDATED_SUCCESSFULLY = 'Product updated successfully',
 }
+export enum ADMIN_PANEL_ORDERS_MESSAGES {
+  ORDER_STATUS_UPDATED_SUCCESSFULLY = 'Order status updated successfully',
+}

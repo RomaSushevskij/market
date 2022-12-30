@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -49,5 +50,8 @@ export const ordersApi = {
       ...orderStatus,
       description: description || '',
     });
+  },
+  async deleteOrder(orderId: string) {
+    await deleteDoc(doc(db, collections.ORDERS, orderId));
   },
 };

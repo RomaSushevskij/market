@@ -75,16 +75,18 @@ export const Products: FC = () => {
       <Grid container spacing={2} justifyContent="space-around" alignItems="stretch">
         {productsItems}
       </Grid>
-      <Box marginY={4}>
-        <PaginationBlock
-          onPageChange={onPaginationPageChange}
-          onPageSizeChange={onPaginationPageSizeChange}
-          itemsTotalCount={productsTotalCount}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          pageSizeOptions={pageSizeOptions}
-        />
-      </Box>
+      {!!products.length && (
+        <Box marginY={4}>
+          <PaginationBlock
+            onPageChange={onPaginationPageChange}
+            onPageSizeChange={onPaginationPageSizeChange}
+            itemsTotalCount={productsTotalCount}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            pageSizeOptions={pageSizeOptions}
+          />
+        </Box>
+      )}
       {productsPageMessage && (
         <SnackBar
           message={productsPageMessage.message}

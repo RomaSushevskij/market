@@ -11,11 +11,16 @@ import { AdminHeaderMenu } from 'components/admin/adminHeader/adminHeaderMenu/ad
 import { ProgressBar } from 'components/progressBar';
 import { useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
+import { selectAdminOrdersStatus } from 'store/selectors';
 import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
 
 export const AdminHeader: FC = memo(() => {
   const { primaryColor } = usePalette();
+
   const adminProductsStatus = useAppSelector(selectAdminProductsStatus);
+  const adminOrdersStatus = useAppSelector(selectAdminOrdersStatus);
+
+  const isLoading = adminProductsStatus === 'loading' || adminOrdersStatus === 'loading';
 
   return (
     <Box sx={{ flexGrow: 1 }} mb={10}>
@@ -36,7 +41,7 @@ export const AdminHeader: FC = memo(() => {
           <AdminHeaderMenu />
         </Toolbar>
       </AppBar>
-      {adminProductsStatus === 'loading' && <ProgressBar />}
+      {isLoading && <ProgressBar />}
     </Box>
   );
 });

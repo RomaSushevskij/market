@@ -85,12 +85,14 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
 
   return (
     <Box>
-      <Paper>
-        <Typography sx={{ p: 2 }} variant="h6" component="div">
-          {isAdmin ? 'Orders' : 'Shopping list'}
-        </Typography>
-        {orderAccordions}
-      </Paper>
+      {!!orders.length && (
+        <Paper>
+          <Typography sx={{ p: 2 }} variant="h6" component="div">
+            {isAdmin ? 'Orders' : 'Shopping list'}
+          </Typography>
+          {orderAccordions}
+        </Paper>
+      )}
     </Box>
   );
 });

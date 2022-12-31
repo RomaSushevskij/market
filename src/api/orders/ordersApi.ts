@@ -47,8 +47,10 @@ export const ordersApi = {
     const { description } = orderStatus;
 
     await updateDoc(doc(db, collections.ORDERS, orderId), {
-      ...orderStatus,
-      description: description || '',
+      orderStatus: {
+        ...orderStatus,
+        description: description || '',
+      },
     });
   },
   async deleteOrder(orderId: string) {

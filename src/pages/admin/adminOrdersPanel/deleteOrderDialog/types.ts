@@ -1,5 +1,3 @@
 import { AddProductDialogProps } from 'pages/admin/adminProductsPanel/addProductDialog';
 
-export type DeleteProductDialogProps = AddProductDialogProps & {
-  productId: string;
-};
+export type DeleteOrderDialogProps = AddProductDialogProps & { orderId: string };

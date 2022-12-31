@@ -13,11 +13,10 @@ import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
+import { DeleteOrderDialog } from 'pages/admin/adminOrdersPanel/deleteOrderDialog';
 import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
 import { ShoppingListRowProps } from 'pages/shoppingList/shoppingListRow/types';
-import { deleteOrder } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { toDollars } from 'utils';
 import { formatDate } from 'utils/formatDate';
 import { formatPieceCount } from 'utils/formatPieceCount';
@@ -37,13 +36,13 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     isAdmin,
   } = prop;
 
-  const dispatch = useAppDispatch();
   const theme = useTheme();
   const { errorColor } = usePalette();
   const primaryColor = theme.palette.primary.main;
 
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [accordionBgc, setAccordionBgc] = useState<string>('#ffffff');
+  const [isOpenDeleteOrderDialog, setOpenDeleteOrderDialog] = useState(false);
 
   const formattedDate = formatDate(orderDate);
   const formattedPrice = toDollars.format(totalCost);
@@ -79,6 +78,10 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     ) : (
       orderStatus.step
     );
+
+  const onDeleteOrderClick = () => {
+    setOpenDeleteOrderDialog(true);
+  };
 
   const accordionSummaries = orderList.map(
     ({ id, title, price, count }, index, array) => {
@@ -156,16 +159,23 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
       </AccordionSummary>
       <Stack sx={{ width: '100%', mb: 2 }}>
         <OrderStepper orderStatus={orderStatus} isAdmin={isAdmin} orderId={orderId} />
-        <Button
-          variant="outlined"
-          color="error"
-          sx={{ color: errorColor, borderColor: errorColor, alignSelf: 'center', mt: 2 }}
-          size="small"
-          endIcon={<DeleteIcon />}
-          onClick={() => dispatch(deleteOrder(orderId))}
-        >
-          Delete order
-        </Button>
+        {isAdmin && (
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{
+              color: errorColor,
+              borderColor: errorColor,
+              alignSelf: 'center',
+              mt: 2,
+            }}
+            size="small"
+            endIcon={<DeleteIcon />}
+            onClick={onDeleteOrderClick}
+          >
+            Delete order
+          </Button>
+        )}
       </Stack>
       {accordionSummaries}
       <AccordionDetails
@@ -186,6 +196,11 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           {`Total cost: ${formattedPrice}`}
         </Typography>
       </AccordionDetails>
+      <DeleteOrderDialog
+        orderId={orderId}
+        open={isOpenDeleteOrderDialog}
+        setOpen={setOpenDeleteOrderDialog}
+      />
     </Accordion>
   );
 });

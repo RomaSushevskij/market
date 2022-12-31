@@ -172,7 +172,7 @@ export const AdminProductsPanel: FC = () => {
           <DeleteProductDialog
             open={isOpenDeleteProductDialog}
             setOpen={setOpenDeleteProductDialog}
-            activeProduct={activeProduct}
+            productId={activeProduct.id}
           />
           {adminProductsPageMessage && (
             <SnackBar

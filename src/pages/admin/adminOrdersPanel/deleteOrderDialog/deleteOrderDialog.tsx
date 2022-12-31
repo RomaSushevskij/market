@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 
+import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,56 +9,52 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { DeleteProductDialogProps } from 'pages/admin/adminProductsPanel/deleteProductDialog/types';
-import { deleteProduct } from 'store/reducers/adminProductsPanel';
-import { selectAdminProductsStatus } from 'store/selectors/adminProductsPanelSelectors';
+import { DeleteOrderDialogProps } from 'pages/admin/adminOrdersPanel/deleteOrderDialog/types';
+import { deleteOrder } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
+import { selectAdminOrdersStatus } from 'store/selectors';
 
-export const DeleteProductDialog: FC<DeleteProductDialogProps> = ({
-  open,
-  setOpen,
-  productId,
-}) => {
+export const DeleteOrderDialog: FC<DeleteOrderDialogProps> = prop => {
+  const { open, setOpen, orderId } = prop;
+
   const dispatch = useAppDispatch();
 
-  const adminProductsStatus = useAppSelector(selectAdminProductsStatus);
+  const adminOrdersStatus = useAppSelector(selectAdminOrdersStatus);
 
   const handleCloseDeleteProductDialog = () => {
     setOpen(false);
   };
 
-  const onDeleteProduct = async () => {
-    const resultAction = await dispatch(deleteProduct(productId));
+  const onDeleteOrder = async () => {
+    const resultAction = await dispatch(deleteOrder(orderId));
 
-    if (deleteProduct.fulfilled.match(resultAction)) {
+    if (deleteOrder.fulfilled.match(resultAction)) {
       setOpen(false);
     }
   };
 
   return (
     <Dialog open={open} onClose={handleCloseDeleteProductDialog} fullWidth>
-      <DialogTitle>Delete product</DialogTitle>
+      <DialogTitle>Delete order</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Are you sure you want to delete this product?
-        </DialogContentText>
+        <DialogContentText>Are you sure you want to delete this order?</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
         <Button
           variant="outlined"
           color="inherit"
           onClick={handleCloseDeleteProductDialog}
-          disabled={adminProductsStatus === 'loading'}
+          disabled={adminOrdersStatus === 'loading'}
         >
           Cancel
         </Button>
-        <Button
+        <LoadingButton
           variant="outlined"
           color="error"
-          onClick={onDeleteProduct}
-          disabled={adminProductsStatus === 'loading'}
+          onClick={onDeleteOrder}
+          loading={adminOrdersStatus === 'loading'}
         >
           Delete
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

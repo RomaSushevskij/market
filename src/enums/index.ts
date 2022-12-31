@@ -43,4 +43,5 @@ export enum ADMIN_PANEL_PRODUCTS_MESSAGES {
 }
 export enum ADMIN_PANEL_ORDERS_MESSAGES {
   ORDER_STATUS_UPDATED_SUCCESSFULLY = 'Order status updated successfully',
+  NETWORK_ERROR = 'Network error',
 }

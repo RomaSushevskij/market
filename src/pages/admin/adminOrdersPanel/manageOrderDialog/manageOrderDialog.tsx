@@ -33,13 +33,18 @@ export const ManageOrderDialog: FC<ManageOrderDialogProps> = prop => {
   const adminOrders = useAppSelector(selectAdminOrders);
 
   const currentOrderStatus = useMemo(() => {
-    return adminOrders.filter(order => order.orderId === orderId)[0].orderStatus;
+    return adminOrders.filter(order => order.orderId === orderId)[0]?.orderStatus;
   }, [adminOrders, orderId]);
-  const { step, state, description } = currentOrderStatus;
 
-  const [statusType, setStatusType] = React.useState<OrderStatusStateType>(state);
-  const [statusStep, setStatusStep] = React.useState<OrderStepStatus>(step);
-  const [statusDescription, setStatusDescription] = useState(description);
+  const [statusType, setStatusType] = React.useState<OrderStatusStateType>(
+    currentOrderStatus ? currentOrderStatus.state : 'success',
+  );
+  const [statusStep, setStatusStep] = React.useState<OrderStepStatus>(
+    currentOrderStatus ? currentOrderStatus.step : 'Order confirmation',
+  );
+  const [statusDescription, setStatusDescription] = useState(
+    currentOrderStatus ? currentOrderStatus.description : '',
+  );
 
   const handleClose = () => {
     setOpen(false);

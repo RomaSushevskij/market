@@ -13,9 +13,11 @@ import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
+import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
 import { ShoppingListRowProps } from 'pages/shoppingList/shoppingListRow/types';
+import { deleteOrder } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { toDollars } from 'utils';
 import { formatDate } from 'utils/formatDate';
 import { formatPieceCount } from 'utils/formatPieceCount';
@@ -35,6 +37,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     isAdmin,
   } = prop;
 
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const { errorColor } = usePalette();
   const primaryColor = theme.palette.primary.main;
@@ -159,6 +162,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           sx={{ color: errorColor, borderColor: errorColor, alignSelf: 'center', mt: 2 }}
           size="small"
           endIcon={<DeleteIcon />}
+          onClick={() => dispatch(deleteOrder(orderId))}
         >
           Delete order
         </Button>

@@ -115,7 +115,7 @@ const slice = createSlice({
           product => product.id === payload.productId,
         );
 
-        if (indexOfCurrentProduct !== -1) state.products.splice(indexOfCurrentProduct, 1);
+        if (indexOfCurrentProduct > -1) state.products.splice(indexOfCurrentProduct, 1);
       })
       .addCase(updateProduct.fulfilled, (state, { payload }) => {
         const { updateProductPayload } = payload;
@@ -124,7 +124,7 @@ const slice = createSlice({
           product => product.id === updateProductPayload.id,
         );
 
-        if (indexOfCurrentProduct !== -1) {
+        if (indexOfCurrentProduct > -1) {
           state.products.splice(indexOfCurrentProduct, 1, updateProductPayload);
         }
       });

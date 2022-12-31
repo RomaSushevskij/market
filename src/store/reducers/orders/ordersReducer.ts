@@ -224,7 +224,7 @@ const slice = createSlice({
           order => order.orderId === orderId,
         );
 
-        if (indexOfCurrentOrder !== -1) {
+        if (indexOfCurrentOrder > -1) {
           state.userOrders[indexOfCurrentOrder].orderStatus = orderStatus;
         }
       });

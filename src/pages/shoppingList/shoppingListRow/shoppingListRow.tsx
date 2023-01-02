@@ -127,11 +127,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
   );
 
   return (
-    <Accordion
-      expanded={isExpanded}
-      sx={{ backgroundColor: accordionBgc }}
-      onClick={onAccordionClick}
-    >
+    <Accordion expanded={isExpanded} sx={{ backgroundColor: accordionBgc }}>
       <AccordionSummary
         expandIcon={
           <ExpandMoreIcon

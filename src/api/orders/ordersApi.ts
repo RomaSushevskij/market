@@ -53,6 +53,9 @@ export const ordersApi = {
       },
     });
   },
+  async editIsViewedByAdmin(orderId: string) {
+    await updateDoc(doc(db, collections.ORDERS, orderId), { isViewedByAdmin: true });
+  },
   async deleteOrder(orderId: string) {
     await deleteDoc(doc(db, collections.ORDERS, orderId));
   },

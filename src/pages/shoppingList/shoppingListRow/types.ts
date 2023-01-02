@@ -13,4 +13,5 @@ export type ShoppingListRowProps = {
   surname: string;
   address: string;
   isAdmin: boolean;
+  isViewedByAdmin: boolean;
 };

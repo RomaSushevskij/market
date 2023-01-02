@@ -37,6 +37,22 @@ export const editOrderStatus = createAsyncThunk<
   },
 );
 
+export const editIsViewedByAdmin = createAsyncThunk<
+  { orderId: string },
+  string,
+  { rejectValue: AlertNotification }
+>('adminOrders/editIsViewedByAdmin', async (orderId, { rejectWithValue }) => {
+  try {
+    await ordersApi.editIsViewedByAdmin(orderId);
+
+    return { orderId };
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+
+    return rejectWithValue({ message: code, severity: 'error' });
+  }
+});
+
 export const deleteOrder = createAsyncThunk<
   { orderId: string },
   string,
@@ -80,7 +96,7 @@ const slice = createSlice({
           order => order.orderId === orderId,
         );
 
-        if (indexOfCurrentOrder !== -1) {
+        if (indexOfCurrentOrder > -1) {
           state.orders[indexOfCurrentOrder].orderStatus = orderStatus;
         }
       })
@@ -91,20 +107,44 @@ const slice = createSlice({
 
         if (indexOfCurrentOrder > -1) state.orders.splice(indexOfCurrentOrder, 1);
       })
+      .addCase(editIsViewedByAdmin.fulfilled, (state, { payload }) => {
+        const indexOfCurrentOrder = state.orders.findIndex(
+          order => order.orderId === payload.orderId,
+        );
+
+        if (indexOfCurrentOrder > -1) {
+          state.orders[indexOfCurrentOrder].isViewedByAdmin = true;
+        }
+      })
       .addMatcher(
-        isAnyOf(fetchOrders.pending, editOrderStatus.pending, deleteOrder.pending),
+        isAnyOf(
+          fetchOrders.pending,
+          editOrderStatus.pending,
+          deleteOrder.pending,
+          editIsViewedByAdmin.pending,
+        ),
         state => {
           state.adminOrdersStatus = 'loading';
         },
       )
       .addMatcher(
-        isAnyOf(fetchOrders.fulfilled, editOrderStatus.fulfilled, deleteOrder.fulfilled),
+        isAnyOf(
+          fetchOrders.fulfilled,
+          editOrderStatus.fulfilled,
+          deleteOrder.fulfilled,
+          editIsViewedByAdmin.fulfilled,
+        ),
         state => {
           state.adminOrdersStatus = 'succeeded';
         },
       )
       .addMatcher(
-        isAnyOf(fetchOrders.rejected, editOrderStatus.rejected, deleteOrder.rejected),
+        isAnyOf(
+          fetchOrders.rejected,
+          editOrderStatus.rejected,
+          deleteOrder.rejected,
+          editIsViewedByAdmin.rejected,
+        ),
         (state, { payload }) => {
           state.adminOrdersStatus = 'failed';
           if (payload) state.adminOrdersPageMessage = payload;

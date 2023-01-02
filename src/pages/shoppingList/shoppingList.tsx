@@ -56,6 +56,7 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
       name,
       surname,
       address,
+      isViewedByAdmin,
     }) => {
       return (
         <ShoppingListRow
@@ -71,6 +72,7 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
           surname={surname}
           address={address}
           isAdmin={isAdmin}
+          isViewedByAdmin={isViewedByAdmin}
         />
       );
     },

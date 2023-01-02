@@ -13,10 +13,12 @@ import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
+import { useAppDispatch } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { DeleteOrderDialog } from 'pages/admin/adminOrdersPanel/deleteOrderDialog';
 import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
 import { ShoppingListRowProps } from 'pages/shoppingList/shoppingListRow/types';
+import { editIsViewedByAdmin } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { toDollars } from 'utils';
 import { formatDate } from 'utils/formatDate';
 import { formatPieceCount } from 'utils/formatPieceCount';
@@ -34,8 +36,10 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     surname,
     address,
     isAdmin,
+    isViewedByAdmin,
   } = prop;
 
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const { errorColor } = usePalette();
   const primaryColor = theme.palette.primary.main;
@@ -50,6 +54,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
 
   const onAccordionClick = () => {
     setExpanded(!isExpanded);
+    if (!isViewedByAdmin) dispatch(editIsViewedByAdmin(orderId));
   };
 
   useEffect(() => {
@@ -58,6 +63,10 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
 
     if (isExpanded) {
       setAccordionBgc('#fff9e2');
+    } else if (!isExpanded && !isViewedByAdmin) {
+      timerId = setTimeout(() => {
+        setAccordionBgc('rgba(225,245,254,0.6)');
+      }, ms);
     } else {
       timerId = setTimeout(() => {
         setAccordionBgc('#ffffff');
@@ -67,7 +76,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [isExpanded]);
+  }, [isExpanded, isViewedByAdmin]);
 
   const orderStatusChipLabel =
     orderStatus.state === 'error' ? (
@@ -118,7 +127,11 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
   );
 
   return (
-    <Accordion expanded={isExpanded} sx={{ backgroundColor: accordionBgc }}>
+    <Accordion
+      expanded={isExpanded}
+      sx={{ backgroundColor: accordionBgc }}
+      onClick={onAccordionClick}
+    >
       <AccordionSummary
         expandIcon={
           <ExpandMoreIcon
@@ -131,6 +144,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
                 isExpanded ? 'rgba(232,245,233,0.65)' : 'rgba(225,245,254,0.6)'
               }`,
               borderRadius: '50%',
+              border: `${!isViewedByAdmin ? `1px solid ${primaryColor}` : 'none'}`,
             }}
           />
         }
@@ -138,10 +152,13 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
         <Stack
           width={{ sm: '100%' }}
           direction={{ sm: 'row' }}
-          alignItems={{ sm: 'center' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
           justifyContent="space-between"
           height={{ xs: 150, sm: 'auto' }}
         >
+          {!isViewedByAdmin && (
+            <Chip size="small" color="primary" sx={{ fontWeight: 'bold' }} label="New" />
+          )}
           <Tooltip title={orderId.toUpperCase()}>
             <Typography sx={{ fontWeight: 'bold', color: primaryColor }}>
               {orderId.toUpperCase()}

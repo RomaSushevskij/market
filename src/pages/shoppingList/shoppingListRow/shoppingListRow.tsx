@@ -54,7 +54,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
 
   const onAccordionClick = () => {
     setExpanded(!isExpanded);
-    if (!isViewedByAdmin) dispatch(editIsViewedByAdmin(orderId));
+    if (!isViewedByAdmin && isAdmin) dispatch(editIsViewedByAdmin(orderId));
   };
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
 
     if (isExpanded) {
       setAccordionBgc('#fff9e2');
-    } else if (!isExpanded && !isViewedByAdmin) {
+    } else if (!isExpanded && isAdmin && !isViewedByAdmin) {
       timerId = setTimeout(() => {
         setAccordionBgc('rgba(225,245,254,0.6)');
       }, ms);
@@ -140,7 +140,9 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
                 isExpanded ? 'rgba(232,245,233,0.65)' : 'rgba(225,245,254,0.6)'
               }`,
               borderRadius: '50%',
-              border: `${!isViewedByAdmin ? `1px solid ${primaryColor}` : 'none'}`,
+              border: `${
+                !isViewedByAdmin && isAdmin ? `1px solid ${primaryColor}` : 'none'
+              }`,
             }}
           />
         }
@@ -152,7 +154,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
           justifyContent="space-between"
           height={{ xs: 150, sm: 'auto' }}
         >
-          {!isViewedByAdmin && (
+          {!isViewedByAdmin && isAdmin && (
             <Chip size="small" color="primary" sx={{ fontWeight: 'bold' }} label="New" />
           )}
           <Tooltip title={orderId.toUpperCase()}>

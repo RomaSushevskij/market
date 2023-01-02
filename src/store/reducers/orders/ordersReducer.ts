@@ -4,10 +4,7 @@ import firebase from 'firebase/compat';
 
 import { ordersApi } from 'api/orders';
 import { AUTH_PAGE_MESSAGES } from 'enums';
-import {
-  editIsViewedByAdmin,
-  editOrderStatus,
-} from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
+import { editOrderStatus } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 import {
   OrderInformationType,
@@ -230,22 +227,6 @@ const slice = createSlice({
         if (indexOfCurrentOrder > -1) {
           state.userOrders[indexOfCurrentOrder].orderStatus = orderStatus;
         }
-      })
-      .addCase(editIsViewedByAdmin.pending, state => {
-        state.ordersPageStatus = 'loading';
-      })
-      .addCase(editIsViewedByAdmin.fulfilled, (state, { payload }) => {
-        state.ordersPageStatus = 'succeeded';
-        const indexOfCurrentOrder = state.userOrders.findIndex(
-          order => order.orderId === payload.orderId,
-        );
-
-        if (indexOfCurrentOrder > -1) {
-          state.userOrders[indexOfCurrentOrder].isViewedByAdmin = true;
-        }
-      })
-      .addCase(editIsViewedByAdmin.rejected, state => {
-        state.ordersPageStatus = 'failed';
       });
   },
 });

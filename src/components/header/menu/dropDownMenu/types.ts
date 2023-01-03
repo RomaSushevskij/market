@@ -12,4 +12,5 @@ export type DropDownMenuProps = {
   onOrdersClick?: () => void;
   onProductsClick?: () => void;
   onUsersClick?: () => void;
+  newOrdersCount?: number;
 };

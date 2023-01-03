@@ -1,0 +1,1 @@
+export const DEFAULT_ORDERS_PAGE_SIZE = 5;

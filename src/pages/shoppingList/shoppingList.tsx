@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Navigate } from 'react-router-dom';
 
+import { PaginationBlock } from 'components/paginationBlock';
 import { adminRoutes, routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { ShoppingListRow } from 'pages/shoppingList/shoppingListRow/shoppingListRow';
@@ -14,8 +15,14 @@ import { fetchOrders } from 'store/reducers/orders/ordersReducer';
 import {
   selectAdminOrders,
   selectIsAuth,
+  selectAdminOrdersCurrentPage,
+  selectAdminOrdersPageSize,
+  selectOrdersCurrentPage,
+  selectOrdersPageSize,
   selectUid,
   selectUserOrders,
+  selectOrdersTotalCount,
+  selectAdminOrdersTotalCount,
 } from 'store/selectors';
 import { selectIsAdminAuth } from 'store/selectors/adminAuthSelectors';
 
@@ -26,16 +33,26 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
 
   const userOrders = useAppSelector(selectUserOrders);
   const adminOrders = useAppSelector(selectAdminOrders);
-  const uId = useAppSelector(selectUid) as string;
+  const userId = useAppSelector(selectUid) as string;
   const isAuth = useAppSelector(selectIsAuth);
   const isAdminAuth = useAppSelector(selectIsAdminAuth);
+  const ordersCurrentPage = useAppSelector(selectOrdersCurrentPage);
+  const ordersPageSize = useAppSelector(selectOrdersPageSize);
+  const ordersTotalCount = useAppSelector(selectOrdersTotalCount);
+  const adminOrdersCurrentPage = useAppSelector(selectAdminOrdersCurrentPage);
+  const adminOrdersPageSize = useAppSelector(selectAdminOrdersPageSize);
+  const adminOrdersTotalCount = useAppSelector(selectAdminOrdersTotalCount);
 
   const [orders, setOrders] = useState<AdminOrder[]>([]);
 
+  const currentPage = isAdmin ? adminOrdersCurrentPage : ordersCurrentPage;
+  const pageSize = isAdmin ? adminOrdersPageSize : ordersPageSize;
+  const totalCount = isAdmin ? adminOrdersTotalCount : ordersTotalCount;
+
   useEffect(() => {
-    if (isAdmin) dispatch(fetchOrders());
-    else dispatch(fetchOrders(uId));
-  }, [dispatch, uId, isAdmin]);
+    if (isAdmin) dispatch(fetchOrders({ currentPage: 1, pageSize }));
+    else dispatch(fetchOrders({ userId, pageSize, currentPage: 1 }));
+  }, [dispatch, userId, isAdmin]);
 
   useEffect(() => {
     if (isAdmin) setOrders(adminOrders);
@@ -43,6 +60,14 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
       setOrders(userOrders);
     }
   }, [isAdmin, adminOrders, userOrders]);
+
+  const onPaginationPageChange = (pageNumber: number) => {
+    dispatch(fetchOrders({ userId, currentPage: pageNumber }));
+  };
+
+  const onPaginationPageSizeChange = (pageSize: number) => {
+    dispatch(fetchOrders({ userId, pageSize, currentPage: 1 }));
+  };
 
   const orderAccordions = orders.map(
     ({
@@ -93,6 +118,15 @@ export const ShoppingList: FC<ShoppingListProps> = memo(prop => {
             {isAdmin ? 'Orders' : 'Shopping list'}
           </Typography>
           {orderAccordions}
+          <Box paddingY={2}>
+            <PaginationBlock
+              onPageChange={onPaginationPageChange}
+              itemsTotalCount={totalCount}
+              pageSize={pageSize}
+              currentPage={currentPage}
+              onPageSizeChange={onPaginationPageSizeChange}
+            />
+          </Box>
         </Paper>
       )}
     </Box>

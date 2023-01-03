@@ -9,9 +9,17 @@ export type OrdersInitialState = {
   cartOrderInformation: OrderInformationType;
   ordersPageStatus: RequestStatusType;
   ordersPageMessage: AlertNotification | null;
+  ordersTotalCount: number;
+  pageSize: number;
+  currentPage: number;
 };
 export type OrderInformationType = Omit<
   OrderFormValuesType,
   'city' | 'street' | 'house' | 'apartment'
 > & { totalCost: number; address: string };
 export type OrderType = ProductType & { count: number };
+export type FetchOrdersThunkArg = {
+  currentPage?: number;
+  pageSize?: number;
+  userId?: string;
+};

@@ -169,6 +169,7 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
             label={orderStatusChipLabel}
             variant="outlined"
             color={orderStatus.state}
+            sx={{ fontWeight: 'bold' }}
           />
         </Stack>
       </AccordionSummary>

@@ -32,6 +32,7 @@ export const DropDownMenu: FC<DropDownMenuProps> = prop => {
     onProductsClick,
     onUsersClick,
     isAdmin,
+    newOrdersCount,
   } = prop;
 
   return (
@@ -82,6 +83,7 @@ export const DropDownMenu: FC<DropDownMenuProps> = prop => {
               <AssignmentIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Orders</ListItemText>
+            <Badge badgeContent={newOrdersCount} color="error" />
           </MenuItem>
           <MenuItem onClick={onUsersClick}>
             <ListItemIcon>

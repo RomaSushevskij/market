@@ -83,9 +83,14 @@ const slice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchOrders.fulfilled, (state, { payload }) => {
-        const { orders, userId } = payload;
+        const { orders, userId, ordersTotalCount, pageSize, currentPage } = payload;
 
-        if (!userId) state.orders = orders;
+        if (!userId) {
+          state.orders = orders;
+          state.currentPage = currentPage;
+          state.pageSize = pageSize;
+          state.ordersTotalCount = ordersTotalCount;
+        }
       })
       .addCase(editOrderStatus.fulfilled, (state, { payload }) => {
         const { updateOrderStatusPayload, adminOrdersPageMessage } = payload;

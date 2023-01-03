@@ -2,15 +2,18 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import firebase from 'firebase/compat';
 
-import { ordersApi } from 'api/orders';
+import { FetchOrdersPayload, ordersApi } from 'api/orders';
 import { AUTH_PAGE_MESSAGES } from 'enums';
 import { editOrderStatus } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
+import { DEFAULT_ORDERS_PAGE_SIZE } from 'store/reducers/orders/constants';
 import {
+  FetchOrdersThunkArg,
   OrderInformationType,
   OrdersInitialState,
   OrderType,
 } from 'store/reducers/orders/types';
+import { DEFAULT_CURRENT_PAGE } from 'store/reducers/products/constants';
 import { ProductType } from 'store/reducers/products/types';
 import { AppStateType } from 'store/types';
 import { AlertNotification } from 'types';
@@ -82,18 +85,41 @@ export const addOrder = createAsyncThunk<
 );
 
 export const fetchOrders = createAsyncThunk<
-  { orders: AdminOrder[]; userId: string | undefined },
-  string | undefined,
+  {
+    orders: AdminOrder[];
+    userId?: string;
+    currentPage: number;
+    pageSize: number;
+    ordersTotalCount: number;
+  },
+  FetchOrdersThunkArg,
   { rejectValue: AlertNotification }
   // eslint-disable-next-line default-param-last
->('orders/fetchOrdersForUser', async (userId, { rejectWithValue }) => {
+>('orders/fetchOrdersForUser', async (thunkArg, { getState, rejectWithValue }) => {
   try {
-    const orders = await ordersApi.fetchOrders(userId);
-    const sortingByDateOrders = orders.sort((order1, order2) => {
-      return order2.orderDate - order1.orderDate;
-    });
+    const { userId, currentPage, pageSize } = thunkArg;
 
-    return { orders: sortingByDateOrders, userId };
+    const getProductsState = getState as () => OrdersInitialState;
+    const pageSizeFromState = getProductsState().pageSize;
+
+    const resultPageSize = pageSize || pageSizeFromState || DEFAULT_ORDERS_PAGE_SIZE;
+    const fetchOrdersApiPayload: FetchOrdersPayload = {
+      userId,
+      currentPage: currentPage || DEFAULT_CURRENT_PAGE,
+      pageSize: resultPageSize,
+    };
+
+    const { orders, ordersTotalCount } = await ordersApi.fetchOrders(
+      fetchOrdersApiPayload,
+    );
+
+    return {
+      orders,
+      userId,
+      currentPage: fetchOrdersApiPayload.currentPage,
+      pageSize: fetchOrdersApiPayload.pageSize,
+      ordersTotalCount,
+    };
   } catch (e) {
     const { code } = e as firebase.FirebaseError;
     const notificationMessage = reduceErrorMessage(code as AUTH_PAGE_MESSAGES);
@@ -116,6 +142,9 @@ const slice = createSlice({
     } as OrderInformationType,
     ordersPageStatus: 'idle',
     ordersPageMessage: null,
+    ordersTotalCount: 0,
+    pageSize: 5,
+    currentPage: 1,
   } as OrdersInitialState,
   reducers: {
     changeOrderItemCount(
@@ -197,9 +226,14 @@ const slice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, { payload }) => {
         state.ordersPageStatus = 'succeeded';
-        const { orders, userId } = payload;
+        const { orders, userId, currentPage, pageSize, ordersTotalCount } = payload;
 
-        if (userId) state.userOrders = orders;
+        if (userId) {
+          state.userOrders = orders;
+          state.currentPage = currentPage;
+          state.pageSize = pageSize;
+          state.ordersTotalCount = ordersTotalCount;
+        }
       })
       .addCase(fetchOrders.rejected, (state, { payload }) => {
         state.ordersPageStatus = 'failed';

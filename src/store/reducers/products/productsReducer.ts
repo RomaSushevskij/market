@@ -10,6 +10,7 @@ import {
 } from 'store/reducers/adminProductsPanel';
 import {
   DEFAULT_ADMIN_PANEL_PAGE_SIZE,
+  DEFAULT_CURRENT_PAGE,
   DEFAULT_PRODUCTS_PAGE_SIZE,
 } from 'store/reducers/products/constants';
 import {
@@ -42,7 +43,7 @@ export const fetchProducts = createAsyncThunk<
 
     const { products, productsTotalCount } = await productsAPI.fetchProducts({
       pageSize: resultPageSize,
-      currentPage: currentPage || 1,
+      currentPage: currentPage || DEFAULT_CURRENT_PAGE,
     });
 
     return { products, thunkArg, productsTotalCount };

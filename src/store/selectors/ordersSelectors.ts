@@ -11,3 +11,9 @@ export const selectUserOrders = (state: AppStateType): AdminOrder[] =>
   state.orders.userOrders;
 export const selectOrdersPageStatus = (state: AppStateType): RequestStatusType =>
   state.orders.ordersPageStatus;
+export const selectOrdersCurrentPage = (state: AppStateType): number =>
+  state.orders.currentPage;
+export const selectOrdersPageSize = (state: AppStateType): number =>
+  state.orders.pageSize;
+export const selectOrdersTotalCount = (state: AppStateType): number =>
+  state.orders.ordersTotalCount;

@@ -4,26 +4,49 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  limit,
+  orderBy,
   query,
+  startAt,
   updateDoc,
   where,
 } from 'firebase/firestore';
 
 import { collections } from 'api/enums';
-import { AddOrderPayload, UpdateOrderStatusPayload } from 'api/orders/types';
+import {
+  AddOrderPayload,
+  FetchOrdersPayload,
+  UpdateOrderStatusPayload,
+} from 'api/orders/types';
 import { db } from 'services/firebase';
 import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 
 export const ordersApi = {
-  async fetchOrders(userId: string | undefined) {
-    let q;
+  async fetchOrders({ pageSize, currentPage, userId }: FetchOrdersPayload) {
+    const q = query(collection(db, collections.ORDERS), orderBy('orderDate', 'desc'));
+    const { docs } = await getDocs(q);
+
+    const firstOrderOfPage = docs[pageSize * currentPage - pageSize];
+
+    let payload;
 
     if (!userId) {
-      q = query(collection(db, collections.ORDERS));
+      payload = query(
+        collection(db, collections.ORDERS),
+        orderBy('orderDate', 'desc'),
+        startAt(firstOrderOfPage),
+        limit(pageSize),
+      );
     } else {
-      q = query(collection(db, collections.ORDERS), where('uid', '==', userId));
+      payload = query(
+        collection(db, collections.ORDERS),
+        where('uid', '==', userId),
+        orderBy('orderDate', 'desc'),
+        startAt(firstOrderOfPage),
+        limit(pageSize),
+      );
     }
-    const response = await getDocs(q);
+    const response = await getDocs(payload);
 
     const orders = response.docs.map(doc => {
       const orderData = doc.data() as AdminOrder;
@@ -35,7 +58,7 @@ export const ordersApi = {
       return order;
     });
 
-    return orders;
+    return { orders, ordersTotalCount: response.size };
   },
   async addOrder(addOrderPayload: AddOrderPayload) {
     const { id } = await addDoc(collection(db, collections.ORDERS), addOrderPayload);

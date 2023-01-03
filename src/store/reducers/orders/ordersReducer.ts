@@ -99,8 +99,8 @@ export const fetchOrders = createAsyncThunk<
   try {
     const { userId, currentPage, pageSize } = thunkArg;
 
-    const getProductsState = getState as () => OrdersInitialState;
-    const pageSizeFromState = getProductsState().pageSize;
+    const getOrdersState = getState as () => OrdersInitialState;
+    const pageSizeFromState = getOrdersState().pageSize;
 
     const resultPageSize = pageSize || pageSizeFromState || DEFAULT_ORDERS_PAGE_SIZE;
     const fetchOrdersApiPayload: FetchOrdersPayload = {

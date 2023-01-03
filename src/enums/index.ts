@@ -12,6 +12,7 @@ export enum routes {
   AUTH_SEND_INSTRUCTIONS = 'sendInstructions',
   AUTH_PASSWORD_RECOVERY = 'passwordRecovery',
   VERIFY_EMAIL = 'verifyEmail',
+  USER_PROFILE = '/profile',
 }
 
 export enum adminRoutes {

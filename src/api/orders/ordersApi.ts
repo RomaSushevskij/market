@@ -24,11 +24,12 @@ import { AdminOrder } from 'store/reducers/adminOrdersPanel/types';
 export const ordersApi = {
   async fetchOrders({ pageSize, currentPage, userId }: FetchOrdersPayload) {
     const q = query(collection(db, collections.ORDERS), orderBy('orderDate', 'desc'));
-    const { docs } = await getDocs(q);
+    const { docs, size } = await getDocs(q);
 
     const firstOrderOfPage = docs[pageSize * currentPage - pageSize];
 
     let payload;
+    let userOrdersSize = 0;
 
     if (!userId) {
       payload = query(
@@ -45,6 +46,14 @@ export const ordersApi = {
         startAt(firstOrderOfPage),
         limit(pageSize),
       );
+      const q = query(
+        collection(db, collections.ORDERS),
+        where('uid', '==', userId),
+        orderBy('orderDate', 'desc'),
+      );
+      const { size } = await getDocs(q);
+
+      userOrdersSize = size;
     }
     const response = await getDocs(payload);
 
@@ -57,8 +66,9 @@ export const ordersApi = {
 
       return order;
     });
+    const ordersTotalCount = !userId ? size : userOrdersSize;
 
-    return { orders, ordersTotalCount: response.size };
+    return { orders, ordersTotalCount };
   },
   async addOrder(addOrderPayload: AddOrderPayload) {
     const { id } = await addDoc(collection(db, collections.ORDERS), addOrderPayload);

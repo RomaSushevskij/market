@@ -34,4 +34,5 @@ export type AdminOrdersInitialState = {
   ordersTotalCount: number;
   adminOrdersPageMessage: AlertNotification | null;
   adminOrdersStatus: RequestStatusType;
+  newOrdersCount: number;
 };

@@ -12,3 +12,5 @@ export const selectAdminOrdersPageSize = (state: AppStateType): number =>
   state.adminOrders.pageSize;
 export const selectAdminOrdersTotalCount = (state: AppStateType): number =>
   state.adminOrders.ordersTotalCount;
+export const selectNewOrdersCount = (state: AppStateType): number =>
+  state.adminOrders.newOrdersCount;

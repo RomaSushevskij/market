@@ -13,12 +13,16 @@ import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';
 import { DeleteOrderDialog } from 'pages/admin/adminOrdersPanel/deleteOrderDialog';
 import { OrderStepper } from 'pages/shoppingList/shoppingListRow/orderStepper';
 import { ShoppingListRowProps } from 'pages/shoppingList/shoppingListRow/types';
-import { editIsViewedByAdmin } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
+import {
+  editIsViewedByAdmin,
+  setNewOrdersCount,
+} from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
+import { selectNewOrdersCount } from 'store/selectors';
 import { toDollars } from 'utils';
 import { formatDate } from 'utils/formatDate';
 import { formatPieceCount } from 'utils/formatPieceCount';
@@ -44,6 +48,8 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
   const { errorColor } = usePalette();
   const primaryColor = theme.palette.primary.main;
 
+  const newOrdersCount = useAppSelector(selectNewOrdersCount);
+
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [accordionBgc, setAccordionBgc] = useState<string>('#ffffff');
   const [isOpenDeleteOrderDialog, setOpenDeleteOrderDialog] = useState(false);
@@ -52,9 +58,17 @@ export const ShoppingListRow: FC<ShoppingListRowProps> = memo(prop => {
   const formattedPrice = toDollars.format(totalCost);
   const formattedProductsNumber = formatPieceCount(productsNumber);
 
-  const onAccordionClick = () => {
+  const onAccordionClick = async () => {
     setExpanded(!isExpanded);
-    if (!isViewedByAdmin && isAdmin) dispatch(editIsViewedByAdmin(orderId));
+    if (!isViewedByAdmin && isAdmin) {
+      const resultAction = await dispatch(editIsViewedByAdmin(orderId));
+
+      if (editIsViewedByAdmin.fulfilled.match(resultAction)) {
+        const decrNewOrdersCount = newOrdersCount - 1;
+
+        dispatch(setNewOrdersCount({ newOrdersCount: decrNewOrdersCount }));
+      }
+    }
   };
 
   useEffect(() => {

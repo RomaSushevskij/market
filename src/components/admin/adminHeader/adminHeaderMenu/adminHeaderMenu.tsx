@@ -12,7 +12,7 @@ import { DropDownMenu } from 'components/header/menu/dropDownMenu';
 import { adminRoutes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { signOut } from 'store/reducers';
-import { selectAdminOrders } from 'store/selectors';
+import { selectNewOrdersCount } from 'store/selectors';
 import { selectIsAdminEmail } from 'store/selectors/adminAuthSelectors';
 
 export const AdminHeaderMenu: FC = memo(() => {
@@ -20,14 +20,10 @@ export const AdminHeaderMenu: FC = memo(() => {
   const navigate = useNavigate();
 
   const adminEmail = useAppSelector(selectIsAdminEmail);
-  const adminOrders = useAppSelector(selectAdminOrders);
+  const newOrdersCount = useAppSelector(selectNewOrdersCount);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
-
-  const newOrdersCount = adminOrders.reduce((sum, { isViewedByAdmin }) => {
-    return !isViewedByAdmin ? sum + 1 : sum;
-  }, 0);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

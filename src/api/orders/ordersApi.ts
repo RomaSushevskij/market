@@ -26,6 +26,7 @@ export const ordersApi = {
     const q = query(collection(db, collections.ORDERS), orderBy('orderDate', 'desc'));
     const { docs, size } = await getDocs(q);
 
+    let newOrdersCount = 0;
     const firstOrderOfPage = docs[pageSize * currentPage - pageSize];
 
     let payload;
@@ -38,6 +39,11 @@ export const ordersApi = {
         startAt(firstOrderOfPage),
         limit(pageSize),
       );
+      newOrdersCount = docs.reduce((sum, doc) => {
+        const { isViewedByAdmin } = doc.data() as AdminOrder;
+
+        return !isViewedByAdmin ? sum + 1 : sum;
+      }, 0);
     } else {
       payload = query(
         collection(db, collections.ORDERS),
@@ -68,7 +74,7 @@ export const ordersApi = {
     });
     const ordersTotalCount = !userId ? size : userOrdersSize;
 
-    return { orders, ordersTotalCount };
+    return { orders, ordersTotalCount, newOrdersCount };
   },
   async addOrder(addOrderPayload: AddOrderPayload) {
     const { id } = await addDoc(collection(db, collections.ORDERS), addOrderPayload);

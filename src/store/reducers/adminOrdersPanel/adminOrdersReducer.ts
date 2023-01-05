@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import firebase from 'firebase/compat';
 
 import { ordersApi, UpdateOrderStatusPayload } from 'api/orders';
@@ -78,18 +78,31 @@ const slice = createSlice({
     ordersTotalCount: 0,
     adminOrdersStatus: 'idle',
     adminOrdersPageMessage: null,
+    newOrdersCount: 0,
   } as AdminOrdersInitialState,
-  reducers: {},
+  reducers: {
+    setNewOrdersCount(state, action: PayloadAction<{ newOrdersCount: number }>) {
+      state.newOrdersCount = action.payload.newOrdersCount;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchOrders.fulfilled, (state, { payload }) => {
-        const { orders, userId, ordersTotalCount, pageSize, currentPage } = payload;
+        const {
+          orders,
+          userId,
+          ordersTotalCount,
+          pageSize,
+          currentPage,
+          newOrdersCount,
+        } = payload;
 
         if (!userId) {
           state.orders = orders;
           state.currentPage = currentPage;
           state.pageSize = pageSize;
           state.ordersTotalCount = ordersTotalCount;
+          state.newOrdersCount = newOrdersCount;
         }
       })
       .addCase(editOrderStatus.fulfilled, (state, { payload }) => {
@@ -159,3 +172,4 @@ const slice = createSlice({
 });
 
 export const adminOrdersReducer = slice.reducer;
+export const { setNewOrdersCount } = slice.actions;

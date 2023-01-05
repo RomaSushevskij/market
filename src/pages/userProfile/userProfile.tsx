@@ -114,7 +114,7 @@ export const UserProfile: FC = () => {
         </Box>
         <List>
           <EditableListItem
-            value={userName || ''}
+            value={userName || 'User name'}
             label="Name"
             onBlur={onNameFieldBlur}
           />

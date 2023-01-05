@@ -91,6 +91,7 @@ export const fetchOrders = createAsyncThunk<
     currentPage: number;
     pageSize: number;
     ordersTotalCount: number;
+    newOrdersCount: number;
   },
   FetchOrdersThunkArg,
   { rejectValue: AlertNotification }
@@ -109,7 +110,7 @@ export const fetchOrders = createAsyncThunk<
       pageSize: resultPageSize,
     };
 
-    const { orders, ordersTotalCount } = await ordersApi.fetchOrders(
+    const { orders, ordersTotalCount, newOrdersCount } = await ordersApi.fetchOrders(
       fetchOrdersApiPayload,
     );
 
@@ -119,6 +120,7 @@ export const fetchOrders = createAsyncThunk<
       currentPage: fetchOrdersApiPayload.currentPage,
       pageSize: fetchOrdersApiPayload.pageSize,
       ordersTotalCount,
+      newOrdersCount,
     };
   } catch (e) {
     const { code } = e as firebase.FirebaseError;

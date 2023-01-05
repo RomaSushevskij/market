@@ -21,14 +21,14 @@ export const AppConfig: FC = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user && user.emailVerified) {
-        const { email, displayName, uid } = user;
+        const { email, displayName, uid, photoURL } = user;
 
         if (appType === 'adminApp') {
           if (uid === adminId) {
-            dispatch(setAdminAuth({ email, displayName }));
+            dispatch(setAdminAuth({ email, displayName, photoURL }));
           }
         } else {
-          dispatch(setUserAuth({ email, displayName, uid }));
+          dispatch(setUserAuth({ email, displayName, uid, photoURL }));
           dispatch(setOrderList({ orderList: getOrderListToLocalStorage(uid) }));
         }
       }

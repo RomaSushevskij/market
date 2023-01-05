@@ -8,6 +8,7 @@ const slice = createSlice({
   initialState: {
     isAdminAuth: false,
     adminName: null,
+    photoURL: null,
     adminAuthStatus: 'idle',
     adminAuthPageMessage: null,
     adminEmail: null,
@@ -15,12 +16,17 @@ const slice = createSlice({
   reducers: {
     setAdminAuth(
       state,
-      action: PayloadAction<{ email: string | null; displayName: string | null }>,
+      action: PayloadAction<{
+        email: string | null;
+        displayName: string | null;
+        photoURL: string | null;
+      }>,
     ) {
-      const { email, displayName } = action.payload;
+      const { email, displayName, photoURL } = action.payload;
 
       state.adminEmail = email;
       state.adminName = displayName;
+      state.photoURL = photoURL;
       state.isAdminAuth = true;
     },
   },

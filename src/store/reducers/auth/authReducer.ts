@@ -3,11 +3,14 @@ import firebase from 'firebase/compat';
 
 import { authApi } from 'api';
 import { ResetPasswordPayload } from 'api/auth/types';
+import { profileApi } from 'api/profile/profileApi';
+import { UpdateProfilePayload } from 'api/profile/types';
 import { AUTH_PAGE_MESSAGES } from 'enums';
 import {
   AuthInitialStateType,
   SignInThunkArg,
   SignUpDataType,
+  UpdateProfileReturned,
 } from 'store/reducers/auth/types';
 import { AlertNotification } from 'types';
 import { reduceErrorMessage } from 'utils/reduceErrorMessage';
@@ -164,6 +167,27 @@ export const verifyEmail = createAsyncThunk<
   }
 });
 
+export const updateProfile = createAsyncThunk<
+  UpdateProfileReturned,
+  UpdateProfilePayload,
+  { rejectValue: AlertNotification }
+>('auth/updateProfile', async (thunkArk, { rejectWithValue }) => {
+  try {
+    const photoURL = await profileApi.updateProfile(thunkArk);
+
+    const authPageMessage: AlertNotification = {
+      message: AUTH_PAGE_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
+      severity: 'success',
+    };
+
+    return { displayName: thunkArk.displayName, photoURL, authPageMessage };
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+
+    return rejectWithValue({ message: code, severity: 'error' });
+  }
+});
+
 const slice = createSlice({
   name: 'auth',
   initialState: {
@@ -191,12 +215,14 @@ const slice = createSlice({
         email: string | null;
         displayName: string | null;
         uid: string;
+        photoURL: string | null;
       }>,
     ) {
-      const { email, displayName, uid } = action.payload;
+      const { email, displayName, uid, photoURL } = action.payload;
 
       state.email = email;
       state.name = displayName;
+      state.photoURL = photoURL;
       state.uid = uid;
       state.isAuth = true;
     },
@@ -220,20 +246,28 @@ const slice = createSlice({
         state.isAuth = false;
         state.email = null;
         state.name = null;
-      });
-    builder.addMatcher(
-      isAnyOf(
-        signUp.pending,
-        signIn.pending,
-        signOut.pending,
-        sendPasswordResetEmail.pending,
-        resetPassword.pending,
-        verifyEmail.pending,
-      ),
-      state => {
-        state.status = 'loading';
-      },
-    );
+      })
+      .addCase(updateProfile.fulfilled, (state, { payload }) => {
+        const { photoURL, displayName, authPageMessage } = payload;
+
+        if (displayName !== undefined) state.name = displayName;
+        if (photoURL !== undefined) state.photoURL = photoURL;
+        state.authPageMessage = authPageMessage;
+      })
+      .addMatcher(
+        isAnyOf(
+          signUp.pending,
+          signIn.pending,
+          signOut.pending,
+          sendPasswordResetEmail.pending,
+          resetPassword.pending,
+          verifyEmail.pending,
+          updateProfile.pending,
+        ),
+        state => {
+          state.status = 'loading';
+        },
+      );
     builder.addMatcher(
       isAnyOf(
         signUp.fulfilled,
@@ -242,6 +276,7 @@ const slice = createSlice({
         sendPasswordResetEmail.fulfilled,
         resetPassword.fulfilled,
         verifyEmail.fulfilled,
+        updateProfile.fulfilled,
       ),
       state => {
         state.status = 'succeeded';
@@ -255,6 +290,7 @@ const slice = createSlice({
         sendPasswordResetEmail.rejected,
         resetPassword.rejected,
         verifyEmail.rejected,
+        updateProfile.rejected,
       ),
       (state, { payload }) => {
         state.status = 'failed';

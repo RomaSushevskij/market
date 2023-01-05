@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useRef, useState } from 'react';
+import React, { ChangeEvent, FC, useRef } from 'react';
 
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import Avatar from '@mui/material/Avatar';
@@ -12,28 +12,37 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import photo from 'assets/images/product.png';
 import { EditableListItem } from 'components/editableListItem/editableListItem';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { updateProfile } from 'store/reducers';
+import { selectAuthPageStatus, selectPhotoURL, selectUserName } from 'store/selectors';
 
 export const UserProfile: FC = () => {
+  const dispatch = useAppDispatch();
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [productImage64, setProductImage64] = useState('');
+
+  const authPageStatus = useAppSelector(selectAuthPageStatus);
+  const photoURL = useAppSelector(selectPhotoURL);
+  const userName = useAppSelector(selectUserName);
 
   const onChangeProductImage = (e: ChangeEvent<HTMLInputElement>) => {
-    const formData = new FormData();
-    const reader = new FileReader();
+    const profileImage = e.target.files && e.target.files[0];
 
-    const productImage = e.target.files && e.target.files[0];
+    dispatch(updateProfile({ photoFile: profileImage }));
+  };
 
-    if (productImage) {
-      formData.append('productImage', productImage, productImage.name);
+  const onNameFieldBlur = async (
+    value: string,
+    setEditMode: (isEditMode: boolean) => void,
+  ) => {
+    if (value !== userName) {
+      const resultAction = await dispatch(updateProfile({ displayName: value }));
 
-      reader.onloadend = () => {
-        if (reader.result) setProductImage64(reader.result as string);
-      };
-      reader.readAsDataURL(productImage);
+      if (updateProfile.fulfilled.match(resultAction)) {
+        setEditMode(false);
+      }
     }
-    console.log(productImage64);
+    setEditMode(false);
   };
 
   return (
@@ -43,7 +52,7 @@ export const UserProfile: FC = () => {
       <Stack direction={{ sm: 'row' }} alignItems="center">
         <Box position="relative">
           <Avatar
-            src={photo}
+            src={photoURL || undefined}
             sx={{
               width: 180,
               height: 180,
@@ -52,6 +61,7 @@ export const UserProfile: FC = () => {
             }}
           />
           <Fab
+            disabled={authPageStatus === 'loading'}
             component="label"
             size="small"
             sx={{
@@ -72,7 +82,11 @@ export const UserProfile: FC = () => {
           </Fab>
         </Box>
         <List>
-          <EditableListItem value="Roman Sushevskij" label="Name" />
+          <EditableListItem
+            value={userName || ''}
+            label="Name"
+            onBlur={onNameFieldBlur}
+          />
           <EditableListItem value="roma.sushevskij@yandex.ru" label="Email" />
           <ListItem>
             <ListItemText primary="User ID" secondary="LKUGf324flqks1384rgakSFGOQ8WR" />

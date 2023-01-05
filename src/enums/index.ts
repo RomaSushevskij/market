@@ -34,6 +34,7 @@ export enum AUTH_PAGE_MESSAGES {
   INVALID_OOB_CODE = 'auth/invalid-action-code',
   INVALID_ARGUMENT = 'invalid-argument',
   ACCOUNT_NOT_ADMIN = 'This account does not have admin rights',
+  PROFILE_UPDATED_SUCCESSFULLY = 'Profile updated successfully',
 }
 
 export enum ADMIN_PANEL_PRODUCTS_MESSAGES {

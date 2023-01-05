@@ -12,6 +12,7 @@ export enum routes {
   AUTH_SEND_INSTRUCTIONS = 'sendInstructions',
   AUTH_PASSWORD_RECOVERY = 'passwordRecovery',
   VERIFY_EMAIL = 'verifyEmail',
+  RECOVER_EMAIL = 'recoverEmail',
   USER_PROFILE = '/profile',
 }
 
@@ -35,6 +36,7 @@ export enum AUTH_PAGE_MESSAGES {
   INVALID_ARGUMENT = 'invalid-argument',
   ACCOUNT_NOT_ADMIN = 'This account does not have admin rights',
   PROFILE_UPDATED_SUCCESSFULLY = 'Profile updated successfully',
+  EMAIL_UPDATED_SUCCESSFULLY = 'Email has been changed. A letter was sent to restore the old email',
 }
 
 export enum ADMIN_PANEL_PRODUCTS_MESSAGES {

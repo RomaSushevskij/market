@@ -1,4 +1,9 @@
-import { getAuth, updateProfile } from 'firebase/auth';
+import {
+  getAuth,
+  updateProfile,
+  updateEmail,
+  sendEmailVerification,
+} from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { UpdateProfilePayload } from 'api/profile/types';
@@ -26,6 +31,12 @@ export const profileApi = {
       });
 
       return photoURL;
+    }
+  },
+  async updateEmail(newEmail: string) {
+    if (auth.currentUser) {
+      await updateEmail(auth.currentUser, newEmail);
+      await sendEmailVerification(auth.currentUser);
     }
   },
 };

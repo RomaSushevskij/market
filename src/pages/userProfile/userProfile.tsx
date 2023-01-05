@@ -11,11 +11,19 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Navigate } from 'react-router-dom';
 
 import { EditableListItem } from 'components/editableListItem/editableListItem';
+import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { updateProfile } from 'store/reducers';
-import { selectAuthPageStatus, selectPhotoURL, selectUserName } from 'store/selectors';
+import { signOut, updateEmail, updateProfile } from 'store/reducers';
+import {
+  selectAuthPageStatus,
+  selectEmail,
+  selectIsAuth,
+  selectPhotoURL,
+  selectUserName,
+} from 'store/selectors';
 
 export const UserProfile: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +32,8 @@ export const UserProfile: FC = () => {
   const authPageStatus = useAppSelector(selectAuthPageStatus);
   const photoURL = useAppSelector(selectPhotoURL);
   const userName = useAppSelector(selectUserName);
+  const userEmail = useAppSelector(selectEmail);
+  const isAuth = useAppSelector(selectIsAuth);
 
   const onChangeProductImage = (e: ChangeEvent<HTMLInputElement>) => {
     const profileImage = e.target.files && e.target.files[0];
@@ -44,6 +54,22 @@ export const UserProfile: FC = () => {
     }
     setEditMode(false);
   };
+
+  const onEmailFieldBlur = async (
+    value: string,
+    setEditMode: (isEditMode: boolean) => void,
+  ) => {
+    const resultAction = await dispatch(updateEmail(value));
+
+    if (updateEmail.fulfilled.match(resultAction)) {
+      setEditMode(false);
+      dispatch(signOut());
+    }
+  };
+
+  if (!isAuth) {
+    return <Navigate to={routes.AUTH_PAGE} />;
+  }
 
   return (
     <Paper sx={{ p: 4 }}>
@@ -87,7 +113,11 @@ export const UserProfile: FC = () => {
             label="Name"
             onBlur={onNameFieldBlur}
           />
-          <EditableListItem value="roma.sushevskij@yandex.ru" label="Email" />
+          <EditableListItem
+            value={userEmail || ''}
+            label="Email"
+            onBlur={onEmailFieldBlur}
+          />
           <ListItem>
             <ListItemText primary="User ID" secondary="LKUGf324flqks1384rgakSFGOQ8WR" />
           </ListItem>

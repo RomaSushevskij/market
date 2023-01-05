@@ -14,6 +14,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
+import { EmailRecover } from 'components/emailRecover/emailRecover';
 import { EmailVerify } from 'components/EmailVerify';
 import {
   LoginForm,
@@ -68,6 +69,8 @@ export const AuthPage: FC = memo(() => {
       navigate(`${routes.VERIFY_EMAIL}?oobCode=${oobCodeQueryParam}`);
     if (searchParams.get('mode') === 'resetPassword')
       navigate(`${routes.AUTH_PASSWORD_RECOVERY}?oobCode=${oobCodeQueryParam}`);
+    if (searchParams.get('mode') === 'recoverEmail')
+      navigate(`${routes.RECOVER_EMAIL}?oobCode=${oobCodeQueryParam}`);
   }, [searchParams, modeQueryParam, oobCodeQueryParam, navigate]);
 
   if (isAuth) {
@@ -105,6 +108,7 @@ export const AuthPage: FC = memo(() => {
               />
 
               <Route path={routes.VERIFY_EMAIL} element={<EmailVerify />} />
+              <Route path={routes.RECOVER_EMAIL} element={<EmailRecover />} />
             </Routes>
           </Box>
         </Paper>

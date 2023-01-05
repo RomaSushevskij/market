@@ -67,6 +67,7 @@ export const HeaderMenu: FC = () => {
   };
 
   const onProfileClick = () => {
+    navigate(routes.USER_PROFILE);
     setAnchorEl(null);
   };
 

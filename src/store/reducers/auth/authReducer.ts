@@ -188,6 +188,28 @@ export const updateProfile = createAsyncThunk<
   }
 });
 
+export const updateEmail = createAsyncThunk<
+  { newEmail: string; authPageMessage: AlertNotification },
+  string,
+  { rejectValue: AlertNotification }
+>('auth/updateEmail', async (newEmail, { rejectWithValue }) => {
+  try {
+    await profileApi.updateEmail(newEmail);
+
+    return {
+      newEmail,
+      authPageMessage: {
+        message: AUTH_PAGE_MESSAGES.EMAIL_UPDATED_SUCCESSFULLY,
+        severity: 'success',
+      },
+    };
+  } catch (e) {
+    const { code } = e as firebase.FirebaseError;
+
+    return rejectWithValue({ message: code, severity: 'error' });
+  }
+});
+
 const slice = createSlice({
   name: 'auth',
   initialState: {
@@ -254,6 +276,12 @@ const slice = createSlice({
         if (photoURL !== undefined) state.photoURL = photoURL;
         state.authPageMessage = authPageMessage;
       })
+      .addCase(updateEmail.fulfilled, (state, { payload }) => {
+        const { newEmail, authPageMessage } = payload;
+
+        state.email = newEmail;
+        state.authPageMessage = authPageMessage;
+      })
       .addMatcher(
         isAnyOf(
           signUp.pending,
@@ -263,6 +291,7 @@ const slice = createSlice({
           resetPassword.pending,
           verifyEmail.pending,
           updateProfile.pending,
+          updateEmail.pending,
         ),
         state => {
           state.status = 'loading';
@@ -277,6 +306,7 @@ const slice = createSlice({
         resetPassword.fulfilled,
         verifyEmail.fulfilled,
         updateProfile.fulfilled,
+        updateEmail.fulfilled,
       ),
       state => {
         state.status = 'succeeded';
@@ -291,6 +321,7 @@ const slice = createSlice({
         resetPassword.rejected,
         verifyEmail.rejected,
         updateProfile.rejected,
+        updateEmail.rejected,
       ),
       (state, { payload }) => {
         state.status = 'failed';

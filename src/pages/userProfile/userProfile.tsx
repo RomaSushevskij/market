@@ -22,6 +22,7 @@ import {
   selectEmail,
   selectIsAuth,
   selectPhotoURL,
+  selectUserId,
   selectUserName,
 } from 'store/selectors';
 
@@ -33,12 +34,16 @@ export const UserProfile: FC = () => {
   const photoURL = useAppSelector(selectPhotoURL);
   const userName = useAppSelector(selectUserName);
   const userEmail = useAppSelector(selectEmail);
+  const userId = useAppSelector(selectUserId);
   const isAuth = useAppSelector(selectIsAuth);
 
   const onChangeProductImage = (e: ChangeEvent<HTMLInputElement>) => {
     const profileImage = e.target.files && e.target.files[0];
 
-    dispatch(updateProfile({ photoFile: profileImage }));
+    const imageExtension = profileImage?.name.split('.')[1];
+    const imageName = `${userId}.${imageExtension}`;
+
+    dispatch(updateProfile({ photoFile: profileImage, imageName }));
   };
 
   const onNameFieldBlur = async (

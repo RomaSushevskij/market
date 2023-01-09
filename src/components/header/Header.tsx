@@ -1,6 +1,7 @@
-import React, { FC, memo } from 'react';
+import React, { ChangeEvent, FC, memo, useState } from 'react';
 
 import LocalMallIcon from '@mui/icons-material/LocalMall';
+import SearchIcon from '@mui/icons-material/Search';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,6 +10,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { HeaderMenu } from './menu/Menu';
 
+import {
+  SearchIconWrapper,
+  StyledInputBase,
+  Search,
+} from 'components/header/search/Search';
 import { ProgressBar } from 'components/progressBar';
 import { routes } from 'enums';
 import { useAppSelector } from 'hooks';
@@ -31,6 +37,12 @@ export const Header: FC = memo(() => {
     authPageStatus === 'loading' ||
     ordersPageStatus === 'loading';
 
+  const [searchValue, setSearchValue] = useState('');
+
+  const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.currentTarget.value);
+  };
+
   const onMenuIconButtonClick = () => {
     navigate(routes.PRODUCTS);
   };
@@ -41,13 +53,31 @@ export const Header: FC = memo(() => {
         <Toolbar>
           <Box flexGrow={1}>
             <Button
-              startIcon={<LocalMallIcon sx={{ transform: 'scale(1.5)', mr: 2 }} />}
-              sx={{ fontSize: 22, color: 'inherit', textTransform: 'inherit' }}
+              startIcon={
+                <LocalMallIcon sx={{ transform: 'scale(1.5)', mr: { sx: 0.5, sm: 2 } }} />
+              }
+              sx={{
+                fontSize: { xs: 16, sm: 22 },
+                color: 'inherit',
+                textTransform: 'inherit',
+                minWidth: 100,
+              }}
               onClick={onMenuIconButtonClick}
             >
               i-Shop
             </Button>
           </Box>
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              value={searchValue}
+              onChange={onSearchInputChange}
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
           <HeaderMenu />
         </Toolbar>
       </AppBar>

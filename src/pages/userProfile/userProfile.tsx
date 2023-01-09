@@ -124,7 +124,7 @@ export const UserProfile: FC = () => {
             onBlur={onEmailFieldBlur}
           />
           <ListItem>
-            <ListItemText primary="User ID" secondary="LKUGf324flqks1384rgakSFGOQ8WR" />
+            <ListItemText primary="User ID" secondary={userId} />
           </ListItem>
         </List>
       </Stack>

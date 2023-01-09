@@ -11,11 +11,10 @@ import TextField from '@mui/material/TextField';
 import { useFormik } from 'formik';
 import { NavLink } from 'react-router-dom';
 
-import { SignUpSchema } from '../validation';
-
 import { FormikFieldSignUp, SignUpFormValuesType } from './types';
 
 import { Notification } from 'components/forms/passwordRecovery/Notification';
+import { SignUpSchema } from 'components/forms/validation';
 import { routes } from 'enums';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { usePalette } from 'hooks/usePalette/usePalette';

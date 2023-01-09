@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import { adminAuthReducer } from 'store/reducers/adminAuth';
 import { adminOrdersReducer } from 'store/reducers/adminOrdersPanel/adminOrdersReducer';
 import { adminPanelProductsReducer } from 'store/reducers/adminProductsPanel';
+import { adminUsersReducer } from 'store/reducers/adminUsersPanel/adminUsersPanel';
 import { appReducer } from 'store/reducers/app';
 import { authReducer } from 'store/reducers/auth/authReducer';
 import { ordersReducer } from 'store/reducers/orders/ordersReducer';
@@ -17,6 +18,7 @@ export const rootReducer = combineReducers({
   adminPanelProducts: adminPanelProductsReducer,
   adminAuth: adminAuthReducer,
   adminOrders: adminOrdersReducer,
+  adminUsers: adminUsersReducer,
 });
 
 export const store = configureStore({
